@@ -1,6 +1,6 @@
 # derive.R
-# lg_derive(): tracked mutate — documents new variable derivations.
-# lg_join():   tracked join — records which source datasets contributed each row.
+# lg_derive(): tracked mutate \u2014 documents new variable derivations.
+# lg_join():   tracked join \u2014 records which source datasets contributed each row.
 
 
 #' Derive new variables with documented derivation
@@ -77,7 +77,7 @@ lg_derive <- function(data, ..., description) {
 #' Performs a left, inner, full, or right join and records the operation in the
 #' session log. The `.__lid__` column from `x` is preserved. A secondary
 #' column `.__lid_y__` records which rows of `y` contributed to each output
-#' row — enabling full bilateral tracing.
+#' row, enabling full bilateral tracing.
 #'
 #' @param x,y `lg_df` objects.
 #' @param by Character vector of join keys, passed to the underlying

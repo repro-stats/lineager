@@ -4,7 +4,7 @@
 # This is the heart of lineager's regulatory value.
 # Every subject removed from a dataset MUST have a documented reason.
 # Excluded subjects, their lineage IDs, USUBJIDs, and reasons are all
-# stored in the session exclusion registry — forming the disposition table.
+# stored in the session exclusion registry \u2014 forming the disposition table.
 
 
 #' Filter a tagged dataset with mandatory exclusion documentation
@@ -14,7 +14,7 @@
 #' session exclusion registry with their USUBJID (if present), lineage ID,
 #' and the documented reason.
 #'
-#' `reason` has no default. Undocumented exclusions are a compliance failure —
+#' `reason` has no default. Undocumented exclusions are a compliance failure :
 #' this is enforced at the R level, not by convention.
 #'
 #' @param data An `lg_df` from [lg_tag()].

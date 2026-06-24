@@ -1,15 +1,11 @@
 # lineager.R
 # Package core: store, session management, and shared internals.
 #
-# Design philosophy:
-#   - Subject-first: every concept is anchored to USUBJID, not operations
-#   - CDISC-aware: ADaM/SDTM domain names, population flags, variable specs
-#     are first-class objects, not strings
+# Design principles:
+#   - Row-first: every concept is anchored to row-level lineage IDs
 #   - Mandatory reason: lg_filter() requires documented exclusion reasons
-#   - No redundancy with dtrackr: lineager tracks WHERE each subject went
-#     and WHY; dtrackr tracks WHAT happened to the dataframe
 #   - Minimal API: one function per concept, no convenience wrappers
-#   - Regulatory output: lg_report() produces CDISC Reviewer's Guide content
+#   - General-purpose: works for any R pipeline; CDISC features are optional
 
 
 # --------------------------------------------------------------------------- #
@@ -17,18 +13,18 @@
 # --------------------------------------------------------------------------- #
 
 # Single in-memory store per R session.
-# Reset with lg_start(); retrieved by all lg_* functions implicitly.
+# Reset with lg_start(); accessed by all lg_* functions implicitly.
 .lg <- new.env(parent = emptyenv())
 .lg_reset <- function() {
-  .lg$active       <- FALSE
-  .lg$study_id     <- NULL
-  .lg$analysis_id  <- NULL
-  .lg$datasets     <- list()   # named list of lg_dataset metadata
-  .lg$operations   <- list()   # ordered list of lg_operation
-  .lg$exclusions   <- list()   # flat list of lg_exclusion
-  .lg$populations  <- list()   # named list of lg_population (by flag_var)
-  .lg$var_specs    <- list()   # list of lg_var_spec
-  .lg$op_counter   <- 0L
+  .lg$active      <- FALSE
+  .lg$study_id    <- NULL
+  .lg$analysis_id <- NULL
+  .lg$datasets    <- list()   # named list of lg_dataset metadata
+  .lg$operations  <- list()   # ordered list of lg_operation
+  .lg$exclusions  <- list()   # flat list of lg_exclusion
+  .lg$populations <- list()   # named list of lg_population (by flag_var)
+  .lg$var_specs   <- list()   # list of lg_var_spec
+  .lg$op_counter  <- 0L
 }
 .lg_reset()
 
@@ -40,7 +36,7 @@
 #' Start a lineager provenance session
 #'
 #' Initialises the session store. Call once at the top of your analysis script,
-#' before any [lg_tag()], [lg_filter()], or [lg_derive()] calls. Resets any
+#' before any [lineager::lg_tag()], [lineager::lg_filter()], or [lineager::lg_derive()] calls. Resets any
 #' prior session state.
 #'
 #' @param study_id Character or `NULL`. Optional study identifier included in
@@ -51,8 +47,9 @@
 #'
 #' @examples
 #' lg_start(study_id = "TRIAL-001", analysis_id = "primary-efficacy")
+#' lg_end()
 #'
-#' @seealso [lg_end()], [lg_tag()], [lg_report()]
+#' @seealso [lineager::lg_end()], [lineager::lg_tag()], [lineager::lg_report()]
 #' @export
 lg_start <- function(study_id = NULL, analysis_id = NULL) {
   .lg_reset()
@@ -71,8 +68,9 @@ lg_start <- function(study_id = NULL, analysis_id = NULL) {
 #' End a lineager provenance session
 #'
 #' Prints a session summary and marks the session inactive. The store is
-#' preserved in memory and remains queryable via [lg_trace()],
-#' [lg_exclusions()], and [lg_report()] until [lg_start()] is called again.
+#' preserved in memory and remains queryable via [lineager::lg_trace()],
+#' [lineager::lg_exclusions()], and [lineager::lg_report()] until
+#' [lineager::lg_start()] is called again.
 #'
 #' @return Invisibly `NULL`.
 #'
@@ -80,7 +78,7 @@ lg_start <- function(study_id = NULL, analysis_id = NULL) {
 #' lg_start()
 #' lg_end()
 #'
-#' @seealso [lg_start()]
+#' @seealso [lineager::lg_start()]
 #' @export
 lg_end <- function() {
   .assert_active()
@@ -139,18 +137,6 @@ lg_end <- function() {
 #' @noRd
 .utc_now <- function() {
   format(Sys.time(), "%Y-%m-%dT%H:%M:%OS3Z", tz = "UTC")
-}
-
-#' @noRd
-.get_call_context <- function(n = 3L) {
-  # Walk up the call stack to find the user's script line
-  sc <- sys.calls()
-  if (length(sc) >= n) {
-    call_str <- tryCatch(deparse(sc[[max(1L, length(sc) - n + 1L)]][[1L]]),
-                         error = function(e) NA_character_)
-    return(call_str)
-  }
-  NA_character_
 }
 
 #' @noRd

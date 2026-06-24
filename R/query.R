@@ -1,5 +1,5 @@
 # query.R
-# Three query functions — the payoff of tagging and tracking:
+# Three query functions \u2014 the payoff of tagging and tracking:
 #
 # lg_trace():       trace a subject's complete journey across the pipeline
 # lg_exclusions():  retrieve the exclusion registry as a data frame
@@ -13,7 +13,7 @@
 #' which datasets they appear in, which operations they passed through or were
 #' excluded by, and which population flags apply to them.
 #'
-#' This is the key regulatory tracing capability — a reviewer can ask
+#' This is the key regulatory tracing capability : a reviewer can ask
 #' "show me everything that happened to subject 01-042" and get a complete,
 #' programmatically generated answer.
 #'
@@ -86,7 +86,7 @@ lg_trace <- function(usubjid, verbose = TRUE) {
   }
 
   # Find population flag values for this subject
-  # (only available if data is still in scope — we store flag values in pops)
+  # (only available if data is still in scope \u2014 we store flag values in pops)
   pop_values <- lapply(names(.lg$populations), function(flag) {
     pop <- .lg$populations[[flag]]
     list(flag_var = flag, label = pop$label,
@@ -159,7 +159,7 @@ lg_trace <- function(usubjid, verbose = TRUE) {
 #'
 #' Returns all exclusions recorded by [lg_filter()] calls during the active
 #' session as a flat `data.frame`. This is the data underlying the subject
-#' disposition listing — every excluded subject, with their USUBJID, the
+#' disposition listing : every excluded subject, with their USUBJID, the
 #' reason they were excluded, and which population the exclusion relates to.
 #'
 #' @param population Character or `NULL`. Filter to a specific population flag

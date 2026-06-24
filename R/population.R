@@ -7,7 +7,7 @@
 #'
 #' Population flags (SAFFL, ITTFL, PPROTFL, and custom flags) are first-class
 #' objects in `lineager`. Every flag must carry its inclusion criteria,
-#' exclusion criteria, and plain-English definition — the information needed
+#' exclusion criteria, and plain-English definition : the information needed
 #' to reconstruct the Reviewer's Guide population section automatically.
 #'
 #' The flag variable must already exist in `data`. `lg_population()` documents

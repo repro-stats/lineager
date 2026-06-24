@@ -3,12 +3,12 @@
 #
 # Produces self-contained HTML (no external dependencies at render time).
 # Sections:
-#   1. Session summary — datasets, date/time, study/analysis IDs
-#   2. Subject disposition — CONSORT-style disposition table
-#   3. Population flag definitions — each registered lg_population
-#   4. Variable derivations — each registered lg_spec (SDTM → ADaM)
-#   5. Operation log — full sequence of lg_filter / lg_derive / lg_join ops
-#   6. Exclusion listing — full exclusion registry, grouped by reason
+#   1. Session summary \u2014 datasets, date/time, study/analysis IDs
+#   2. Subject disposition \u2014 CONSORT-style disposition table
+#   3. Population flag definitions \u2014 each registered lg_population
+#   4. Variable derivations \u2014 each registered lg_spec (SDTM \u2192 ADaM)
+#   5. Operation log \u2014 full sequence of lg_filter / lg_derive / lg_join ops
+#   6. Exclusion listing \u2014 full exclusion registry, grouped by reason
 
 
 #' Generate a CDISC Reviewer's Guide-aligned provenance report
@@ -18,15 +18,15 @@
 #' regulatory submission package.
 #'
 #' The report covers:
-#' - **Dataset inventory** — all tagged datasets, row counts, sources
-#' - **Subject disposition** — CONSORT-style disposition table from all
+#' - **Dataset inventory** : all tagged datasets, row counts, sources
+#' - **Subject disposition** : CONSORT-style disposition table from all
 #'   [lg_filter()] calls
-#' - **Population flags** — definitions, criteria, and counts for all
+#' - **Population flags** : definitions, criteria, and counts for all
 #'   [lg_population()] registrations
-#' - **Variable derivations** — SDTM-to-ADaM mappings from [lg_spec()]
+#' - **Variable derivations** : SDTM-to-ADaM mappings from [lg_spec()]
 #'   registrations
-#' - **Operation log** — full sequence of pipeline operations
-#' - **Exclusion listing** — every excluded subject with reason and population
+#' - **Operation log** : full sequence of pipeline operations
+#' - **Exclusion listing** : every excluded subject with reason and population
 #'
 #' @param format Character. Output format: `"html"` (default). PDF requires
 #'   Quarto CLI and a LaTeX installation.
@@ -49,13 +49,13 @@
 #'
 #' lg_report(
 #'   output   = "outputs/lineage_report_TRIAL001.html",
-#'   title    = "Data Provenance Report \u2014 TRIAL-001",
+#'   title    = "Data Provenance Report: TRIAL-001",
 #'   sponsor  = "Example Pharma Ltd",
 #'   author   = "Ndoh Penn, Biostatistician"
 #' )
 #' }
 #'
-#' @seealso [lg_start()], [lg_exclusions()], [lg_disposition()]
+#' @seealso [lineager::lg_start()], [lg_exclusions()], [lg_disposition()]
 #' @export
 lg_report <- function(format   = "html",
                       output   = NULL,
@@ -88,7 +88,7 @@ lg_report <- function(format   = "html",
 
 
 # --------------------------------------------------------------------------- #
-#  HTML builder — no external dependencies                                     #
+#  HTML builder \u2014 no external dependencies                                     #
 # --------------------------------------------------------------------------- #
 
 .build_html_report <- function(title, study_id, sponsor, author, date) {

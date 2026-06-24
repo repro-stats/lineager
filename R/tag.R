@@ -13,7 +13,7 @@
 #'
 #' Assigns a unique lineage identifier (`.__lid__`) to every row and registers
 #' the dataset in the active session store. This is the entry point to
-#' `lineager` — all other functions require a tagged data frame.
+#' `lineager` : all other functions require a tagged data frame.
 #'
 #' The `.__lid__` column is added at position 1 and is preserved through
 #' [lg_filter()], [lg_derive()], and [lg_join()] operations. It allows
@@ -30,7 +30,7 @@
 #'   (e.g. `"Laboratory test results"`). Used in reports.
 #' @param source Character or `NULL`. Source file or system description.
 #'
-#' @return An `lg_df` object — a `data.frame` with a `.__lid__` column and
+#' @return An `lg_df` object : a `data.frame` with a `.__lid__` column and
 #'   lineage metadata stored in attributes.
 #'
 #' @examples
@@ -110,6 +110,7 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
 #  S3 methods for lg_df                                                        #
 # --------------------------------------------------------------------------- #
 
+#' @importFrom utils head
 #' @export
 print.lg_df <- function(x, ...) {
   ds  <- attr(x, "lg_dataset_id") %||% "unknown"
@@ -120,8 +121,10 @@ print.lg_df <- function(x, ...) {
     if (!is.null(dom)) sprintf(" (domain: %s)", dom) else "",
     nrow(x), ncol(x)
   ))
-  # Print without the .__lid__ column for readability
+  # Strip .__lid__ and lg_df class before printing to avoid infinite recursion:
+  # print.lg_df -> [.lg_df (returns lg_df) -> print.lg_df -> ...
   visible <- x[, names(x) != .lid_col, drop = FALSE]
+  class(visible) <- "data.frame"
   print(head(visible, 6L))
   if (nrow(x) > 6L) cat(sprintf("# \u2026 %d more rows\n", nrow(x) - 6L))
   invisible(x)
