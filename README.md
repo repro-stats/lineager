@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml)
-[![Codecov](https://codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg)](https://codecov.io/gh/repro-stats/lineager)
+[![Codecov test coverage](https://codecov.io/gh/repro-stats/lineager/graph/badge.svg)](https://app.codecov.io/gh/repro-stats/lineager)
 <!-- badges: end -->
 
 **Row-Level Data Provenance and Exclusion Tracking**
