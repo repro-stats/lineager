@@ -1,0 +1,9 @@
+url: https://reprostats.org/lineager/
+
+template:
+  bootstrap: 5
+
+navbar:
+  logo:
+    image: logo.png
+    href: index.html
