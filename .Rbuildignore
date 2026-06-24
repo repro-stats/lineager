@@ -2,4 +2,10 @@
 ^\.Rproj\.user$
 ^LICENSE\.md$
 ^\.gitignore$
+^\.github$
+^codecov\.yml$
+^outputs$
 ^_pkgdown\.yml$
+^docs$
+^logs$
+^.*\.rlog$

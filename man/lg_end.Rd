@@ -12,7 +12,8 @@ Invisibly \code{NULL}.
 \description{
 Prints a session summary and marks the session inactive. The store is
 preserved in memory and remains queryable via \code{\link[=lg_trace]{lg_trace()}},
-\code{\link[=lg_exclusions]{lg_exclusions()}}, and \code{\link[=lg_report]{lg_report()}} until \code{\link[=lg_start]{lg_start()}} is called again.
+\code{\link[=lg_exclusions]{lg_exclusions()}}, and \code{\link[=lg_report]{lg_report()}} until
+\code{\link[=lg_start]{lg_start()}} is called again.
 }
 \examples{
 lg_start()

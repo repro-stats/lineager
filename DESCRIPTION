@@ -26,12 +26,13 @@ URL: https://reprostats.org, https://github.com/repro-stats/lineager
 BugReports: https://github.com/repro-stats/lineager/issues
 Imports:
     dplyr    (>= 1.1.0),
-    magrittr (>= 2.0.3),
-    cli      (>= 3.6.0)
+    magrittr (>= 2.0.3)
 Suggests:
     admiral,
+    DiagrammeR,
     haven,
     knitr,
+    mockery,
     rmarkdown,
     testthat (>= 3.0.0),
     tibble

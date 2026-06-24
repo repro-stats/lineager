@@ -33,7 +33,7 @@ which datasets they appear in, which operations they passed through or were
 excluded by, and which population flags apply to them.
 }
 \details{
-This is the key regulatory tracing capability — a reviewer can ask
+This is the key regulatory tracing capability : a reviewer can ask
 "show me everything that happened to subject 01-042" and get a complete,
 programmatically generated answer.
 }

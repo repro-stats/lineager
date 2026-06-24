@@ -32,7 +32,7 @@ session exclusion registry with their USUBJID (if present), lineage ID,
 and the documented reason.
 }
 \details{
-\code{reason} has no default. Undocumented exclusions are a compliance failure —
+\code{reason} has no default. Undocumented exclusions are a compliance failure :
 this is enforced at the R level, not by convention.
 }
 \examples{

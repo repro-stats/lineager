@@ -43,15 +43,15 @@ regulatory submission package.
 \details{
 The report covers:
 \itemize{
-\item \strong{Dataset inventory} — all tagged datasets, row counts, sources
-\item \strong{Subject disposition} — CONSORT-style disposition table from all
+\item \strong{Dataset inventory} : all tagged datasets, row counts, sources
+\item \strong{Subject disposition} : CONSORT-style disposition table from all
 \code{\link[=lg_filter]{lg_filter()}} calls
-\item \strong{Population flags} — definitions, criteria, and counts for all
+\item \strong{Population flags} : definitions, criteria, and counts for all
 \code{\link[=lg_population]{lg_population()}} registrations
-\item \strong{Variable derivations} — SDTM-to-ADaM mappings from \code{\link[=lg_spec]{lg_spec()}}
+\item \strong{Variable derivations} : SDTM-to-ADaM mappings from \code{\link[=lg_spec]{lg_spec()}}
 registrations
-\item \strong{Operation log} — full sequence of pipeline operations
-\item \strong{Exclusion listing} — every excluded subject with reason and population
+\item \strong{Operation log} : full sequence of pipeline operations
+\item \strong{Exclusion listing} : every excluded subject with reason and population
 }
 }
 \examples{
@@ -62,7 +62,7 @@ lg_start(study_id = "TRIAL-001", analysis_id = "primary")
 
 lg_report(
   output   = "outputs/lineage_report_TRIAL001.html",
-  title    = "Data Provenance Report \u2014 TRIAL-001",
+  title    = "Data Provenance Report: TRIAL-001",
   sponsor  = "Example Pharma Ltd",
   author   = "Ndoh Penn, Biostatistician"
 )

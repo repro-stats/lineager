@@ -35,7 +35,7 @@ or plain English. At least one required.}
 \description{
 Population flags (SAFFL, ITTFL, PPROTFL, and custom flags) are first-class
 objects in \code{lineager}. Every flag must carry its inclusion criteria,
-exclusion criteria, and plain-English definition — the information needed
+exclusion criteria, and plain-English definition : the information needed
 to reconstruct the Reviewer's Guide population section automatically.
 }
 \details{

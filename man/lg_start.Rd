@@ -22,6 +22,7 @@ prior session state.
 }
 \examples{
 lg_start(study_id = "TRIAL-001", analysis_id = "primary-efficacy")
+lg_end()
 
 }
 \seealso{

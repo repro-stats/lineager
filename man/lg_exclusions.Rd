@@ -21,7 +21,7 @@ A \code{data.frame} with columns: \code{excl_id}, \code{op_id}, \code{dataset_id
 \description{
 Returns all exclusions recorded by \code{\link[=lg_filter]{lg_filter()}} calls during the active
 session as a flat \code{data.frame}. This is the data underlying the subject
-disposition listing — every excluded subject, with their USUBJID, the
+disposition listing : every excluded subject, with their USUBJID, the
 reason they were excluded, and which population the exclusion relates to.
 }
 \examples{

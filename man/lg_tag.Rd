@@ -23,13 +23,13 @@ Reviewer's Guide output.}
 \item{source}{Character or \code{NULL}. Source file or system description.}
 }
 \value{
-An \code{lg_df} object — a \code{data.frame} with a \code{.__lid__} column and
+An \code{lg_df} object : a \code{data.frame} with a \code{.__lid__} column and
 lineage metadata stored in attributes.
 }
 \description{
 Assigns a unique lineage identifier (\code{.__lid__}) to every row and registers
 the dataset in the active session store. This is the entry point to
-\code{lineager} — all other functions require a tagged data frame.
+\code{lineager} : all other functions require a tagged data frame.
 }
 \details{
 The \code{.__lid__} column is added at position 1 and is preserved through

@@ -32,7 +32,7 @@ the contributing row IDs from \code{y}.
 Performs a left, inner, full, or right join and records the operation in the
 session log. The \code{.__lid__} column from \code{x} is preserved. A secondary
 column \code{.__lid_y__} records which rows of \code{y} contributed to each output
-row — enabling full bilateral tracing.
+row, enabling full bilateral tracing.
 }
 \examples{
 lg_start()
