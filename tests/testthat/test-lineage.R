@@ -170,7 +170,7 @@ test_that("lg_plot() returns lg_lineage invisibly", {
   expect_identical(result, lin)
 })
 
-# ── Additional coverage tests ─────────────────────────────────────────────────
+# ── Additional tests ─────────────────────────────────────────────────
 
 test_that("lg_plot() falls back to message when DiagrammeR not installed", {
   new_session()
@@ -188,10 +188,13 @@ test_that("lg_plot() falls back to message when DiagrammeR not installed", {
     content <- paste(readLines(tmp), collapse = "\n")
     expect_true(grepl("digraph", content))
   } else {
-    mockery::with_mock(
-      requireNamespace = function(pkg, ...) if (pkg == "DiagrammeR") FALSE else TRUE,
-      expect_message(lg_plot(lin), "DiagrammeR")
+    # CORRECT MOCKERY SYNTAX: Use stub() to mock requireNamespace inside lg_plot
+    mockery::stub(
+      where = lg_plot,
+      what = "requireNamespace",
+      how = function(pkg, ...) if (pkg == "DiagrammeR") FALSE else TRUE
     )
+    expect_message(lg_plot(lin), "DiagrammeR")
   }
 })
 
