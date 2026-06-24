@@ -1,0 +1,13 @@
+comment: false          # no PR comments
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true   # won't block PRs
+    patch:
+      default:
+        target: auto
+        threshold: 1%
+        informational: true

@@ -1,0 +1,321 @@
+---
+title: "Exclusion tracking and subject tracing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Exclusion tracking and subject tracing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+library(lineager)
+```
+
+The ability to say exactly which rows were excluded, why, and what
+happened to a specific row across the whole pipeline is one of the
+primary values of `lineager`. This vignette covers all the tools for
+that: `lg_filter()` in depth, the exclusion registry, disposition
+tables, and subject-level tracing.
+
+## Setup: a realistic multi-stage pipeline
+
+We build a cohort through three exclusion stages — a pattern common
+to clinical trials, epidemiological studies, machine learning pipelines,
+and observational research.
+
+```{r setup-data}
+lg_start(study_id = "COHORT-001", analysis_id = "main-analysis")
+
+# Simulate a patient registry
+set.seed(42)
+n <- 20L
+
+raw <- data.frame(
+  id         = sprintf("PT-%03d", seq_len(n)),
+  age        = sample(15:75, n, replace = TRUE),
+  sex        = sample(c("M", "F"), n, replace = TRUE),
+  diagnosis  = sample(c("Y", "N", "N"), n, replace = TRUE),
+  consent    = sample(c("Y", "Y", "Y", "N"), n, replace = TRUE),
+  prior_drug = sample(c("Y", "N", "N", "N"), n, replace = TRUE),
+  biomarker  = round(runif(n, 0.5, 8.5), 2),
+  outcome    = ifelse(runif(n) > 0.4, round(rnorm(n, 50, 12), 1), NA_real_),
+  stringsAsFactors = FALSE
+)
+
+registry <- lg_tag(raw, dataset_id = "REGISTRY",
+                   label = "Patient registry — all screened")
+
+cat("Screened: ", nrow(registry), "patients\n")
+```
+
+## 1. lg_filter() in depth
+
+### Mandatory reason
+
+Every call to `lg_filter()` requires a `reason`. The reason becomes the
+canonical documentation for that exclusion step — it appears in
+`lg_exclusions()`, `lg_disposition()`, `lg_trace()`, and `lg_report()`.
+
+```{r filter-required}
+# This would error:
+# lg_filter(registry, age >= 18L)
+# Error: A `reason` is required.
+
+# Correct:
+adults <- lg_filter(registry,
+  age >= 18L,
+  reason = "Under minimum age threshold (age < 18 years)"
+)
+```
+
+### reason_code: machine-readable classification
+
+`reason_code` provides a short, controlled-vocabulary label for the
+exclusion — useful for grouping similar exclusions programmatically.
+
+```{r filter-reason-code}
+consented <- lg_filter(adults,
+  consent == "Y",
+  reason      = "Did not provide written informed consent",
+  reason_code = "NO_CONSENT"
+)
+
+diagnosed <- lg_filter(consented,
+  diagnosis == "Y",
+  reason      = "Does not meet diagnostic criteria per protocol section 3.1",
+  reason_code = "NO_DIAGNOSIS"
+)
+```
+
+### population: grouping exclusions by analysis set
+
+`population` groups exclusions into named cohorts — corresponding to
+analysis set flags in clinical data (SAFFL, ITTFL, etc.) or cohort
+definitions in epidemiology.
+
+```{r filter-population}
+no_prior <- lg_filter(diagnosed,
+  prior_drug == "N",
+  reason      = "Received prohibited prior medication within wash-out period",
+  reason_code = "PRIOR_MED",
+  population  = "ELIGIBLE_SET"
+)
+
+biomarker_pos <- lg_filter(no_prior,
+  biomarker >= 2.0,
+  reason      = "Biomarker below threshold (< 2.0) per protocol section 4.3",
+  reason_code = "LOW_BIOMARKER",
+  population  = "BIOMARKER_POS"
+)
+
+analysis_set <- lg_filter(biomarker_pos,
+  !is.na(outcome),
+  reason      = "Missing primary outcome measurement",
+  reason_code = "MISSING_OUTCOME",
+  population  = "ANALYSIS_SET"
+)
+
+cat("Screened:     ", nrow(registry),     "\n")
+cat("Adults:       ", nrow(adults),       "\n")
+cat("Consented:    ", nrow(consented),    "\n")
+cat("Diagnosed:    ", nrow(diagnosed),    "\n")
+cat("No prior med: ", nrow(no_prior),     "\n")
+cat("Biomarker+:   ", nrow(biomarker_pos),"\n")
+cat("Analysis set: ", nrow(analysis_set), "\n")
+```
+
+## 2. The exclusion registry
+
+Every excluded row is captured in the session store as a structured
+record. `lg_exclusions()` retrieves the full registry as a data frame.
+
+```{r exclusions-all}
+excl <- lg_exclusions()
+cat("Total exclusions:", nrow(excl), "\n")
+names(excl)
+```
+
+### Filter by population
+
+```{r exclusions-population}
+# Only exclusions related to the final analysis set
+analysis_excl <- lg_exclusions(population = "ANALYSIS_SET")
+analysis_excl[, c("id", "reason", "reason_code")]
+```
+
+### Filter by dataset
+
+When multiple datasets are tagged and filtered, query by dataset:
+
+```{r exclusions-dataset}
+lg_exclusions(dataset_id = "REGISTRY")[,
+  c("id", "reason_code", "population")]
+```
+
+### The exclusion record structure
+
+Each exclusion record contains:
+
+| Field | Content |
+|---|---|
+| `excl_id` | Unique exclusion identifier (`op_0001_excl_0001`) |
+| `op_id` | Which `lg_filter()` operation caused this |
+| `dataset_id` | Which dataset the row was removed from |
+| `lid` | The `.__lid__` of the excluded row |
+| `usubjid` | Subject identifier if present (from USUBJID column) |
+| `id` | Row identifier if an `id` column exists |
+| `reason` | The documented exclusion reason |
+| `reason_code` | Short code for programmatic grouping |
+| `population` | Which population/cohort this relates to |
+| `excluded_at` | UTC timestamp of exclusion |
+
+## 3. Disposition tables
+
+`lg_disposition()` aggregates the exclusion registry into a grouped
+summary — the data behind a CONSORT flow diagram or study disposition
+table.
+
+### Group by reason
+
+```{r disposition-reason}
+lg_disposition(by = "reason")
+```
+
+### Group by population
+
+```{r disposition-population}
+lg_disposition(by = "population")
+```
+
+### Group by dataset
+
+Useful when multiple source datasets are filtered:
+
+```{r disposition-dataset}
+lg_disposition(by = "dataset")
+```
+
+## 4. Subject tracing
+
+`lg_trace()` returns the complete history of a row identified by its
+USUBJID or any substring matching its lineage ID. This is `lineager`'s
+most distinctive capability.
+
+### Tracing an excluded subject
+
+```{r trace-excluded}
+# Find a subject who was excluded
+excluded_id <- lg_exclusions()$id[[1L]]
+cat("Tracing excluded subject:", excluded_id, "\n")
+
+lg_trace(excluded_id)
+```
+
+The trace shows:
+- Which tagged datasets contain this row
+- Which operations (in order) touched datasets containing this row
+- All exclusion records for this row, with reasons and population
+
+### Tracing an included subject
+
+```{r trace-included}
+included_id <- analysis_set$id[[1L]]
+cat("Tracing included subject:", included_id, "\n")
+
+lg_trace(included_id)
+```
+
+For included subjects, the exclusions section will be empty — they
+passed every filter.
+
+### Tracing a subject not found
+
+```{r trace-notfound}
+result <- lg_trace("PT-999", verbose = FALSE)
+cat("Datasets found in:", length(result$datasets), "\n")
+```
+
+### Using the trace result programmatically
+
+`lg_trace()` returns its result invisibly — capture it for programmatic
+use:
+
+```{r trace-programmatic}
+result <- lg_trace(excluded_id, verbose = FALSE)
+
+cat("Subject:       ", result$usubjid,           "\n")
+cat("Found in:      ", paste(result$datasets, collapse = ", "), "\n")
+cat("Operations:    ", nrow(result$operations),  "\n")
+cat("Exclusions:    ", nrow(result$exclusions),  "\n")
+
+if (nrow(result$exclusions) > 0L) {
+  cat("Excluded by:   ", result$exclusions$reason[[1L]], "\n")
+  cat("Population:    ", result$exclusions$population[[1L]], "\n")
+}
+```
+
+## 5. The operation log
+
+`lg_operations()` returns the full sequence of operations as a data
+frame — useful for understanding the pipeline structure and for
+automating documentation.
+
+```{r operations}
+ops <- lg_operations()
+ops[, c("op_id", "op_type", "dataset_id", "description",
+        "rows_in", "rows_out")]
+```
+
+The difference between `rows_in` and `rows_out` is the number of rows
+excluded by that operation — matching the exclusion records registered
+at that step.
+
+```{r operation-check}
+# Verify: total excluded == sum of (rows_in - rows_out) across FILTER ops
+filter_ops <- ops[ops$op_type == "FILTER", ]
+total_via_ops  <- sum(filter_ops$rows_in - filter_ops$rows_out)
+total_via_excl <- nrow(lg_exclusions())
+cat("Excluded via ops:  ", total_via_ops,  "\n")
+cat("Excluded via excl: ", total_via_excl, "\n")
+cat("Match:             ", total_via_ops == total_via_excl, "\n")
+```
+
+## 6. Common patterns
+
+### Cascaded filters with verbose tracking
+
+```{r cascade}
+lg_start()
+
+cohort <- lg_tag(
+  data.frame(
+    id = sprintf("S%02d", 1:10),
+    enrolled = c(rep(TRUE, 8), FALSE, FALSE),
+    treated  = c(rep(TRUE, 6), FALSE, FALSE, FALSE, FALSE),
+    complete = c(rep(TRUE, 4), FALSE, FALSE, rep(FALSE, 4)),
+    stringsAsFactors = FALSE
+  ),
+  dataset_id = "COHORT"
+)
+
+step1 <- lg_filter(cohort,  enrolled == TRUE,
+                   reason = "Not enrolled in study")
+step2 <- lg_filter(step1,   treated  == TRUE,
+                   reason = "Did not receive study treatment")
+step3 <- lg_filter(step2,   complete == TRUE,
+                   reason = "Did not complete the study")
+
+cat("Enrolled:  ", nrow(step1), "\n")
+cat("Treated:   ", nrow(step2), "\n")
+cat("Completed: ", nrow(step3), "\n")
+
+lg_disposition(by = "reason")
+```
+
+```{r cascade-end}
+lg_end()
+```
+
+Continue to `vignette("populations-and-reporting")` for population flag
+registration and report generation.

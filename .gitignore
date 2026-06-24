@@ -1,0 +1,39 @@
+# R 
+*.Rcheck/
+*.tar.gz
+*.Rproj.user/
+.RData
+.Rhistory
+.Rproj.user
+/docs/
+/inst/doc/
+
+# Vignette build outputs
+vignettes/*.html
+vignettes/*.pdf
+vignettes/*_cache/
+vignettes/*_files/
+
+# Test coverage
+coverage.json
+
+# pkgdown site build
+_pkgdown.yml.lock
+
+# macOS metadata
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# VSCode
+.vscode/
+
+# Generated log files from vignette examples
+logs/
+*.rlog
+outputs/
+
+# knitr cache
+cache/.DS_Store
