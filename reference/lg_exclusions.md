@@ -61,5 +61,5 @@ lg_exclusions()
 #>             excl_id   op_id dataset_id          lid usubjid         reason
 #> 1 op_0001_excl_0001 op_0001       ADSL ADSL_0002_02      02 Not randomised
 #>   reason_code population              excluded_at
-#> 1        <NA>     RANDFL 2026-06-24T21:59:48.968Z
+#> 1        <NA>     RANDFL 2026-06-24T22:26:35.357Z
 ```
