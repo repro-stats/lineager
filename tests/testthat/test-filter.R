@@ -51,9 +51,7 @@ test_that("lg_filter() records correct USUBJID for each excluded subject", {
   adsl    <- adsl_tagged()
   lg_filter(adsl, RANDFL == "Y", reason = "Not randomised")
 
-  excl    <- lg_env()$exclusions
-  excl_df <- do.call(rbind, lapply(excl, as.data.frame,
-                                   stringsAsFactors = FALSE))
+  excl_df  <- lg_exclusions(verbose = FALSE)
   expected_subjs <- adsl_raw()$USUBJID[adsl_raw()$RANDFL != "Y"]
   expect_setequal(excl_df$usubjid, expected_subjs)
 })

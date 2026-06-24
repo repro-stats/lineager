@@ -224,3 +224,88 @@ test_that("lg_trace() shows operations from datasets containing the subject", {
   expect_gt(nrow(result$operations), 0L)
   expect_true(any(grepl("ADSL", result$operations$dataset_id)))
 })
+
+# ── Additional coverage tests ─────────────────────────────────────────────────
+
+test_that("lg_trace(verbose=TRUE) prints formatted output", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_filter(adsl, RANDFL == "Y", reason = "Not randomised", population = "RANDFL")
+  lg_population(adsl, "SAFFL", "Safety", "Def", "SAFFL == 'Y'")
+
+  # verbose=TRUE hits .print_trace() with datasets, operations, exclusions, populations
+  expect_output(lg_trace("01-002", verbose = TRUE))
+})
+
+test_that("lg_trace(verbose=TRUE) prints 'not found' for missing subject", {
+  new_session()
+  adsl_tagged()
+  expect_output(lg_trace("NOTEXIST", verbose = TRUE), regexp = "not found|NOTEXIST")
+})
+
+test_that("lg_trace() shows operations from dataset containing subject", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_derive(adsl, X = 1L, description = "Add X")
+  lg_filter(adsl, RANDFL == "Y", reason = "Not randomised")
+
+  result <- lg_trace("01-001", verbose = FALSE)
+  expect_gt(nrow(result$operations), 0L)
+})
+
+test_that("lg_trace() shows exclusions section in verbose output", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_filter(adsl, RANDFL == "Y", reason = "Not randomised", population = "RANDFL")
+
+  # 01-002 is excluded — verbose output should show exclusion block
+  out <- capture.output(lg_trace("01-002", verbose = TRUE))
+  expect_true(any(grepl("Exclusion|excluded|Not randomised", out, ignore.case = TRUE)))
+})
+
+test_that("lg_trace() shows populations section in verbose output", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_population(adsl, "SAFFL", "Safety Analysis Flag", "Def", "SAFFL == 'Y'")
+
+  out <- capture.output(lg_trace("01-001", verbose = TRUE))
+  expect_true(any(grepl("SAFFL|population|Safety", out, ignore.case = TRUE)))
+})
+
+test_that("lg_exclusions(verbose=TRUE) messages the count", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_filter(adsl, RANDFL == "Y", reason = "Not randomised")
+
+  expect_message(lg_exclusions(verbose = TRUE), "exclusion")
+})
+
+test_that("lg_exclusions(verbose=TRUE) messages when empty", {
+  new_session()
+  adsl_tagged()
+  expect_message(lg_exclusions(verbose = TRUE), "no exclusions")
+})
+
+test_that("lg_operations(verbose=TRUE) messages the operation count", {
+  new_session()
+  adsl <- adsl_tagged()
+  lg_derive(adsl, X = 1L, description = "Test")
+
+  expect_message(lg_operations(verbose = TRUE), "operation")
+})
+
+test_that("lg_operations() returns empty data frame with correct columns when no ops", {
+  new_session()
+  adsl_tagged()
+  ops <- lg_operations(verbose = FALSE)
+  expect_equal(nrow(ops), 0L)
+  expect_true("op_type" %in% names(ops))
+})
+
+test_that("lg_disposition() returns empty data frame when no exclusions", {
+  new_session()
+  adsl_tagged()
+  df <- lg_disposition()
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 0L)
+})

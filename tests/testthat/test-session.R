@@ -55,8 +55,9 @@ test_that("lg_start() resets populations and var_specs", {
 
 test_that("lg_start() resets op_counter to zero", {
   new_session()
-  lg_derive(adsl_tagged(), X = 1L, description = "D1")
-  lg_derive(adsl_tagged(), Y = 2L, description = "D2")
+  adsl <- adsl_tagged()
+  lg_derive(adsl, X = 1L, description = "D1")
+  lg_derive(adsl, Y = 2L, description = "D2")
   expect_equal(lg_env()$op_counter, 2L)
   lg_start()
   expect_equal(lg_env()$op_counter, 0L)
