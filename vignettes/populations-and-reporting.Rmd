@@ -33,7 +33,7 @@ lg_start(study_id = "TRIAL-001", analysis_id = "primary-efficacy")
 
 # Source data — patients and lab measurements
 patients <- data.frame(
-  id       = sprintf("PT-%03d", 1:15),
+  USUBJID  = sprintf("PT-%03d", 1:15),
   age      = c(22L, 45L, 38L, 61L, 29L, 55L, 43L, 17L, 52L,
                34L, 48L, 27L, 66L, 39L, 51L),
   sex      = rep(c("M", "F", "M"), 5L),
@@ -45,7 +45,7 @@ patients <- data.frame(
 )
 
 labs <- data.frame(
-  id       = sprintf("PT-%03d", c(1:10, 12:13)),
+  USUBJID  = sprintf("PT-%03d", c(1:10, 12:13)),
   baseline = round(c(24.1,31.8,28.4,22.9,35.2,26.7,
                       29.1,33.4,27.8,25.5,30.2,28.9), 1),
   endpoint = round(c(18.4,27.1,24.6,19.8,NA,22.3,
@@ -79,7 +79,7 @@ pts <- lg_derive(pts,
 
 # Join lab measurements
 pts_labs <- lg_join(pts, labs_tagged,
-  by          = "id",
+  by          = "USUBJID",
   type        = "left",
   description = "Merge baseline and endpoint lab measurements from LABS"
 )
@@ -312,7 +312,30 @@ For non-CDISC users, these arguments and features are entirely optional.
 The core workflow — tag, filter, trace, report — works without any
 CDISC-specific configuration.
 
-## 5. End the session
+## 5. Visualise the pipeline lineage
+
+`lg_lineage()` builds a graph of the complete pipeline — source datasets,
+all derive/join/filter operations, and exclusion branches — as a Graphviz
+DOT string. `lg_plot()` renders it inline or writes it to a file.
+
+```{r lineage}
+lin <- lg_lineage()
+print(lin)
+```
+
+```{r lineage-plot, eval = FALSE}
+# Render inline (requires DiagrammeR)
+lg_plot(lin)
+
+# Export DOT for Graphviz or https://dreampuf.github.io/GraphvizOnline/
+lg_plot(lin, output = "outputs/pipeline.dot")
+```
+
+The lineage graph for this pipeline shows the two source datasets (PATIENTS
+and LABS) flowing through four derive steps, a left join, and three filter
+steps with exclusion branches at each stage.
+
+## 6. End the session
 
 ```{r end}
 lg_end()

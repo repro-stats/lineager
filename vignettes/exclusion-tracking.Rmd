@@ -32,7 +32,7 @@ set.seed(42)
 n <- 20L
 
 raw <- data.frame(
-  id         = sprintf("PT-%03d", seq_len(n)),
+  USUBJID    = sprintf("PT-%03d", seq_len(n)),
   age        = sample(15:75, n, replace = TRUE),
   sex        = sample(c("M", "F"), n, replace = TRUE),
   diagnosis  = sample(c("Y", "N", "N"), n, replace = TRUE),
@@ -141,7 +141,7 @@ names(excl)
 ```{r exclusions-population}
 # Only exclusions related to the final analysis set
 analysis_excl <- lg_exclusions(population = "ANALYSIS_SET")
-analysis_excl[, c("id", "reason", "reason_code")]
+analysis_excl[, c("usubjid", "reason", "reason_code")]
 ```
 
 ### Filter by dataset
@@ -150,7 +150,7 @@ When multiple datasets are tagged and filtered, query by dataset:
 
 ```{r exclusions-dataset}
 lg_exclusions(dataset_id = "REGISTRY")[,
-  c("id", "reason_code", "population")]
+  c("usubjid", "reason_code", "population")]
 ```
 
 ### The exclusion record structure
@@ -163,8 +163,7 @@ Each exclusion record contains:
 | `op_id` | Which `lg_filter()` operation caused this |
 | `dataset_id` | Which dataset the row was removed from |
 | `lid` | The `.__lid__` of the excluded row |
-| `usubjid` | Subject identifier if present (from USUBJID column) |
-| `id` | Row identifier if an `id` column exists |
+| `usubjid` | Subject identifier (from USUBJID column if present) |
 | `reason` | The documented exclusion reason |
 | `reason_code` | Short code for programmatic grouping |
 | `population` | Which population/cohort this relates to |
@@ -206,7 +205,7 @@ most distinctive capability.
 
 ```{r trace-excluded}
 # Find a subject who was excluded
-excluded_id <- lg_exclusions()$id[[1L]]
+excluded_id <- lg_exclusions()$usubjid[[1L]]
 cat("Tracing excluded subject:", excluded_id, "\n")
 
 lg_trace(excluded_id)
@@ -220,7 +219,7 @@ The trace shows:
 ### Tracing an included subject
 
 ```{r trace-included}
-included_id <- analysis_set$id[[1L]]
+included_id <- analysis_set$USUBJID[[1L]]
 cat("Tracing included subject:", included_id, "\n")
 
 lg_trace(included_id)
@@ -281,7 +280,23 @@ cat("Excluded via excl: ", total_via_excl, "\n")
 cat("Match:             ", total_via_ops == total_via_excl, "\n")
 ```
 
-## 6. Common patterns
+## 6. Visualise exclusions as a lineage graph
+
+After building a pipeline, `lg_lineage()` produces a visual summary showing
+each filter step, how many rows it removed, and where exclusion branches
+occur — complementing the tabular output of `lg_exclusions()` and
+`lg_disposition()`.
+
+```{r lineage}
+lin <- lg_lineage()
+print(lin)
+```
+
+```{r lineage-plot, eval = FALSE}
+lg_plot(lin)
+```
+
+## 7. Common patterns
 
 ### Cascaded filters with verbose tracking
 

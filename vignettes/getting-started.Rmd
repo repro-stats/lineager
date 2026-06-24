@@ -45,7 +45,7 @@ every row at position 1. This ID persists through all operations.
 
 ```{r tag-basic}
 patients <- data.frame(
-  id      = c("P001", "P002", "P003", "P004", "P005", "P006"),
+  USUBJID = c("P001", "P002", "P003", "P004", "P005", "P006"),
   age     = c(34L, 19L, 52L, 28L, 61L, 44L),
   group   = c("A", "B", "A", "B", "A", "B"),
   eligible = c(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE),
@@ -73,7 +73,7 @@ Tag all source datasets before any transformations:
 
 ```{r tag-multiple}
 labs <- data.frame(
-  id      = c("P001", "P001", "P003", "P004", "P006"),
+  USUBJID = c("P001", "P001", "P003", "P004", "P006"),
   test    = c("ALT", "AST", "ALT", "ALT", "ALT"),
   value   = c(28.4, 31.2, 45.1, 22.8, 38.6),
   stringsAsFactors = FALSE
@@ -97,7 +97,7 @@ derived <- lg_derive(tagged,
   description = "age_group: >=40 vs <40 from age; adult: age >= 18"
 )
 
-derived[, c("id", "age", "age_group", "adult")]
+derived[, c("USUBJID", "age", "age_group", "adult")]
 ```
 
 The `.__lid__` column is preserved unchanged through derivations:
@@ -110,11 +110,11 @@ Chain derivations naturally:
 
 ```{r derive-chain}
 derived2 <- lg_derive(derived,
-  label = paste0(id, " (", group, ")"),
-  description = "Display label combining id and group"
+  label = paste0(USUBJID, " (", group, ")"),
+  description = "Display label combining USUBJID and group"
 )
 
-derived2[, c(".__lid__", "id", "group", "label")]
+derived2[, c(".__lid__", "USUBJID", "group", "label")]
 ```
 
 Each call adds one `DERIVE` operation to the session log.
@@ -127,12 +127,12 @@ dataset contributed — enabling bilateral tracing.
 
 ```{r join-left}
 joined <- lg_join(tagged, labs_tagged,
-  by          = "id",
+  by          = "USUBJID",
   type        = "left",
   description = "Merge ALT lab values from LABS onto PATIENTS"
 )
 
-joined[, c(".__lid__", "id", "eligible", "test", "value", ".__lid_y__")]
+joined[, c(".__lid__", "USUBJID", "eligible", "test", "value", ".__lid_y__")]
 ```
 
 The `.__lid_y__` column shows which LABS row contributed to each PATIENTS
@@ -141,10 +141,10 @@ row. Rows with no matching lab record have `NA` in `.__lid_y__`.
 Supported join types:
 
 ```{r join-types, eval = FALSE}
-lg_join(x, y, by = "id", type = "left")   # all rows of x
-lg_join(x, y, by = "id", type = "inner")  # only matching rows
-lg_join(x, y, by = "id", type = "full")   # all rows of both
-lg_join(x, y, by = "id", type = "right")  # all rows of y
+lg_join(x, y, by = "USUBJID", type = "left")   # all rows of x
+lg_join(x, y, by = "USUBJID", type = "inner")  # only matching rows
+lg_join(x, y, by = "USUBJID", type = "full")   # all rows of both
+lg_join(x, y, by = "USUBJID", type = "right")  # all rows of y
 ```
 
 ## 5. Filter with mandatory exclusion reasons
@@ -174,18 +174,7 @@ Optional arguments enrich the exclusion record:
 | `population` | Which population/cohort this relates to | `"ANALYSIS_SET"` |
 
 ```{r filter-enriched}
-adult_eligible <- lg_filter(tagged,
-  eligible == TRUE & adult == FALSE | age >= 18L,
-  reason      = "Ineligible or under 18 years of age",
-  reason_code = "INELIGIBLE",
-  population  = "ANALYSIS_SET"
-)
-```
-
-Wait — let us use a cleaner example to demonstrate `reason_code` and
-`population` clearly:
-
-```{r filter-chain}
+# reason_code and population enrich the exclusion record
 step1 <- lg_filter(tagged,
   eligible == TRUE,
   reason      = "Screening criteria not met (eligible != TRUE)",
@@ -259,12 +248,60 @@ ds_clean <- ds |>
 
 cat("Rows after cleaning:", nrow(ds_clean), "\n")
 
+# Visualise the pipeline
+lin <- lg_lineage()
+print(lin)
+
 lg_end()
 ```
+
+## 9. Visualise the pipeline
+
+`lg_lineage()` builds a complete lineage graph of the pipeline —
+every dataset, operation, and exclusion branch — and returns a Graphviz
+DOT string. Render it inline or export to a file.
+
+```{r lineage-demo}
+lg_start()
+raw <- lg_tag(
+  data.frame(USUBJID = sprintf("P%02d", 1:6),
+             group = rep(c("A","B"), 3L),
+             flag  = c(TRUE,TRUE,FALSE,TRUE,FALSE,TRUE),
+             stringsAsFactors = FALSE),
+  dataset_id = "RAW"
+)
+raw <- lg_derive(raw, group_n = ifelse(group == "A", 1L, 2L),
+                 description = "Numeric group code")
+lg_filter(raw, flag == TRUE, reason = "Flag not set")
+
+lin <- lg_lineage()
+print(lin)
+lg_end()
+```
+
+```{r lineage-plot, eval = FALSE}
+# Render inline (requires DiagrammeR)
+lg_plot(lin)
+
+# Export DOT file for Graphviz / online renderers
+lg_plot(lin, output = "outputs/pipeline.dot")
+```
+
+**Node colour legend:**
+
+| Colour | Shape | Meaning |
+|---|---|---|
+| Blue | Box | Source dataset from `lg_tag()` |
+| Yellow | Ellipse | `lg_derive()` operation |
+| Green | Diamond | `lg_join()` operation |
+| Orange | Ellipse | `lg_filter()` operation |
+| Red label | — | Rows excluded at that filter step |
+| White | Box | Dataset state after each operation |
 
 The next two vignettes cover exclusion tracking and reporting in depth:
 
 - `vignette("exclusion-tracking")` — `lg_filter()`, `lg_exclusions()`,
   `lg_disposition()`, and `lg_trace()` with detailed examples
 - `vignette("populations-and-reporting")` — `lg_population()`,
-  `lg_spec()`, and `lg_report()` for structured documentation
+  `lg_spec()`, `lg_report()`, and `lg_lineage()` / `lg_plot()` for
+  structured documentation and pipeline visualisation
