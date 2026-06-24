@@ -1,4 +1,4 @@
-#' lineager: Row-Level Data Provenance and Exclusion Tracking for R
+#' lineager: Row-Level Data Provenance and Exclusion Tracking
 #'
 #' @description
 #' You build a dataset. You filter it, join it, derive new variables, and

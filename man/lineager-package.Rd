@@ -4,84 +4,79 @@
 \name{lineager-package}
 \alias{lineager}
 \alias{lineager-package}
-\title{lineager: Subject-Level Data Provenance for CDISC Clinical Datasets}
+\title{lineager: Row-Level Data Provenance and Exclusion Tracking}
 \description{
-You build an ADaM dataset. The code runs. The submission goes in. But can
-you answer the question a regulatory reviewer will ask:
-\emph{"Show me exactly which subjects were excluded, why, and what happened
-to the data for subject 01-042 between SDTM and this analysis dataset."}
+You build a dataset. You filter it, join it, derive new variables, and
+produce an analysis. Somewhere along the way rows disappear — subjects
+excluded, records removed, observations dropped. Later, someone asks:
+\emph{"Show me exactly which records were excluded, why, and what happened
+to record 01-042 between the source data and this analysis."}
 
-\code{lineager} makes that question answerable — programmatically, from your
-existing R pipeline.
+Without \code{lineager}, that answer requires manual reconstruction.
+With \code{lineager}, it is a single function call.
 
-It tags every row of every dataset with a unique lineage identifier that
-survives filters, joins, and derivations. Every subject exclusion must
-carry a documented reason. Population flags (SAFFL, ITTFL, PPROTFL) are
-self-documenting objects. SDTM-to-ADaM variable derivations are registered
-as structured specs. And at any point, \code{lg_trace("01-042")} returns that
-subject's complete journey across the entire pipeline.
+\code{lineager} tags every row of every dataset with a unique lineage
+identifier that survives filters, joins, and derivations. Every
+row removal must carry a documented reason. Variable derivations are
+registered as structured specifications. And at any point,
+\code{\link[=lg_trace]{lg_trace()}} returns any row's complete journey across the entire
+pipeline — from source to final analysis dataset.
 
-The result is a CDISC Reviewer's Guide-aligned provenance report generated
-automatically from your analysis code — not written by hand after the fact.
+The package is general-purpose. It works for any R pipeline where
+row-level provenance matters: clinical data, machine learning,
+financial modelling, epidemiology, or any analytical workflow where
+"what was excluded and why" is a question you need to answer.
+CDISC-specific features (domain codes, population flags, SDTM-to-ADaM
+variable mapping, Reviewer's Guide output) are available as optional
+enrichment for pharmaceutical and clinical users.
 }
 \section{Workflow}{
 
 
-\strong{Step 1 -- Start a session and tag your source data}
+\strong{Step 1 — Start a session and tag your source data}
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{lg_start(study_id = "TRIAL-001", analysis_id = "primary-efficacy")
 
-dm <- lg_tag(haven::read_sas("sdtm/dm.sas7bdat"),
+dm <- lg_tag(read_sas("sdtm/dm.sas7bdat"),
              dataset_id = "DM", domain = "DM",
              label = "Demographics")
-lb <- lg_tag(haven::read_sas("sdtm/lb.sas7bdat"),
-             dataset_id = "LB", domain = "LB",
-             label = "Laboratory Results")
+
+# Works equally for non-CDISC data:
+patients <- lg_tag(patient_df, dataset_id = "patients",
+                   label = "Patient registry")
 }\if{html}{\out{</div>}}
 
-\strong{Step 2 -- Derive and document variables}
+\strong{Step 2 — Derive variables with documented descriptions}
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{adsl <- lg_derive(dm,
   RANDFL = ifelse(ARMCD != "SCRNFAIL", "Y", "N"),
-  SAFFL  = ifelse(ARMCD != "SCRNFAIL" & EXOCCUR == "Y", "Y", "N"),
-  description = "RANDFL: not screen failure. SAFFL: randomised AND received dose."
+  description = "RANDFL: Y if subject was randomised (ARMCD != 'SCRNFAIL')"
 )
 
+# lg_spec() documents the SDTM→ADaM mapping (optional, pharma use)
 lg_spec("ADSL", "RANDFL", "Randomised Flag",
         source_domain = "DM", source_var = "ARMCD",
         derivation    = "Y if ARMCD != 'SCRNFAIL'")
 }\if{html}{\out{</div>}}
 
-\strong{Step 3 -- Filter with mandatory exclusion reasons}
+\strong{Step 3 — Filter with mandatory exclusion reasons}
 
 \if{html}{\out{<div class="sourceCode r">}}\preformatted{adsl_safety <- lg_filter(
   adsl,
   SAFFL == "Y",
   reason      = "Not in safety population (SAFFL != 'Y')",
   reason_code = "NOT_SAFETY",
-  population  = "SAFFL"
+  population  = "SAFFL"    # optional grouping field
 )
 }\if{html}{\out{</div>}}
 
-\strong{Step 4 -- Register population flag definitions}
+\strong{Step 4 — Trace any row and generate the report}
 
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{lg_population(
-  adsl,
-  flag_var      = "SAFFL",
-  label         = "Safety Analysis Flag",
-  definition    = "All randomised subjects who received at least one dose",
-  incl_criteria = c("RANDFL == 'Y'", "EXOCCUR == 'Y'"),
-  excl_criteria = "No study drug administered"
-)
-}\if{html}{\out{</div>}}
-
-\strong{Step 5 -- Trace any subject and generate the report}
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{lg_trace("01-042")   # complete subject history across all pipeline operations
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{lg_trace("01-042")   # complete history of this subject across the pipeline
 
 lg_report(
-  output   = "outputs/provenance_TRIAL001.html",
-  title    = "Data Provenance Report -- TRIAL-001",
+  output   = "outputs/provenance_report.html",
+  title    = "Data Provenance Report",
   sponsor  = "Example Pharma Ltd",
   author   = "Ndoh Penn, Biostatistician"
 )
@@ -97,44 +92,62 @@ lg_report(
    \code{\link[=lg_filter]{lg_filter()}} \tab Filter with mandatory exclusion reason \cr
    \code{\link[=lg_derive]{lg_derive()}} \tab Derive new variables with documented description \cr
    \code{\link[=lg_join]{lg_join()}} \tab Tracked join with bilateral row-ID tracing \cr
-   \code{\link[=lg_population]{lg_population()}} \tab Register a population flag definition \cr
-   \code{\link[=lg_spec]{lg_spec()}} \tab Document an SDTM-to-ADaM variable derivation \cr
-   \code{\link[=lg_trace]{lg_trace()}} \tab Trace a subject's complete lineage journey \cr
+   \code{\link[=lg_population]{lg_population()}} \tab Register a population or cohort definition \cr
+   \code{\link[=lg_spec]{lg_spec()}} \tab Document a source-to-analysis variable derivation \cr
+   \code{\link[=lg_trace]{lg_trace()}} \tab Trace a row's complete lineage journey \cr
    \code{\link[=lg_exclusions]{lg_exclusions()}} \tab Retrieve the full exclusion registry \cr
-   \code{\link[=lg_disposition]{lg_disposition()}} \tab CONSORT-style subject disposition table \cr
+   \code{\link[=lg_disposition]{lg_disposition()}} \tab Grouped exclusion summary table \cr
    \code{\link[=lg_operations]{lg_operations()}} \tab Full pipeline operation log \cr
-   \code{\link[=lg_report]{lg_report()}} \tab Generate a CDISC Reviewer's Guide-aligned HTML report \cr
+   \code{\link[=lg_report]{lg_report()}} \tab Generate a structured HTML provenance report \cr
 }
-}
-
-\section{How it differs from dtrackr}{
-
-
-\code{dtrackr} tracks what happened to a \strong{dataset} — operations applied, row
-counts at each step, CONSORT flowcharts. It is an excellent tool for that
-purpose.
-
-\code{lineager} tracks what happened to each \strong{subject} — where they came from
-in SDTM, which population flags apply to them and why, which operations
-they passed through or were excluded by, and how each of their analysis
-variables was derived. It is CDISC-aware, exclusion reasons are mandatory,
-and the output targets the CDISC Reviewer's Guide format rather than a
-flowchart.
 }
 
 \section{The lineage ID}{
 
 
-Every row in every tagged dataset carries a \code{.__lid__} column. For CDISC
-datasets, the ID embeds the USUBJID for human readability:
+Every row in every tagged dataset carries a \code{.__lid__} column. For
+CDISC datasets with USUBJID, the ID embeds the subject identifier for
+human readability:
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{LB_0001_01-042    ← row 1 from LB domain, subject 01-042
-ADLB_0047_01-042  ← row 47 from ADLB, subject 01-042
+\if{html}{\out{<div class="sourceCode">}}\preformatted{DM_0001_01-042    <- row 1 from DM domain, subject 01-042
+ADLB_0047_01-042  <- row 47 from ADLB, subject 01-042
+}\if{html}{\out{</div>}}
+
+For non-CDISC datasets, a zero-padded sequence is used:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{patients_000001   <- row 1 from the patients dataset
 }\if{html}{\out{</div>}}
 
 This ID persists through \code{\link[=lg_filter]{lg_filter()}}, \code{\link[=lg_derive]{lg_derive()}}, and \code{\link[=lg_join]{lg_join()}},
-forming the traceable thread that connects any row in any ADaM dataset
-back to its SDTM origin.
+forming the traceable thread connecting any output row back to its origin.
+}
+
+\section{CDISC-specific features}{
+
+
+Pharmaceutical and clinical users can additionally use:
+\itemize{
+\item \code{domain} argument in \code{\link[=lg_tag]{lg_tag()}} — CDISC domain code (\code{"DM"}, \code{"LB"}, \code{"AE"})
+\item \code{\link[=lg_population]{lg_population()}} — registers SAFFL, ITTFL, PPROTFL definitions
+\item \code{\link[=lg_spec]{lg_spec()}} — documents SDTM-to-ADaM variable derivations
+\item \code{\link[=lg_report]{lg_report()}} — generates CDISC Reviewer's Guide-aligned documentation
+}
+
+None of these are required for general use.
+}
+
+\section{How it differs from dtrackr}{
+
+
+\code{dtrackr} tracks what happened to a \strong{dataset} — operations applied,
+row counts at each step, CONSORT flowcharts. It is excellent for that
+purpose.
+
+\code{lineager} tracks what happened to each \strong{row} — where it came from,
+which operations it passed through or was excluded by, how its derived
+variables were computed, and why it was removed if it was. Exclusion
+reasons are mandatory. The output targets provenance documentation
+rather than flowcharts.
 }
 
 \section{Integration with regulog}{
@@ -142,9 +155,9 @@ back to its SDTM origin.
 
 \code{lineager} and \code{regulog} are complementary. Use \code{regulog} to create a
 tamper-evident audit trail of the session (who ran what, when, and why),
-and \code{lineager} to document the subject-level data transformations within
-that session. The \code{lg_report()} output can be included in the \code{regulog}
-audit package via \code{log_action()}.
+and \code{lineager} to document the row-level data transformations within that
+session. The \code{\link[=lg_report]{lg_report()}} output can be referenced in the \code{regulog}
+audit trail via \code{log_action()}.
 }
 
 \seealso{
@@ -157,6 +170,6 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Ndoh Penn \email{penn@reprosia.com} (\href{https://orcid.org/0009-0003-9054-465X}{ORCID})
+\strong{Maintainer}: Ndoh Penn \email{ndohpenn9@gmail.com} (\href{https://orcid.org/0009-0003-9054-465X}{ORCID})
 
 }
