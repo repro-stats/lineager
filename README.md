@@ -32,7 +32,7 @@ available as optional enrichment for pharmaceutical users.
 
 ```r
 # Install from GitHub
-remotes::install_github("repro-stats/lineager")
+> pak::pak("repro-stats/lineager")
 ```
 
 ## Quick start
