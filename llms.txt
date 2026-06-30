@@ -29,9 +29,8 @@ available as optional enrichment for pharmaceutical users.
 ## Installation
 
 ``` r
-
 # Install from GitHub
-remotes::install_github("repro-stats/lineager")
+> pak::pak("repro-stats/lineager")
 ```
 
 ## Quick start
