@@ -42,16 +42,19 @@
 #' @examples
 #' lg_start()
 #' patients <- data.frame(
-#'   USUBJID  = c("P01","P02","P03","P04","P05"),
+#'   USUBJID = c("P01", "P02", "P03", "P04", "P05"),
 #'   eligible = c(TRUE, FALSE, TRUE, TRUE, FALSE),
-#'   age      = c(34L, 17L, 52L, 29L, 61L),
+#'   age = c(34L, 17L, 52L, 29L, 61L),
 #'   stringsAsFactors = FALSE
 #' )
 #' pts <- lg_tag(patients, dataset_id = "PATIENTS")
-#' pts <- lg_derive(pts, adult = age >= 18L,
-#'                  description = "adult flag from age")
+#' pts <- lg_derive(pts,
+#'   adult = age >= 18L,
+#'   description = "adult flag from age"
+#' )
 #' lg_filter(pts, eligible & adult,
-#'           reason = "Ineligible or under 18")
+#'   reason = "Ineligible or under 18"
+#' )
 #'
 #' lin <- lg_lineage()
 #' print(lin)
@@ -68,7 +71,7 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
 
   # Step 1: one source node per tagged dataset
   for (ds_id in names(.lg$datasets)) {
-    ds  <- .lg$datasets[[ds_id]]
+    ds <- .lg$datasets[[ds_id]]
     nid <- .node_id("SRC", ds_id)
     nodes[[nid]] <- .lineage_node(nid,
       label = sprintf("%s\nn = %d", ds_id, ds$n_rows),
@@ -84,14 +87,14 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
 
   # Step 3: replay operations in order, extending the graph
   for (op in .lg$operations) {
-    ds_id   <- op$dataset_id %||% "unknown"
+    ds_id <- op$dataset_id %||% "unknown"
     op_type <- op$op_type
-    op_id   <- op$op_id
-    n_in    <- op$rows_in    %||% NA_integer_
-    n_out   <- op$rows_out   %||% NA_integer_
-    n_excl  <- if (!is.na(n_in) && !is.na(n_out)) n_in - n_out else 0L
-    desc    <- .truncate_label(op$description %||% "")
-    op_nid  <- .node_id("OP", op_id)
+    op_id <- op$op_id
+    n_in <- op$rows_in %||% NA_integer_
+    n_out <- op$rows_out %||% NA_integer_
+    n_excl <- if (!is.na(n_in) && !is.na(n_out)) n_in - n_out else 0L
+    desc <- .truncate_label(op$description %||% "")
+    op_nid <- .node_id("OP", op_id)
 
     if (op_type == "FILTER") {
       nodes[[op_nid]] <- .lineage_node(op_nid,
@@ -119,11 +122,10 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
       }
 
       tips[[ds_id]] <- res_nid
-
     } else if (grepl("^JOIN", op_type, ignore.case = TRUE)) {
-      source_y  <- op$source_y %||% "unknown"
+      source_y <- op$source_y %||% "unknown"
       join_type <- tolower(gsub("^JOIN_", "", op_type))
-      by_str    <- op$by       %||% "?"
+      by_str <- op$by %||% "?"
 
       nodes[[op_nid]] <- .lineage_node(op_nid,
         label = sprintf("JOIN (%s)\nby: %s", join_type, by_str),
@@ -140,9 +142,11 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
         if (is.null(nodes[[y_src]])) {
           ds_info <- .lg$datasets[[source_y]]
           nodes[[y_src]] <- .lineage_node(y_src,
-            label = sprintf("%s\nn = %s", source_y,
-                            if (!is.null(ds_info)) ds_info$n_rows else "?"),
-            type  = "source"
+            label = sprintf(
+              "%s\nn = %s", source_y,
+              if (!is.null(ds_info)) ds_info$n_rows else "?"
+            ),
+            type = "source"
           )
         }
         y_tip <- y_src
@@ -157,7 +161,6 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
       edges[[paste0(op_id, "_out")]] <- .lineage_edge(op_nid, res_nid, "")
 
       tips[[ds_id]] <- res_nid
-
     } else if (op_type == "DERIVE") {
       nodes[[op_nid]] <- .lineage_node(op_nid,
         label = sprintf("DERIVE\n%s", desc),
@@ -206,10 +209,14 @@ lg_lineage <- function(rankdir = c("TB", "LR")) {
 #' @examples
 #' \dontrun{
 #' lg_start()
-#' pts <- lg_tag(data.frame(USUBJID = c("P01","P02"),
-#'                           eligible = c(TRUE, FALSE),
-#'                           stringsAsFactors = FALSE),
-#'               dataset_id = "PATIENTS")
+#' pts <- lg_tag(
+#'   data.frame(
+#'     USUBJID = c("P01", "P02"),
+#'     eligible = c(TRUE, FALSE),
+#'     stringsAsFactors = FALSE
+#'   ),
+#'   dataset_id = "PATIENTS"
+#' )
 #' lg_filter(pts, eligible, reason = "Not eligible")
 #' lin <- lg_lineage()
 #' lg_plot(lin)
@@ -237,7 +244,7 @@ lg_plot <- function(lineage, output = NULL) {
       "  install.packages(\"DiagrammeR\")\n\n",
       "DOT source (paste into https://dreampuf.github.io/GraphvizOnline/):\n"
     )
-    cat(lineage$dot, "\n")
+    cat(lineage$dot, "\n") # nolint: undesirable_function_linter
   }
 
   invisible(lineage)
@@ -250,10 +257,12 @@ lg_plot <- function(lineage, output = NULL) {
 
 #' @export
 print.lg_lineage <- function(x, ...) {
-  n_src  <- sum(vapply(x$nodes, function(n) n$type == "source",              logical(1L)))
-  n_op   <- sum(vapply(x$nodes, function(n) n$type %in%
-                         c("derive", "join", "filter"),                        logical(1L)))
-  n_excl <- sum(vapply(x$nodes, function(n) n$type == "exclusion",            logical(1L)))
+  n_src <- sum(vapply(x$nodes, function(n) n$type == "source", logical(1L)))
+  n_op <- sum(vapply(x$nodes, function(n) {
+    n$type %in%
+      c("derive", "join", "filter")
+  }, logical(1L)))
+  n_excl <- sum(vapply(x$nodes, function(n) n$type == "exclusion", logical(1L)))
 
   cat(sprintf(
     "<lg_lineage>  %d source dataset(s), %d operation(s), %d exclusion branch(es)\n",
@@ -321,10 +330,10 @@ print.lg_lineage <- function(x, ...) {
   )
 
   for (nd in nodes) {
-    cols  <- .lineage_colours[[nd$type]]
+    cols <- .lineage_colours[[nd$type]]
     shape <- .lineage_shape(nd$type)
     label <- gsub("\n", "\\\\n", nd$label)
-    label <- gsub('"',  '\\\\"', label)
+    label <- gsub('"', '\\\\"', label)
 
     if (nd$type == "exclusion") {
       lines <- c(lines, sprintf(
@@ -343,10 +352,12 @@ print.lg_lineage <- function(x, ...) {
 
   for (ed in edges) {
     if (nzchar(ed$label)) {
-      lines <- c(lines, sprintf('  %s -> %s [label=" %s "];',
-                                ed$from, ed$to, ed$label))
+      lines <- c(lines, sprintf(
+        '  %s -> %s [label=" %s "];',
+        ed$from, ed$to, ed$label
+      ))
     } else {
-      lines <- c(lines, sprintf('  %s -> %s;', ed$from, ed$to))
+      lines <- c(lines, sprintf("  %s -> %s;", ed$from, ed$to))
     }
   }
 

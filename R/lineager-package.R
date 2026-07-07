@@ -74,7 +74,7 @@
 #'   output  = "outputs/provenance_report.html",
 #'   title   = "Data Provenance Report",
 #'   sponsor = "Example Pharma Ltd",
-#'   author  = "Ndoh Penn, Biostatistician"
+#'   author  = "J. Smith, Biostatistician"
 #' )
 #' ```
 #'

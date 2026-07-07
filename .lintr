@@ -1,0 +1,14 @@
+linters: linters_with_defaults(
+    line_length_linter(120L),
+    object_name_linter = NULL
+  )
+exclusions: list(
+    "vignettes/articles/lineager-dermatology.qmd" = Inf,
+    "vignettes/articles/lineager-rwe.qmd"         = Inf,
+    "vignettes/exclusion-tracking.Rmd"            = Inf,
+    "vignettes/getting-started.Rmd"               = Inf,
+    "vignettes/populations-and-reporting.Rmd"     = Inf,
+    "R/report.R"                                  = list(line_length_linter = Inf),
+    "R/lineage.R"                                 = list(line_length_linter = Inf),
+    "tests/testthat/test-report.R"                = list(object_usage_linter = Inf)
+  )

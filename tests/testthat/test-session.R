@@ -8,7 +8,7 @@ test_that("lg_start() marks session active", {
 test_that("lg_start() sets study_id and analysis_id", {
   lg_start(study_id = "STUDY-99", analysis_id = "secondary")
   env <- lg_env()
-  expect_equal(env$study_id,    "STUDY-99")
+  expect_equal(env$study_id, "STUDY-99")
   expect_equal(env$analysis_id, "secondary")
 })
 
@@ -19,7 +19,8 @@ test_that("lg_start() accepts NULL identifiers", {
 })
 
 test_that("lg_start() resets datasets from prior session", {
-  new_session(); adsl_tagged()
+  new_session()
+  adsl_tagged()
   expect_length(lg_env()$datasets, 1L)
   lg_start()
   expect_length(lg_env()$datasets, 0L)
@@ -46,11 +47,11 @@ test_that("lg_start() resets populations and var_specs", {
   lg_population(adsl_tagged(), "SAFFL", "Safety", "Def", "SAFFL == 'Y'")
   lg_spec("ADSL", "X", "X", "DM", "X", "Derivation")
   expect_gt(length(lg_env()$populations), 0L)
-  expect_gt(length(lg_env()$var_specs),   0L)
+  expect_gt(length(lg_env()$var_specs), 0L)
 
   lg_start()
   expect_length(lg_env()$populations, 0L)
-  expect_length(lg_env()$var_specs,   0L)
+  expect_length(lg_env()$var_specs, 0L)
 })
 
 test_that("lg_start() resets op_counter to zero", {
@@ -70,15 +71,17 @@ test_that("lg_end() marks session inactive and messages summary", {
 })
 
 test_that("lg_end() errors when no session is active", {
-  new_session(); lg_end()
+  new_session()
+  lg_end()
   expect_error(lg_end(), "lg_start")
-  new_session()  # restore
+  new_session() # restore
 })
 
 test_that("lg_* functions error when no session active", {
-  new_session(); lg_end()
+  new_session()
+  lg_end()
   expect_error(lg_tag(adsl_raw(), "ADSL"), "lg_start")
-  expect_error(lg_exclusions(),            "lg_start")
-  expect_error(lg_report(output = NULL),   "lg_start")
-  new_session()  # restore
+  expect_error(lg_exclusions(), "lg_start")
+  expect_error(lg_report(output = NULL), "lg_start")
+  new_session() # restore
 })

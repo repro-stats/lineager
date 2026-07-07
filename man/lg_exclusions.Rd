@@ -27,11 +27,12 @@ reason they were excluded, and which population the exclusion relates to.
 \examples{
 lg_start()
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01","02","03"), RANDFL = c("Y","N","Y")),
+  data.frame(USUBJID = c("01", "02", "03"), RANDFL = c("Y", "N", "Y")),
   dataset_id = "ADSL"
 )
 lg_filter(adsl, RANDFL == "Y",
-          reason = "Not randomised", population = "RANDFL")
+  reason = "Not randomised", population = "RANDFL"
+)
 
 lg_exclusions()
 

@@ -30,17 +30,19 @@
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
-#'   data.frame(USUBJID = c("01", "02", "03"),
-#'              RANDFL  = c("Y","N","Y"), EXOCCUR = c("Y","N","Y"),
-#'              SAFFL   = c("Y","N","Y")),
+#'   data.frame(
+#'     USUBJID = c("01", "02", "03"),
+#'     RANDFL = c("Y", "N", "Y"), EXOCCUR = c("Y", "N", "Y"),
+#'     SAFFL = c("Y", "N", "Y")
+#'   ),
 #'   dataset_id = "ADSL"
 #' )
 #'
 #' lg_population(
 #'   adsl,
-#'   flag_var     = "SAFFL",
-#'   label        = "Safety Analysis Flag",
-#'   definition   = "All randomised subjects who received at least one dose",
+#'   flag_var = "SAFFL",
+#'   label = "Safety Analysis Flag",
+#'   definition = "All randomised subjects who received at least one dose",
 #'   incl_criteria = c("RANDFL == 'Y'", "EXOCCUR == 'Y'"),
 #'   excl_criteria = "No study drug administered (EXOCCUR != 'Y')"
 #' )
@@ -59,21 +61,21 @@ lg_population <- function(data, flag_var, label, definition,
     ), "  Derive the flag with lg_derive() first, then call lg_population().")
   }
 
-  flag_vals  <- data[[flag_var]]
+  flag_vals <- data[[flag_var]]
   n_included <- sum(flag_vals == "Y", na.rm = TRUE)
   n_excluded <- sum(flag_vals != "Y" | is.na(flag_vals), na.rm = TRUE)
 
   pop <- structure(
     list(
-      flag_var     = flag_var,
-      label        = label,
-      definition   = definition,
+      flag_var = flag_var,
+      label = label,
+      definition = definition,
       incl_criteria = incl_criteria,
       excl_criteria = excl_criteria,
-      dataset_id   = attr(data, "lg_dataset_id") %||% "unknown",
-      n_included   = n_included,
-      n_excluded   = n_excluded,
-      n_total      = nrow(data),
+      dataset_id = attr(data, "lg_dataset_id") %||% "unknown",
+      n_included = n_included,
+      n_excluded = n_excluded,
+      n_total = nrow(data),
       registered_at = .utc_now()
     ),
     class = "lg_population"
@@ -98,11 +100,15 @@ print.lg_population <- function(x, ...) {
   cat(sprintf("  Definition : %s\n", x$definition))
   cat(sprintf("  N included : %d\n", x$n_included))
   cat(sprintf("  N excluded : %d\n", x$n_excluded))
-  cat(sprintf("  Inclusion  : %s\n",
-              paste(x$incl_criteria, collapse = "; ")))
+  cat(sprintf(
+    "  Inclusion  : %s\n",
+    paste(x$incl_criteria, collapse = "; ")
+  ))
   if (!is.null(x$excl_criteria)) {
-    cat(sprintf("  Exclusion  : %s\n",
-                paste(x$excl_criteria, collapse = "; ")))
+    cat(sprintf(
+      "  Exclusion  : %s\n",
+      paste(x$excl_criteria, collapse = "; ")
+    ))
   }
   invisible(x)
 }
@@ -132,12 +138,12 @@ print.lg_population <- function(x, ...) {
 #'
 #' lg_spec(
 #'   adam_dataset = "ADLB",
-#'   adam_var     = "AVAL",
-#'   label        = "Analysis Value",
+#'   adam_var = "AVAL",
+#'   label = "Analysis Value",
 #'   source_domain = "LB",
-#'   source_var    = "LBSTRESN",
-#'   derivation   = "LBSTRESN; numeric conversion of LBORRES where LBSTRESN is missing",
-#'   conditions   = "LBSTAT != 'NOT DONE'"
+#'   source_var = "LBSTRESN",
+#'   derivation = "LBSTRESN; numeric conversion of LBORRES where LBSTRESN is missing",
+#'   conditions = "LBSTAT != 'NOT DONE'"
 #' )
 #'
 #' @seealso [lg_derive()], [lg_report()]

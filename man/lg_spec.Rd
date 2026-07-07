@@ -45,12 +45,12 @@ lg_start()
 
 lg_spec(
   adam_dataset = "ADLB",
-  adam_var     = "AVAL",
-  label        = "Analysis Value",
+  adam_var = "AVAL",
+  label = "Analysis Value",
   source_domain = "LB",
-  source_var    = "LBSTRESN",
-  derivation   = "LBSTRESN; numeric conversion of LBORRES where LBSTRESN is missing",
-  conditions   = "LBSTAT != 'NOT DONE'"
+  source_var = "LBSTRESN",
+  derivation = "LBSTRESN; numeric conversion of LBORRES where LBSTRESN is missing",
+  conditions = "LBSTAT != 'NOT DONE'"
 )
 
 }

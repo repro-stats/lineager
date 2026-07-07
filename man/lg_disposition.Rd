@@ -23,14 +23,17 @@ showing cumulative subject counts at each stage.
 \examples{
 lg_start()
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01","02","03","04","05"),
-             RANDFL  = c("Y","N","Y","Y","N"),
-             SAFFL   = c("Y","N","Y","Y","N")),
+  data.frame(
+    USUBJID = c("01", "02", "03", "04", "05"),
+    RANDFL = c("Y", "N", "Y", "Y", "N"),
+    SAFFL = c("Y", "N", "Y", "Y", "N")
+  ),
   dataset_id = "ADSL"
 )
 lg_filter(adsl, RANDFL == "Y",
-          reason = "Not randomised (RANDFL != 'Y')",
-          reason_code = "NOT_RANDOMISED", population = "RANDFL")
+  reason = "Not randomised (RANDFL != 'Y')",
+  reason_code = "NOT_RANDOMISED", population = "RANDFL"
+)
 
 lg_disposition()
 

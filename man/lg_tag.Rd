@@ -45,8 +45,10 @@ dm <- data.frame(
   SEX     = c("M", "F", "M")
 )
 
-dm_tagged <- lg_tag(dm, dataset_id = "DM", domain = "DM",
-                    label = "Demographics")
+dm_tagged <- lg_tag(dm,
+  dataset_id = "DM", domain = "DM",
+  label = "Demographics"
+)
 dm_tagged
 
 }

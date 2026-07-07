@@ -5,14 +5,14 @@ Authors@R: person("Ndoh", "Penn",
     email = "ndohpenn9@gmail.com",
     role  = c("aut", "cre"),
     comment = c(ORCID = "0009-0003-9054-465X"))
-Description: Provides row-level data provenance tracking for R analysis
+Description: Provides row-level data provenance tracking for analytical
     pipelines. Tags datasets with unique lineage identifiers that persist
     through filter, join, and derive operations. Requires documented reasons
     for every row exclusion, capturing who was removed, why, and at which
     pipeline stage. Variable derivations are registered as structured
     specifications linking output variables back to their source. Any row
     in any downstream dataset can be traced back to its origin via
-    lg_trace(). Generates structured HTML provenance reports suitable for
+    'lg_trace()'. Generates structured HTML provenance reports suitable for
     regulatory submissions, internal audit, or analytical documentation.
     General-purpose: works for clinical data, machine learning pipelines,
     financial modelling, epidemiology, or any workflow where row-level
@@ -21,6 +21,7 @@ Description: Provides row-level data provenance tracking for R analysis
     documentation (SAFFL, ITTFL, PPROTFL), SDTM-to-ADaM variable
     mapping, and Reviewer's Guide-aligned report output. Complements
     the 'regulog' package for tamper-evident session-level audit logging.
+    For more details see <https://reprostats.org/lineager/>.
 License: MIT + file LICENSE
 URL: https://reprostats.org, https://github.com/repro-stats/lineager
 BugReports: https://github.com/repro-stats/lineager/issues
@@ -37,6 +38,7 @@ Suggests:
     testthat (>= 3.0.0),
     tibble
 Encoding: UTF-8
+Language: en-GB
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
 VignetteBuilder: knitr

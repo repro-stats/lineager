@@ -32,16 +32,19 @@ or write the DOT string to a file and render externally with Graphviz.
 \examples{
 lg_start()
 patients <- data.frame(
-  USUBJID  = c("P01","P02","P03","P04","P05"),
+  USUBJID = c("P01", "P02", "P03", "P04", "P05"),
   eligible = c(TRUE, FALSE, TRUE, TRUE, FALSE),
-  age      = c(34L, 17L, 52L, 29L, 61L),
+  age = c(34L, 17L, 52L, 29L, 61L),
   stringsAsFactors = FALSE
 )
 pts <- lg_tag(patients, dataset_id = "PATIENTS")
-pts <- lg_derive(pts, adult = age >= 18L,
-                 description = "adult flag from age")
+pts <- lg_derive(pts,
+  adult = age >= 18L,
+  description = "adult flag from age"
+)
 lg_filter(pts, eligible & adult,
-          reason = "Ineligible or under 18")
+  reason = "Ineligible or under 18"
+)
 
 lin <- lg_lineage()
 print(lin)

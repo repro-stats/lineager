@@ -46,8 +46,10 @@ ex_summary <- lg_tag(
   dataset_id = "EX_SUMM"
 )
 
-adsl_ex <- lg_join(adsl, ex_summary, by = "USUBJID",
-                   description = "First dose date from EX domain")
+adsl_ex <- lg_join(adsl, ex_summary,
+  by = "USUBJID",
+  description = "First dose date from EX domain"
+)
 
 }
 \seealso{

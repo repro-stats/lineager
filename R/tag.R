@@ -42,8 +42,10 @@
 #'   SEX     = c("M", "F", "M")
 #' )
 #'
-#' dm_tagged <- lg_tag(dm, dataset_id = "DM", domain = "DM",
-#'                     label = "Demographics")
+#' dm_tagged <- lg_tag(dm,
+#'   dataset_id = "DM", domain = "DM",
+#'   label = "Demographics"
+#' )
 #' dm_tagged
 #'
 #' @seealso [lg_filter()], [lg_derive()], [lg_trace()]
@@ -52,7 +54,7 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
                    source = NULL) {
   .assert_active()
 
-  if (!is.data.frame(data))   stop("`data` must be a data.frame or tibble.")
+  if (!is.data.frame(data)) stop("`data` must be a data.frame or tibble.")
   if (!is.character(dataset_id) || !nzchar(dataset_id)) {
     stop("`dataset_id` must be a non-empty character string.")
   }
@@ -74,18 +76,20 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
   }
 
   # Insert .__lid__ at position 1
-  out <- data.frame(.lid_placeholder_ = lids, data, stringsAsFactors = FALSE,
-                    check.names = FALSE)
+  out <- data.frame(
+    .lid_placeholder_ = lids, data, stringsAsFactors = FALSE,
+    check.names = FALSE
+  )
   names(out)[1L] <- .lid_col
 
   # Attach lineage metadata as attributes
   attr(out, "lg_dataset_id") <- dataset_id
-  attr(out, "lg_domain")     <- domain
-  attr(out, "lg_label")      <- label %||% dataset_id
-  attr(out, "lg_source")     <- source
-  attr(out, "lg_row_count")  <- n
-  attr(out, "lg_tagged_at")  <- .utc_now()
-  attr(out, "lg_history")    <- list()
+  attr(out, "lg_domain") <- domain
+  attr(out, "lg_label") <- label %||% dataset_id
+  attr(out, "lg_source") <- source
+  attr(out, "lg_row_count") <- n
+  attr(out, "lg_tagged_at") <- .utc_now()
+  attr(out, "lg_history") <- list()
 
   class(out) <- c("lg_df", "data.frame")
 
@@ -100,8 +104,10 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
     tagged_at  = attr(out, "lg_tagged_at")
   )
 
-  message(sprintf("lineager: tagged '%s' \u2014 %d rows, %d cols",
-                  dataset_id, n, ncol(data)))
+  message(sprintf(
+    "lineager: tagged '%s' \u2014 %d rows, %d cols",
+    dataset_id, n, ncol(data)
+  ))
   out
 }
 
@@ -113,7 +119,7 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
 #' @importFrom utils head
 #' @export
 print.lg_df <- function(x, ...) {
-  ds  <- attr(x, "lg_dataset_id") %||% "unknown"
+  ds <- attr(x, "lg_dataset_id") %||% "unknown"
   dom <- attr(x, "lg_domain")
   cat(sprintf(
     "<lg_df> '%s'%s  [%d \u00d7 %d]\n",

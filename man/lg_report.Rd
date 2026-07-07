@@ -55,16 +55,16 @@ registrations
 }
 }
 \examples{
-\dontrun{
+\donttest{
 lg_start(study_id = "TRIAL-001", analysis_id = "primary")
 
 # ... tagging, filtering, deriving, spec registration ...
 
 lg_report(
-  output   = "outputs/lineage_report_TRIAL001.html",
+  output   = tempfile(fileext = ".html"),
   title    = "Data Provenance Report: TRIAL-001",
   sponsor  = "Example Pharma Ltd",
-  author   = "Ndoh Penn, Biostatistician"
+  author   = "J. Smith, Biostatistician"
 )
 }
 

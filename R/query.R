@@ -37,12 +37,15 @@
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
-#'   data.frame(USUBJID = c("01", "02", "03"),
-#'              RANDFL  = c("Y", "N", "Y")),
+#'   data.frame(
+#'     USUBJID = c("01", "02", "03"),
+#'     RANDFL = c("Y", "N", "Y")
+#'   ),
 #'   dataset_id = "ADSL"
 #' )
 #' lg_filter(adsl, RANDFL == "Y",
-#'           reason = "Not randomised", population = "RANDFL")
+#'   reason = "Not randomised", population = "RANDFL"
+#' )
 #'
 #' lg_trace("02")
 #'
@@ -63,7 +66,7 @@ lg_trace <- function(usubjid, verbose = TRUE) {
     ds <- .lg$datasets[[ds_id]]
     matching <- grep(usubjid, ds$lids, fixed = TRUE, value = TRUE)
     if (length(matching) > 0L) {
-      subject_lids    <- c(subject_lids, matching)
+      subject_lids <- c(subject_lids, matching)
       subject_datasets <- c(subject_datasets, ds_id)
     }
   }
@@ -72,7 +75,8 @@ lg_trace <- function(usubjid, verbose = TRUE) {
   all_excl <- lg_exclusions(verbose = FALSE)
   subj_excl <- if (nrow(all_excl) > 0L) {
     all_excl[!is.na(all_excl$usubjid) & all_excl$usubjid == usubjid, ,
-             drop = FALSE]
+      drop = FALSE
+    ]
   } else {
     all_excl[0L, , drop = FALSE]
   }
@@ -89,8 +93,10 @@ lg_trace <- function(usubjid, verbose = TRUE) {
   # (only available if data is still in scope \u2014 we store flag values in pops)
   pop_values <- lapply(names(.lg$populations), function(flag) {
     pop <- .lg$populations[[flag]]
-    list(flag_var = flag, label = pop$label,
-         definition = pop$definition)
+    list(
+      flag_var = flag, label = pop$label,
+      definition = pop$definition
+    )
   })
   names(pop_values) <- names(.lg$populations)
 
@@ -108,8 +114,10 @@ lg_trace <- function(usubjid, verbose = TRUE) {
 }
 
 .print_trace <- function(tr) {
-  cat(sprintf("\n\u2500\u2500 lineager trace: USUBJID '%s' \u2500\u2500\n\n",
-              tr$usubjid))
+  cat(sprintf(
+    "\n\u2500\u2500 lineager trace: USUBJID '%s' \u2500\u2500\n\n",
+    tr$usubjid
+  ))
 
   if (length(tr$datasets) == 0L) {
     cat("  [not found in any tagged dataset]\n\n")
@@ -122,10 +130,12 @@ lg_trace <- function(usubjid, verbose = TRUE) {
     cat("  Operations:\n")
     for (i in seq_len(nrow(tr$operations))) {
       op <- tr$operations[i, ]
-      cat(sprintf("    [%s] %s: %s (%d\u2192%d)\n",
-                  op$op_type, op$dataset_id,
-                  substr(op$description, 1L, 60L),
-                  op$rows_in, op$rows_out))
+      cat(sprintf(
+        "    [%s] %s: %s (%d\u2192%d)\n",
+        op$op_type, op$dataset_id,
+        substr(op$description, 1L, 60L),
+        op$rows_in, op$rows_out
+      ))
     }
     cat("\n")
   }
@@ -134,10 +144,12 @@ lg_trace <- function(usubjid, verbose = TRUE) {
     cat(sprintf("  Exclusions (%d):\n", nrow(tr$exclusions)))
     for (i in seq_len(nrow(tr$exclusions))) {
       ex <- tr$exclusions[i, ]
-      cat(sprintf("    \u2717 [%s] %s%s\n",
-                  ex$dataset_id %||% "?",
-                  ex$reason,
-                  if (!is.na(ex$population)) sprintf(" [pop: %s]", ex$population) else ""))
+      cat(sprintf(
+        "    \u2717 [%s] %s%s\n",
+        ex$dataset_id %||% "?",
+        ex$reason,
+        if (!is.na(ex$population)) sprintf(" [pop: %s]", ex$population) else ""
+      ))
     }
     cat("\n")
   } else {
@@ -173,11 +185,12 @@ lg_trace <- function(usubjid, verbose = TRUE) {
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
-#'   data.frame(USUBJID = c("01","02","03"), RANDFL = c("Y","N","Y")),
+#'   data.frame(USUBJID = c("01", "02", "03"), RANDFL = c("Y", "N", "Y")),
 #'   dataset_id = "ADSL"
 #' )
 #' lg_filter(adsl, RANDFL == "Y",
-#'           reason = "Not randomised", population = "RANDFL")
+#'   reason = "Not randomised", population = "RANDFL"
+#' )
 #'
 #' lg_exclusions()
 #'
@@ -194,14 +207,14 @@ lg_exclusions <- function(population = NULL, dataset_id = NULL,
 
   rows <- lapply(.lg$exclusions, function(e) {
     data.frame(
-      excl_id     = e$excl_id,
-      op_id       = e$op_id,
-      dataset_id  = e$dataset_id,
-      lid         = e$lid,
-      usubjid     = e$usubjid %||% NA_character_,
-      reason      = e$reason,
+      excl_id = e$excl_id,
+      op_id = e$op_id,
+      dataset_id = e$dataset_id,
+      lid = e$lid,
+      usubjid = e$usubjid %||% NA_character_,
+      reason = e$reason,
       reason_code = e$reason_code %||% NA_character_,
-      population  = e$population %||% NA_character_,
+      population = e$population %||% NA_character_,
       excluded_at = e$excluded_at,
       stringsAsFactors = FALSE
     )
@@ -219,11 +232,13 @@ lg_exclusions <- function(population = NULL, dataset_id = NULL,
 }
 
 .empty_excl_frame <- function() {
-  data.frame(excl_id = character(0), op_id = character(0),
-             dataset_id = character(0), lid = character(0),
-             usubjid = character(0), reason = character(0),
-             reason_code = character(0), population = character(0),
-             excluded_at = character(0), stringsAsFactors = FALSE)
+  data.frame(
+    excl_id = character(0), op_id = character(0),
+    dataset_id = character(0), lid = character(0),
+    usubjid = character(0), reason = character(0),
+    reason_code = character(0), population = character(0),
+    excluded_at = character(0), stringsAsFactors = FALSE
+  )
 }
 
 
@@ -243,14 +258,17 @@ lg_exclusions <- function(population = NULL, dataset_id = NULL,
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
-#'   data.frame(USUBJID = c("01","02","03","04","05"),
-#'              RANDFL  = c("Y","N","Y","Y","N"),
-#'              SAFFL   = c("Y","N","Y","Y","N")),
+#'   data.frame(
+#'     USUBJID = c("01", "02", "03", "04", "05"),
+#'     RANDFL = c("Y", "N", "Y", "Y", "N"),
+#'     SAFFL = c("Y", "N", "Y", "Y", "N")
+#'   ),
 #'   dataset_id = "ADSL"
 #' )
 #' lg_filter(adsl, RANDFL == "Y",
-#'           reason = "Not randomised (RANDFL != 'Y')",
-#'           reason_code = "NOT_RANDOMISED", population = "RANDFL")
+#'   reason = "Not randomised (RANDFL != 'Y')",
+#'   reason_code = "NOT_RANDOMISED", population = "RANDFL"
+#' )
 #'
 #' lg_disposition()
 #'
@@ -264,8 +282,10 @@ lg_disposition <- function(by = c("reason", "population", "dataset")) {
 
   if (nrow(excl) == 0L) {
     message("lineager: no exclusions to summarise")
-    return(data.frame(group = character(0), n_excluded = integer(0),
-                      stringsAsFactors = FALSE))
+    return(data.frame(
+      group = character(0), n_excluded = integer(0),
+      stringsAsFactors = FALSE
+    ))
   }
 
   group_col <- switch(by,
@@ -275,7 +295,8 @@ lg_disposition <- function(by = c("reason", "population", "dataset")) {
   )
 
   counts <- as.data.frame(table(excl[[group_col]], dnn = "group"),
-                           stringsAsFactors = FALSE)
+    stringsAsFactors = FALSE
+  )
   names(counts)[2L] <- "n_excluded"
   counts <- counts[order(-counts$n_excluded), ]
   rownames(counts) <- NULL
@@ -293,21 +314,23 @@ lg_operations <- function(verbose = FALSE) {
   .assert_active()
 
   if (length(.lg$operations) == 0L) {
-    return(data.frame(op_id = character(0), op_type = character(0),
-                      dataset_id = character(0), description = character(0),
-                      rows_in = integer(0), rows_out = integer(0),
-                      stringsAsFactors = FALSE))
+    return(data.frame(
+      op_id = character(0), op_type = character(0),
+      dataset_id = character(0), description = character(0),
+      rows_in = integer(0), rows_out = integer(0),
+      stringsAsFactors = FALSE
+    ))
   }
 
   rows <- lapply(.lg$operations, function(op) {
     data.frame(
-      op_id       = op$op_id,
-      op_type     = op$op_type,
-      dataset_id  = op$dataset_id %||% NA_character_,
+      op_id = op$op_id,
+      op_type = op$op_type,
+      dataset_id = op$dataset_id %||% NA_character_,
       description = op$description %||% NA_character_,
-      rows_in     = op$rows_in    %||% NA_integer_,
-      rows_out    = op$rows_out   %||% NA_integer_,
-      timestamp   = op$timestamp  %||% NA_character_,
+      rows_in = op$rows_in %||% NA_integer_,
+      rows_out = op$rows_out %||% NA_integer_,
+      timestamp = op$timestamp %||% NA_character_,
       stringsAsFactors = FALSE
     )
   })

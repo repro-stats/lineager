@@ -38,18 +38,20 @@ this is enforced at the R level, not by convention.
 \examples{
 lg_start()
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01", "02", "03"),
-             RANDFL  = c("Y", "N", "Y"),
-             SAFFL   = c("Y", "N", "Y")),
+  data.frame(
+    USUBJID = c("01", "02", "03"),
+    RANDFL = c("Y", "N", "Y"),
+    SAFFL = c("Y", "N", "Y")
+  ),
   dataset_id = "ADSL"
 )
 
 adsl_rand <- lg_filter(
   adsl,
   RANDFL == "Y",
-  reason      = "Not randomised (RANDFL != 'Y')",
+  reason = "Not randomised (RANDFL != 'Y')",
   reason_code = "NOT_RANDOMISED",
-  population  = "RANDFL"
+  population = "RANDFL"
 )
 
 }

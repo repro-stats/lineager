@@ -11,22 +11,26 @@ populated_session <- function() {
   )
 
   lg_filter(adsl, RANDFL == "Y",
-            reason      = "Not randomised (RANDFL != 'Y')",
-            reason_code = "NOT_RAND",
-            population  = "RANDFL")
+    reason      = "Not randomised (RANDFL != 'Y')",
+    reason_code = "NOT_RAND",
+    population  = "RANDFL"
+  )
 
   lg_population(adsl, "SAFFL",
-                label        = "Safety Analysis Flag",
-                definition   = "All randomised subjects who received at least one dose",
-                incl_criteria = c("RANDFL == 'Y'", "EXOCCUR == 'Y'"),
-                excl_criteria = "No study drug administered")
+    label = "Safety Analysis Flag",
+    definition = "All randomised subjects who received at least one dose",
+    incl_criteria = c("RANDFL == 'Y'", "EXOCCUR == 'Y'"),
+    excl_criteria = "No study drug administered"
+  )
 
-  lg_spec(adam_dataset  = "ADSL",
-          adam_var      = "RANDFL",
-          label         = "Randomised Flag",
-          source_domain = "DM",
-          source_var    = "ARMCD",
-          derivation    = "Y if ARMCD != 'SCRNFAIL', N otherwise")
+  lg_spec(
+    adam_dataset = "ADSL",
+    adam_var = "RANDFL",
+    label = "Randomised Flag",
+    source_domain = "DM",
+    source_var = "ARMCD",
+    derivation = "Y if ARMCD != 'SCRNFAIL', N otherwise"
+  )
 }
 
 test_that("lg_report() returns HTML string when output is NULL", {
@@ -40,9 +44,9 @@ test_that("lg_report() output is valid HTML", {
   populated_session()
   html <- lg_report(output = NULL, title = "Test Report")
   expect_true(grepl("<!DOCTYPE html>", html, fixed = TRUE))
-  expect_true(grepl("<html",  html))
+  expect_true(grepl("<html", html))
   expect_true(grepl("</html>", html))
-  expect_true(grepl("<body",  html))
+  expect_true(grepl("<body", html))
   expect_true(grepl("</body>", html))
 })
 
@@ -54,10 +58,12 @@ test_that("lg_report() includes the custom title", {
 
 test_that("lg_report() includes study_id and sponsor", {
   populated_session()
-  html <- lg_report(output = NULL, title = "T",
-                    study_id = "TRIAL-999",
-                    sponsor  = "Acme Pharma")
-  expect_true(grepl("TRIAL-999",  html))
+  html <- lg_report(
+    output = NULL, title = "T",
+    study_id = "TRIAL-999",
+    sponsor = "Acme Pharma"
+  )
+  expect_true(grepl("TRIAL-999", html))
   expect_true(grepl("Acme Pharma", html))
 })
 
@@ -65,13 +71,13 @@ test_that("lg_report() includes dataset inventory section", {
   populated_session()
   html <- lg_report(output = NULL)
   expect_true(grepl("Dataset Inventory", html))
-  expect_true(grepl("ADSL",             html))
+  expect_true(grepl("ADSL", html))
 })
 
 test_that("lg_report() includes subject disposition when exclusions exist", {
   populated_session()
   html <- lg_report(output = NULL)
-  expect_true(grepl("Disposition",   html, ignore.case = TRUE))
+  expect_true(grepl("Disposition", html, ignore.case = TRUE))
   expect_true(grepl("Not randomised", html))
 })
 
@@ -79,7 +85,7 @@ test_that("lg_report() includes population flag section", {
   populated_session()
   html <- lg_report(output = NULL)
   expect_true(grepl("Population Flag", html))
-  expect_true(grepl("SAFFL",           html))
+  expect_true(grepl("SAFFL", html))
   expect_true(grepl("Safety Analysis Flag", html))
 })
 
@@ -87,16 +93,16 @@ test_that("lg_report() includes variable derivation section", {
   populated_session()
   html <- lg_report(output = NULL)
   expect_true(grepl("Variable Derivation", html, ignore.case = TRUE))
-  expect_true(grepl("ADSL",               html))
-  expect_true(grepl("RANDFL",             html))
+  expect_true(grepl("ADSL", html))
+  expect_true(grepl("RANDFL", html))
 })
 
 test_that("lg_report() includes operation log section", {
   populated_session()
   html <- lg_report(output = NULL)
   expect_true(grepl("Operation Log", html))
-  expect_true(grepl("FILTER",        html))
-  expect_true(grepl("DERIVE",        html))
+  expect_true(grepl("FILTER", html))
+  expect_true(grepl("DERIVE", html))
 })
 
 test_that("lg_report() includes exclusion listing section", {
@@ -140,9 +146,9 @@ test_that("lg_report() creates output directory if it doesn't exist", {
 
 test_that("lg_report() only accepts html format", {
   populated_session()
-  expect_error(lg_report(format = "pdf",  output = NULL), "html")
+  expect_error(lg_report(format = "pdf", output = NULL), "html")
   expect_error(lg_report(format = "docx", output = NULL), "html")
-  expect_error(lg_report(format = "xml",  output = NULL), "html")
+  expect_error(lg_report(format = "xml", output = NULL), "html")
 })
 
 test_that("lg_report() works with a minimal session (nothing but a tag)", {
@@ -150,5 +156,5 @@ test_that("lg_report() works with a minimal session (nothing but a tag)", {
   adsl_tagged()
   html <- lg_report(output = NULL, title = "Minimal")
   expect_true(grepl("<!DOCTYPE html>", html, fixed = TRUE))
-  expect_true(grepl("ADSL",            html))
+  expect_true(grepl("ADSL", html))
 })

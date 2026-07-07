@@ -42,28 +42,28 @@
 #'   (if `output` is `NULL`), invisibly.
 #'
 #' @examples
-#' \dontrun{
+#' \donttest{
 #' lg_start(study_id = "TRIAL-001", analysis_id = "primary")
 #'
 #' # ... tagging, filtering, deriving, spec registration ...
 #'
 #' lg_report(
-#'   output   = "outputs/lineage_report_TRIAL001.html",
+#'   output   = tempfile(fileext = ".html"),
 #'   title    = "Data Provenance Report: TRIAL-001",
 #'   sponsor  = "Example Pharma Ltd",
-#'   author   = "Ndoh Penn, Biostatistician"
+#'   author   = "J. Smith, Biostatistician"
 #' )
 #' }
 #'
 #' @seealso [lineager::lg_start()], [lg_exclusions()], [lg_disposition()]
 #' @export
-lg_report <- function(format   = "html",
-                      output   = NULL,
-                      title    = "Data Provenance Report",
+lg_report <- function(format = "html",
+                      output = NULL,
+                      title = "Data Provenance Report",
                       study_id = .lg$study_id,
-                      sponsor  = NULL,
-                      author   = NULL,
-                      date     = Sys.Date()) {
+                      sponsor = NULL,
+                      author = NULL,
+                      date = Sys.Date()) {
   .assert_active()
 
   if (format != "html") stop("Only format = 'html' is currently supported.")
@@ -71,8 +71,8 @@ lg_report <- function(format   = "html",
   html <- .build_html_report(
     title    = title,
     study_id = study_id %||% "Not specified",
-    sponsor  = sponsor  %||% "Not specified",
-    author   = author   %||% "Not specified",
+    sponsor  = sponsor %||% "Not specified",
+    author   = author %||% "Not specified",
     date     = as.character(date)
   )
 
@@ -155,11 +155,11 @@ lg_report <- function(format   = "html",
 
 
 .section_header <- function(title, study_id, sponsor, author, date) {
-  n_ds   <- length(.lg$datasets)
+  n_ds <- length(.lg$datasets)
   n_excl <- length(.lg$exclusions)
-  n_pop  <- length(.lg$populations)
+  n_pop <- length(.lg$populations)
   n_spec <- length(.lg$var_specs)
-  n_ops  <- length(.lg$operations)
+  n_ops <- length(.lg$operations)
 
   sprintf(
     '<h1>%s</h1>
@@ -187,7 +187,9 @@ lg_report <- function(format   = "html",
 
 
 .section_datasets <- function() {
-  if (length(.lg$datasets) == 0L) return("")
+  if (length(.lg$datasets) == 0L) {
+    return("")
+  }
 
   rows <- vapply(names(.lg$datasets), function(id) {
     ds <- .lg$datasets[[id]]
@@ -202,11 +204,12 @@ lg_report <- function(format   = "html",
   }, character(1L))
 
   sprintf(
-    '<h2>1. Dataset Inventory</h2>
+    "<h2>1. Dataset Inventory</h2>
 <table>
 <tr><th>Dataset ID</th><th>Label</th><th>Domain</th><th>Rows</th><th>Source</th></tr>
 %s
-</table>', paste(rows, collapse = "\n"))
+</table>", paste(rows, collapse = "\n")
+  )
 }
 
 
@@ -218,8 +221,10 @@ lg_report <- function(format   = "html",
 
   disp <- lg_disposition(by = "reason")
   rows <- vapply(seq_len(nrow(disp)), function(i) {
-    sprintf("<tr><td>%s</td><td class='excl'>%d</td></tr>",
-            disp$group[[i]], disp$n_excluded[[i]])
+    sprintf(
+      "<tr><td>%s</td><td class='excl'>%d</td></tr>",
+      disp$group[[i]], disp$n_excluded[[i]]
+    )
   }, character(1L))
 
   sprintf(
@@ -228,16 +233,19 @@ lg_report <- function(format   = "html",
 <tr><th>Exclusion reason</th><th>N excluded</th></tr>
 %s
 <tr><td><strong>Total excluded</strong></td><td class="excl"><strong>%d</strong></td></tr>
-</table>', paste(rows, collapse = "\n"), sum(disp$n_excluded))
+</table>', paste(rows, collapse = "\n"), sum(disp$n_excluded)
+  )
 }
 
 
 .section_populations <- function() {
-  if (length(.lg$populations) == 0L) return("")
+  if (length(.lg$populations) == 0L) {
+    return("")
+  }
 
   sections <- vapply(names(.lg$populations), function(flag) {
     p <- .lg$populations[[flag]]
-    crit_in  <- paste(p$incl_criteria, collapse = "<br>")
+    crit_in <- paste(p$incl_criteria, collapse = "<br>")
     crit_out <- if (!is.null(p$excl_criteria)) paste(p$excl_criteria, collapse = "<br>") else "&mdash;"
     sprintf(
       "<h3><code>%s</code> &mdash; %s</h3>
@@ -260,7 +268,9 @@ lg_report <- function(format   = "html",
 
 
 .section_var_specs <- function() {
-  if (length(.lg$var_specs) == 0L) return("")
+  if (length(.lg$var_specs) == 0L) {
+    return("")
+  }
 
   rows <- vapply(names(.lg$var_specs), function(key) {
     s <- .lg$var_specs[[key]]
@@ -272,17 +282,20 @@ lg_report <- function(format   = "html",
   }, character(1L))
 
   sprintf(
-    '<h2>4. Variable Derivations (SDTM \u2192 ADaM)</h2>
+    "<h2>4. Variable Derivations (SDTM \u2192 ADaM)</h2>
 <table>
 <tr><th>ADaM Dataset</th><th>Variable</th><th>Label</th><th>Source Domain</th><th>Source Var</th><th>Derivation</th></tr>
 %s
-</table>', paste(rows, collapse = "\n"))
+</table>", paste(rows, collapse = "\n")
+  )
 }
 
 
 .section_operations <- function() {
   ops <- lg_operations(verbose = FALSE)
-  if (nrow(ops) == 0L) return("")
+  if (nrow(ops) == 0L) {
+    return("")
+  }
 
   rows <- vapply(seq_len(nrow(ops)), function(i) {
     op <- ops[i, ]
@@ -295,17 +308,20 @@ lg_report <- function(format   = "html",
   }, character(1L))
 
   sprintf(
-    '<h2>5. Operation Log</h2>
+    "<h2>5. Operation Log</h2>
 <table>
 <tr><th>Type</th><th>Dataset</th><th>Description</th><th>Rows in</th><th>Rows out</th></tr>
 %s
-</table>', paste(rows, collapse = "\n"))
+</table>", paste(rows, collapse = "\n")
+  )
 }
 
 
 .section_exclusions <- function() {
   excl <- lg_exclusions(verbose = FALSE)
-  if (nrow(excl) == 0L) return("")
+  if (nrow(excl) == 0L) {
+    return("")
+  }
 
   rows <- vapply(seq_len(nrow(excl)), function(i) {
     e <- excl[i, ]
@@ -319,9 +335,10 @@ lg_report <- function(format   = "html",
   }, character(1L))
 
   sprintf(
-    '<h2>6. Exclusion Listing</h2>
+    "<h2>6. Exclusion Listing</h2>
 <table>
 <tr><th>USUBJID</th><th>Dataset</th><th>Reason</th><th>Population</th></tr>
 %s
-</table>', paste(rows, collapse = "\n"))
+</table>", paste(rows, collapse = "\n")
+  )
 }

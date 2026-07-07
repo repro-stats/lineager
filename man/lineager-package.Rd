@@ -76,7 +76,7 @@ lg_report(
   output  = "outputs/provenance_report.html",
   title   = "Data Provenance Report",
   sponsor = "Example Pharma Ltd",
-  author  = "Ndoh Penn, Biostatistician"
+  author  = "J. Smith, Biostatistician"
 )
 }\if{html}{\out{</div>}}
 }

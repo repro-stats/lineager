@@ -25,10 +25,14 @@ to a file for rendering with Graphviz externally.
 \examples{
 \dontrun{
 lg_start()
-pts <- lg_tag(data.frame(USUBJID = c("P01","P02"),
-                          eligible = c(TRUE, FALSE),
-                          stringsAsFactors = FALSE),
-              dataset_id = "PATIENTS")
+pts <- lg_tag(
+  data.frame(
+    USUBJID = c("P01", "P02"),
+    eligible = c(TRUE, FALSE),
+    stringsAsFactors = FALSE
+  ),
+  dataset_id = "PATIENTS"
+)
 lg_filter(pts, eligible, reason = "Not eligible")
 lin <- lg_lineage()
 lg_plot(lin)

@@ -32,19 +32,21 @@ set.seed(42)
 n <- 20L
 
 raw <- data.frame(
-  USUBJID    = sprintf("PT-%03d", seq_len(n)),
-  age        = sample(15:75, n, replace = TRUE),
-  sex        = sample(c("M", "F"), n, replace = TRUE),
-  diagnosis  = sample(c("Y", "N", "N"), n, replace = TRUE),
-  consent    = sample(c("Y", "Y", "Y", "N"), n, replace = TRUE),
+  USUBJID = sprintf("PT-%03d", seq_len(n)),
+  age = sample(15:75, n, replace = TRUE),
+  sex = sample(c("M", "F"), n, replace = TRUE),
+  diagnosis = sample(c("Y", "N", "N"), n, replace = TRUE),
+  consent = sample(c("Y", "Y", "Y", "N"), n, replace = TRUE),
   prior_drug = sample(c("Y", "N", "N", "N"), n, replace = TRUE),
-  biomarker  = round(runif(n, 0.5, 8.5), 2),
-  outcome    = ifelse(runif(n) > 0.4, round(rnorm(n, 50, 12), 1), NA_real_),
+  biomarker = round(runif(n, 0.5, 8.5), 2),
+  outcome = ifelse(runif(n) > 0.4, round(rnorm(n, 50, 12), 1), NA_real_),
   stringsAsFactors = FALSE
 )
 
-registry <- lg_tag(raw, dataset_id = "REGISTRY",
-                   label = "Patient registry — all screened")
+registry <- lg_tag(raw,
+  dataset_id = "REGISTRY",
+  label = "Patient registry — all screened"
+)
 
 cat("Screened: ", nrow(registry), "patients\n")
 ```
@@ -77,13 +79,13 @@ exclusion — useful for grouping similar exclusions programmatically.
 ```{r filter-reason-code}
 consented <- lg_filter(adults,
   consent == "Y",
-  reason      = "Did not provide written informed consent",
+  reason = "Did not provide written informed consent",
   reason_code = "NO_CONSENT"
 )
 
 diagnosed <- lg_filter(consented,
   diagnosis == "Y",
-  reason      = "Does not meet diagnostic criteria per protocol section 3.1",
+  reason = "Does not meet diagnostic criteria per protocol section 3.1",
   reason_code = "NO_DIAGNOSIS"
 )
 ```
@@ -104,9 +106,9 @@ no_prior <- lg_filter(diagnosed,
 
 biomarker_pos <- lg_filter(no_prior,
   biomarker >= 2.0,
-  reason      = "Biomarker below threshold (< 2.0) per protocol section 4.3",
+  reason = "Biomarker below threshold (< 2.0) per protocol section 4.3",
   reason_code = "LOW_BIOMARKER",
-  population  = "BIOMARKER_POS"
+  population = "BIOMARKER_POS"
 )
 
 analysis_set <- lg_filter(biomarker_pos,
@@ -116,12 +118,12 @@ analysis_set <- lg_filter(biomarker_pos,
   population  = "ANALYSIS_SET"
 )
 
-cat("Screened:     ", nrow(registry),     "\n")
-cat("Adults:       ", nrow(adults),       "\n")
-cat("Consented:    ", nrow(consented),    "\n")
-cat("Diagnosed:    ", nrow(diagnosed),    "\n")
-cat("No prior med: ", nrow(no_prior),     "\n")
-cat("Biomarker+:   ", nrow(biomarker_pos),"\n")
+cat("Screened:     ", nrow(registry), "\n")
+cat("Adults:       ", nrow(adults), "\n")
+cat("Consented:    ", nrow(consented), "\n")
+cat("Diagnosed:    ", nrow(diagnosed), "\n")
+cat("No prior med: ", nrow(no_prior), "\n")
+cat("Biomarker+:   ", nrow(biomarker_pos), "\n")
 cat("Analysis set: ", nrow(analysis_set), "\n")
 ```
 
@@ -149,8 +151,10 @@ analysis_excl[, c("usubjid", "reason", "reason_code")]
 When multiple datasets are tagged and filtered, query by dataset:
 
 ```{r exclusions-dataset}
-lg_exclusions(dataset_id = "REGISTRY")[,
-  c("usubjid", "reason_code", "population")]
+lg_exclusions(dataset_id = "REGISTRY")[
+  ,
+  c("usubjid", "reason_code", "population")
+]
 ```
 
 ### The exclusion record structure
@@ -243,10 +247,10 @@ use:
 ```{r trace-programmatic}
 result <- lg_trace(excluded_id, verbose = FALSE)
 
-cat("Subject:       ", result$usubjid,           "\n")
+cat("Subject:       ", result$usubjid, "\n")
 cat("Found in:      ", paste(result$datasets, collapse = ", "), "\n")
-cat("Operations:    ", nrow(result$operations),  "\n")
-cat("Exclusions:    ", nrow(result$exclusions),  "\n")
+cat("Operations:    ", nrow(result$operations), "\n")
+cat("Exclusions:    ", nrow(result$exclusions), "\n")
 
 if (nrow(result$exclusions) > 0L) {
   cat("Excluded by:   ", result$exclusions$reason[[1L]], "\n")
@@ -262,8 +266,10 @@ automating documentation.
 
 ```{r operations}
 ops <- lg_operations()
-ops[, c("op_id", "op_type", "dataset_id", "description",
-        "rows_in", "rows_out")]
+ops[, c(
+  "op_id", "op_type", "dataset_id", "description",
+  "rows_in", "rows_out"
+)]
 ```
 
 The difference between `rows_in` and `rows_out` is the number of rows
@@ -273,9 +279,9 @@ at that step.
 ```{r operation-check}
 # Verify: total excluded == sum of (rows_in - rows_out) across FILTER ops
 filter_ops <- ops[ops$op_type == "FILTER", ]
-total_via_ops  <- sum(filter_ops$rows_in - filter_ops$rows_out)
+total_via_ops <- sum(filter_ops$rows_in - filter_ops$rows_out)
 total_via_excl <- nrow(lg_exclusions())
-cat("Excluded via ops:  ", total_via_ops,  "\n")
+cat("Excluded via ops:  ", total_via_ops, "\n")
 cat("Excluded via excl: ", total_via_excl, "\n")
 cat("Match:             ", total_via_ops == total_via_excl, "\n")
 ```
@@ -307,19 +313,22 @@ cohort <- lg_tag(
   data.frame(
     id = sprintf("S%02d", 1:10),
     enrolled = c(rep(TRUE, 8), FALSE, FALSE),
-    treated  = c(rep(TRUE, 6), FALSE, FALSE, FALSE, FALSE),
+    treated = c(rep(TRUE, 6), FALSE, FALSE, FALSE, FALSE),
     complete = c(rep(TRUE, 4), FALSE, FALSE, rep(FALSE, 4)),
     stringsAsFactors = FALSE
   ),
   dataset_id = "COHORT"
 )
 
-step1 <- lg_filter(cohort,  enrolled == TRUE,
-                   reason = "Not enrolled in study")
-step2 <- lg_filter(step1,   treated  == TRUE,
-                   reason = "Did not receive study treatment")
-step3 <- lg_filter(step2,   complete == TRUE,
-                   reason = "Did not complete the study")
+step1 <- lg_filter(cohort, enrolled == TRUE,
+  reason = "Not enrolled in study"
+)
+step2 <- lg_filter(step1, treated == TRUE,
+  reason = "Did not receive study treatment"
+)
+step3 <- lg_filter(step2, complete == TRUE,
+  reason = "Did not complete the study"
+)
 
 cat("Enrolled:  ", nrow(step1), "\n")
 cat("Treated:   ", nrow(step2), "\n")

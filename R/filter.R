@@ -33,18 +33,20 @@
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
-#'   data.frame(USUBJID = c("01", "02", "03"),
-#'              RANDFL  = c("Y", "N", "Y"),
-#'              SAFFL   = c("Y", "N", "Y")),
+#'   data.frame(
+#'     USUBJID = c("01", "02", "03"),
+#'     RANDFL = c("Y", "N", "Y"),
+#'     SAFFL = c("Y", "N", "Y")
+#'   ),
 #'   dataset_id = "ADSL"
 #' )
 #'
 #' adsl_rand <- lg_filter(
 #'   adsl,
 #'   RANDFL == "Y",
-#'   reason      = "Not randomised (RANDFL != 'Y')",
+#'   reason = "Not randomised (RANDFL != 'Y')",
 #'   reason_code = "NOT_RANDOMISED",
-#'   population  = "RANDFL"
+#'   population = "RANDFL"
 #' )
 #'
 #' @seealso [lg_tag()], [lg_exclusions()], [lg_disposition()]
@@ -55,25 +57,25 @@ lg_filter <- function(data, ..., reason, population = NULL,
   .assert_tagged(data)
   .assert_reason(reason)
 
-  op_id    <- .next_op_id()
-  ds_id    <- attr(data, "lg_dataset_id") %||% "unknown"
-  rows_in  <- nrow(data)
+  op_id <- .next_op_id()
+  ds_id <- attr(data, "lg_dataset_id") %||% "unknown"
+  rows_in <- nrow(data)
 
   # Apply the filter
   filtered <- dplyr::filter(data, ...)
 
   # Identify excluded rows by their lineage IDs
   included_lids <- filtered[[.lid_col]]
-  all_lids      <- data[[.lid_col]]
+  all_lids <- data[[.lid_col]]
   excluded_lids <- setdiff(all_lids, included_lids)
 
-  rows_out      <- length(included_lids)
+  rows_out <- length(included_lids)
   rows_excluded <- length(excluded_lids)
 
   # Build exclusion records for every removed row
   if (rows_excluded > 0L) {
-    excl_rows  <- data[data[[.lid_col]] %in% excluded_lids, , drop = FALSE]
-    has_subj   <- "USUBJID" %in% names(excl_rows)
+    excl_rows <- data[data[[.lid_col]] %in% excluded_lids, , drop = FALSE]
+    has_subj <- "USUBJID" %in% names(excl_rows)
 
     excl_list <- lapply(seq_len(nrow(excl_rows)), function(i) {
       structure(
@@ -97,15 +99,15 @@ lg_filter <- function(data, ..., reason, population = NULL,
   # Record the operation
   op <- structure(
     list(
-      op_id        = op_id,
-      op_type      = "FILTER",
-      dataset_id   = ds_id,
-      description  = reason,
-      population   = population %||% NA_character_,
-      rows_in      = rows_in,
-      rows_out     = rows_out,
+      op_id = op_id,
+      op_type = "FILTER",
+      dataset_id = ds_id,
+      description = reason,
+      population = population %||% NA_character_,
+      rows_in = rows_in,
+      rows_out = rows_out,
       rows_excluded = rows_excluded,
-      timestamp    = .utc_now()
+      timestamp = .utc_now()
     ),
     class = "lg_operation"
   )

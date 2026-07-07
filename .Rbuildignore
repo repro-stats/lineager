@@ -10,3 +10,4 @@
 ^logs$
 ^.*\.rlog$
 ^pkgdown$
+^\.lintr$

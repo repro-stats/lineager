@@ -1,0 +1,349 @@
+---
+title: "Traceable ADaM derivation: every exclusion documented"
+subtitle: "Row-level data provenance for a Phase III atopic dermatitis trial"
+author: "Ndoh Penn"
+date: "2026-06-26"
+categories: [lineager, CDISC, ADaM, dermatology, data-provenance, exclusion-tracking]
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: false
+    code-tools: true
+    highlight-style: github
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r setup, include=FALSE}
+set.seed(2026)
+knitr::opts_chunk$set(comment = "#>", fig.width = 7, fig.height = 4.5)
+```
+
+## Overview
+
+Every ADaM derivation involves exclusions — screen failures, protocol
+deviations, missing baselines, assessment windows. In most trials these are
+documented in aggregate: "47 subjects were excluded from the per-protocol
+population." But regulators increasingly ask for more: which rows? Why? And
+can you trace any subject through the complete derivation pipeline?
+
+`lineager` answers these questions at the row level. Every row in every
+dataset carries a lineage ID (`.__lid__`) that survives filters, joins, and
+derivations. Every `lg_filter()` call requires a documented reason, and the
+session automatically accumulates an exclusion registry as the pipeline
+runs — no manual disposition tracking needed.
+
+This article builds an ADEFF dataset for a Phase III atopic dermatitis
+trial — starting from raw ADSL and ADLB, deriving baseline and change from
+baseline, tracking every exclusion, and producing a CDISC Reviewer's
+Guide-aligned provenance report.
+
+---
+
+## Setup
+
+```{r packages}
+library(lineager)
+library(dplyr)
+```
+
+---
+
+## Simulate source datasets
+
+We simulate CDISC ADaM-structured ADSL (subject-level) and ADLB (lab/
+assessment) datasets for a Phase III trial of dupilumab in moderate-to-severe
+atopic dermatitis. 320 randomised subjects, primary endpoint EASI score.
+
+```{r simulate}
+n_total <- 320L
+
+# ── ADSL ──────────────────────────────────────────────────────────────────
+adsl_raw <- data.frame(
+  STUDYID = "DERM-DUP-301",
+  USUBJID = sprintf("DUP301-%04d", seq_len(n_total)),
+  TRT01P = rep(c("Dupilumab 300mg Q2W", "Placebo Q2W"), each = n_total / 2),
+  AGE = round(rnorm(n_total, mean = 36, sd = 14)),
+  SEX = sample(c("M", "F"), n_total, replace = TRUE),
+  ITTFL = ifelse(runif(n_total) < 0.97, "Y", "N"),
+  SAFFL = ifelse(runif(n_total) < 0.98, "Y", "N"),
+  PPROTFL = ifelse(runif(n_total) < 0.91, "Y", "N"),
+  EASISCAT = sample(c("MODERATE", "SEVERE"), n_total, replace = TRUE, prob = c(0.55, 0.45)),
+  stringsAsFactors = FALSE
+)
+
+# ── ADLB: EASI scores at baseline and Week 16 ──────────────────────────────
+adlb_raw <- expand.grid(
+  USUBJID = adsl_raw$USUBJID,
+  AVISITN = c(0L, 16L),
+  stringsAsFactors = FALSE
+) |>
+  merge(adsl_raw[, c("USUBJID", "TRT01P", "EASISCAT")], by = "USUBJID") |>
+  arrange(USUBJID, AVISITN)
+
+set.seed(2026)
+adlb_raw$AVAL <- mapply(function(trt, vis, scat) {
+  base_mean <- if (scat == "SEVERE") 45 else 30
+  if (vis == 0L) {
+    return(round(pmax(0, rnorm(1, base_mean, 8)), 1))
+  }
+  reduction <- if (trt == "Dupilumab 300mg Q2W") 0.55 else 0.12
+  round(pmax(0, base_mean * (1 - reduction) + rnorm(1, 0, 5)), 1)
+}, adlb_raw$TRT01P, adlb_raw$AVISITN, adlb_raw$EASISCAT)
+
+# Missingness at Week 16 (~6%)
+post_bl <- adlb_raw$AVISITN > 0
+miss_idx <- which(post_bl)[sample(sum(post_bl), round(sum(post_bl) * 0.06))]
+adlb_raw$AVAL[miss_idx] <- NA_real_
+
+adlb_raw$PARAMCD <- "EASI"
+
+cat(sprintf(
+  "ADSL: %d subjects | ADLB: %d records\n", nrow(adsl_raw), nrow(adlb_raw)
+))
+```
+
+---
+
+## Start the lineager session
+
+`lg_start()` initialises the session store. All `lg_*` functions write to
+this store automatically.
+
+```{r session}
+lg_start(study_id = "DERM-DUP-301", analysis_id = "ADEFF-primary-efficacy")
+```
+
+---
+
+## Tag source datasets
+
+`lg_tag()` assigns a unique lineage ID (`.__lid__`) to every row. The
+`USUBJID` is embedded automatically when present, making IDs human-readable.
+
+```{r tag}
+adsl <- lg_tag(adsl_raw, dataset_id = "ADSL", domain = "DM", label = "Subject-Level")
+adlb <- lg_tag(adlb_raw, dataset_id = "ADLB", domain = "LB", label = "Laboratory/Efficacy")
+
+head(adsl[, c(".__lid__", "USUBJID", "TRT01P", "ITTFL")], 4L)
+```
+
+---
+
+## Build the ADEFF derivation pipeline
+
+### Step 1: Document and apply the safety population
+
+`lg_population()` registers the population flag definition — inclusion
+criteria, exclusion criteria, and a plain-English description — directly
+linking to the flag already present in the data.
+
+```{r population}
+lg_population(
+  adsl,
+  flag_var      = "SAFFL",
+  label         = "Safety Analysis Flag",
+  definition    = "All randomised subjects who received at least one dose of study treatment",
+  incl_criteria = c("Randomised", "Received >= 1 dose of study treatment"),
+  excl_criteria = "No study drug administered"
+)
+
+adsl_saf <- lg_filter(
+  adsl, SAFFL == "Y",
+  reason = "Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1",
+  population = "SAFFL"
+)
+```
+
+### Step 2: ITT population
+
+```{r itt}
+adsl_itt <- lg_filter(
+  adsl_saf, ITTFL == "Y",
+  reason = "Restrict to ITT population (ITTFL = Y) per SAP Section 4.2",
+  population = "ITTFL"
+)
+
+cat(sprintf("After ITT filter: %d subjects\n", nrow(adsl_itt)))
+```
+
+### Step 3: Join EASI assessments to ADSL covariates
+
+```{r join}
+adeff <- lg_join(
+  adlb, adsl_itt[, c(".__lid__", "USUBJID", "TRT01P", "EASISCAT")],
+  by = "USUBJID",
+  type = "inner",
+  description = "Join ADLB EASI assessments to ITT-restricted ADSL covariates"
+)
+
+cat(sprintf("After join: %d records\n", nrow(adeff)))
+```
+
+### Step 4: Derive baseline and change from baseline
+
+```{r derive-baseline}
+adeff <- adeff |>
+  group_by(USUBJID) |>
+  mutate(BASE = AVAL[AVISITN == 0L][1L]) |>
+  ungroup()
+
+# Re-tag after the dplyr grouping pipeline to keep lg_df class intact
+adeff <- lg_tag(as.data.frame(adeff),
+  dataset_id = "ADEFF", domain = "ADLB",
+  label = "Efficacy Analysis Dataset"
+)
+
+n_miss_base <- sum(is.na(adeff$BASE[adeff$AVISITN == 0L]))
+
+adeff <- lg_filter(
+  adeff, !is.na(BASE),
+  reason = "Exclude records with missing baseline EASI score per SAP Section 5.1",
+  population = "ITTFL"
+)
+
+adeff <- lg_derive(
+  adeff,
+  CHG = AVAL - BASE,
+  PCHG = (AVAL - BASE) / BASE * 100,
+  description = "Derive change from baseline (CHG) and percent change (PCHG) per CDISC ADaM IG Section 3.2.7"
+)
+```
+
+### Step 5: Restrict to Week 16, non-missing
+
+```{r week16}
+adeff_w16 <- lg_filter(
+  adeff, AVISITN == 16L, !is.na(AVAL),
+  reason = "Restrict to Week 16 primary timepoint with non-missing EASI assessment",
+  population = "ITTFL"
+)
+
+cat(sprintf("Week 16 primary analysis records: %d\n", nrow(adeff_w16)))
+```
+
+### Step 6: Derive EASI-75 responder flag
+
+```{r easi75}
+adeff_final <- lg_derive(
+  adeff_w16,
+  EASI75FL = ifelse(PCHG <= -75, "Y", "N"),
+  description = "Derive EASI-75 responder flag: Y if percent change <= -75% per SAP Section 5.3"
+)
+```
+
+---
+
+## Document the SDTM-to-ADaM derivation
+
+`lg_spec()` records the structured derivation specification linking the
+ADaM variable back to its SDTM source — the basis for the CDISC Reviewer's
+Guide derivation section.
+
+```{r spec}
+lg_spec(
+  adam_dataset  = "ADEFF",
+  adam_var      = "CHG",
+  label         = "Change from Baseline EASI Score",
+  source_domain = "LB",
+  source_var    = "LBSTRESN",
+  derivation    = "AVAL - BASE, where BASE is the Visit 0 (Baseline) EASI assessment",
+  conditions    = "Subjects with non-missing baseline EASI score"
+)
+```
+
+---
+
+## Subject disposition
+
+`lg_disposition()` summarises the exclusion registry automatically — no
+manual group definitions needed. Every `lg_filter()` call above contributed
+its exclusions to this summary.
+
+```{r disposition}
+lg_disposition(by = "reason")
+```
+
+---
+
+## Exclusion registry
+
+```{r exclusions}
+excl <- lg_exclusions()
+
+excl |>
+  select(dataset_id, reason, population) |>
+  knitr::kable(caption = "ADEFF derivation exclusion registry — DERM-DUP-301")
+```
+
+---
+
+## Trace a subject through the pipeline
+
+`lg_trace()` returns the complete provenance history for any subject —
+every dataset it appeared in, every operation that touched it, and any
+exclusion records.
+
+```{r trace}
+example_subj <- adeff_final$USUBJID[1L]
+lg_trace(example_subj)
+```
+
+```{r trace-excluded}
+excluded_subj <- adsl_raw$USUBJID[adsl_raw$ITTFL == "N"][1L]
+if (!is.na(excluded_subj)) lg_trace(excluded_subj)
+```
+
+---
+
+## Pipeline lineage graph
+
+```{r lineage}
+lin <- lg_lineage()
+print(lin)
+```
+
+---
+
+## Provenance report
+
+```{r report, eval=FALSE}
+lg_report(
+  output   = "outputs/DERM-DUP-301_ADEFF_provenance_v1.html",
+  title    = "ADEFF Provenance Report — DERM-DUP-301",
+  study_id = "DERM-DUP-301",
+  sponsor  = "Example Pharma Ltd",
+  author   = "Ndoh Penn, Biostatistician"
+)
+```
+
+---
+
+## End the session
+
+```{r end}
+lg_end()
+```
+
+---
+
+## What the provenance record proves
+
+Every row in the final ADEFF dataset carries a lineage ID tracing it to its
+source record in ADSL or ADLB. The exclusion registry — built automatically
+from each `lg_filter()` call, not maintained separately — documents which
+subjects were excluded at each step, why, and which population the
+exclusion relates to. `lg_disposition()` produces the population flow table
+directly from these records, so the numbers can never drift out of sync
+with the derivation code that produced them.
+
+---
+
+## Session information
+
+```{r session-info}
+sessionInfo()
+```

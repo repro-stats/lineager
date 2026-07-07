@@ -25,8 +25,10 @@ variables from SDTM source variables.
 \examples{
 lg_start()
 lb <- lg_tag(
-  data.frame(USUBJID = "01-001", LBORRES = "12.4",
-             LBSTRESN = 12.4, stringsAsFactors = FALSE),
+  data.frame(
+    USUBJID = "01-001", LBORRES = "12.4",
+    LBSTRESN = 12.4, stringsAsFactors = FALSE
+  ),
   dataset_id = "LB", domain = "LB"
 )
 

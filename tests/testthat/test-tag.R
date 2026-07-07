@@ -14,16 +14,16 @@ test_that("lg_tag() adds .__lid__ as first column", {
 test_that("lg_tag() .__lid__ embeds USUBJID for CDISC datasets", {
   new_session()
   tagged <- adsl_tagged(3L)
-  lids   <- tagged[[".__lid__"]]
+  lids <- tagged[[".__lid__"]]
   expect_true(all(grepl("01-001|01-002|01-003", lids)))
   expect_true(all(grepl("^ADSL_", lids)))
 })
 
 test_that("lg_tag() .__lid__ uses zero-padded seq for non-CDISC data", {
   new_session()
-  df     <- data.frame(x = 1:4, y = letters[1:4])
+  df <- data.frame(x = 1:4, y = letters[1:4])
   tagged <- lg_tag(df, dataset_id = "MISC")
-  lids   <- tagged[[".__lid__"]]
+  lids <- tagged[[".__lid__"]]
   expect_true(all(grepl("^MISC_\\d{6}$", lids)))
 })
 
@@ -35,7 +35,7 @@ test_that("lg_tag() .__lid__ values are unique", {
 
 test_that("lg_tag() preserves all original columns", {
   new_session()
-  raw    <- adsl_raw()
+  raw <- adsl_raw()
   tagged <- lg_tag(raw, dataset_id = "ADSL")
   original_cols <- names(raw)
   expect_true(all(original_cols %in% names(tagged)))
@@ -43,14 +43,16 @@ test_that("lg_tag() preserves all original columns", {
 
 test_that("lg_tag() sets dataset attributes correctly", {
   new_session()
-  tagged <- lg_tag(adsl_raw(3L), dataset_id = "ADSL",
-                   domain = "DM", label = "Demographics",
-                   source = "dm.sas7bdat")
+  tagged <- lg_tag(adsl_raw(3L),
+    dataset_id = "ADSL",
+    domain = "DM", label = "Demographics",
+    source = "dm.sas7bdat"
+  )
   expect_equal(attr(tagged, "lg_dataset_id"), "ADSL")
-  expect_equal(attr(tagged, "lg_domain"),     "DM")
-  expect_equal(attr(tagged, "lg_label"),      "Demographics")
-  expect_equal(attr(tagged, "lg_source"),     "dm.sas7bdat")
-  expect_equal(attr(tagged, "lg_row_count"),  3L)
+  expect_equal(attr(tagged, "lg_domain"), "DM")
+  expect_equal(attr(tagged, "lg_label"), "Demographics")
+  expect_equal(attr(tagged, "lg_source"), "dm.sas7bdat")
+  expect_equal(attr(tagged, "lg_row_count"), 3L)
 })
 
 test_that("lg_tag() registers dataset in session store", {
@@ -60,20 +62,20 @@ test_that("lg_tag() registers dataset in session store", {
   expect_true("ADSL2" %in% names(env$datasets))
   ds <- env$datasets[["ADSL2"]]
   expect_equal(ds$domain, "DM")
-  expect_equal(ds$n_rows,  4L)
-  expect_length(ds$lids,   4L)
+  expect_equal(ds$n_rows, 4L)
+  expect_length(ds$lids, 4L)
 })
 
 test_that("lg_tag() errors on non-data-frame input", {
   new_session()
-  expect_error(lg_tag(list(a = 1), "X"),  "data.frame")
-  expect_error(lg_tag("a string", "X"),   "data.frame")
-  expect_error(lg_tag(1:10,        "X"),  "data.frame")
+  expect_error(lg_tag(list(a = 1), "X"), "data.frame")
+  expect_error(lg_tag("a string", "X"), "data.frame")
+  expect_error(lg_tag(1:10, "X"), "data.frame")
 })
 
 test_that("lg_tag() errors on blank or missing dataset_id", {
   new_session()
-  expect_error(lg_tag(adsl_raw(), ""),   "non-empty")
+  expect_error(lg_tag(adsl_raw(), ""), "non-empty")
   expect_error(lg_tag(adsl_raw(), NULL), "non-empty")
 })
 
