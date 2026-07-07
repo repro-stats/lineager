@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Ndoh Penn" />
+
+<meta name="date" content="2026-06-26" />
+
+<title>Traceable ADaM derivation: every exclusion documented</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Traceable ADaM derivation: every exclusion
+documented</h1>
+<h3 class="subtitle">Row-level data provenance for a Phase III atopic
+dermatitis trial</h3>
+<h4 class="author">Ndoh Penn</h4>
+<h4 class="date">2026-06-26</h4>
+
+
+<div id="TOC">
+<ul>
+<li><a href="#overview" id="toc-overview">Overview</a></li>
+<li><a href="#setup" id="toc-setup">Setup</a></li>
+<li><a href="#simulate-source-datasets" id="toc-simulate-source-datasets">Simulate source datasets</a></li>
+<li><a href="#start-the-lineager-session" id="toc-start-the-lineager-session">Start the lineager session</a></li>
+<li><a href="#tag-source-datasets" id="toc-tag-source-datasets">Tag
+source datasets</a></li>
+<li><a href="#build-the-adeff-derivation-pipeline" id="toc-build-the-adeff-derivation-pipeline">Build the ADEFF derivation
+pipeline</a>
+<ul>
+<li><a href="#step-1-document-and-apply-the-safety-population" id="toc-step-1-document-and-apply-the-safety-population">Step 1:
+Document and apply the safety population</a></li>
+<li><a href="#step-2-itt-population" id="toc-step-2-itt-population">Step
+2: ITT population</a></li>
+<li><a href="#step-3-join-easi-assessments-to-adsl-covariates" id="toc-step-3-join-easi-assessments-to-adsl-covariates">Step 3: Join
+EASI assessments to ADSL covariates</a></li>
+<li><a href="#step-4-derive-baseline-and-change-from-baseline" id="toc-step-4-derive-baseline-and-change-from-baseline">Step 4: Derive
+baseline and change from baseline</a></li>
+<li><a href="#step-5-restrict-to-week-16-non-missing" id="toc-step-5-restrict-to-week-16-non-missing">Step 5: Restrict to Week
+16, non-missing</a></li>
+<li><a href="#step-6-derive-easi-75-responder-flag" id="toc-step-6-derive-easi-75-responder-flag">Step 6: Derive EASI-75
+responder flag</a></li>
+</ul></li>
+<li><a href="#document-the-sdtm-to-adam-derivation" id="toc-document-the-sdtm-to-adam-derivation">Document the SDTM-to-ADaM
+derivation</a></li>
+<li><a href="#subject-disposition" id="toc-subject-disposition">Subject
+disposition</a></li>
+<li><a href="#exclusion-registry" id="toc-exclusion-registry">Exclusion
+registry</a></li>
+<li><a href="#trace-a-subject-through-the-pipeline" id="toc-trace-a-subject-through-the-pipeline">Trace a subject through
+the pipeline</a></li>
+<li><a href="#pipeline-lineage-graph" id="toc-pipeline-lineage-graph">Pipeline lineage graph</a></li>
+<li><a href="#provenance-report" id="toc-provenance-report">Provenance
+report</a></li>
+<li><a href="#end-the-session" id="toc-end-the-session">End the
+session</a></li>
+<li><a href="#what-the-provenance-record-proves" id="toc-what-the-provenance-record-proves">What the provenance record
+proves</a></li>
+<li><a href="#session-information" id="toc-session-information">Session
+information</a></li>
+</ul>
+</div>
+
+<div id="overview" class="section level2">
+<h2>Overview</h2>
+<p>Every ADaM derivation involves exclusions — screen failures, protocol
+deviations, missing baselines, assessment windows. In most trials these
+are documented in aggregate: “47 subjects were excluded from the
+per-protocol population.” But regulators increasingly ask for more:
+which rows? Why? And can you trace any subject through the complete
+derivation pipeline?</p>
+<p><code>lineager</code> answers these questions at the row level. Every
+row in every dataset carries a lineage ID (<code>.__lid__</code>) that
+survives filters, joins, and derivations. Every <code>lg_filter()</code>
+call requires a documented reason, and the session automatically
+accumulates an exclusion registry as the pipeline runs — no manual
+disposition tracking needed.</p>
+<p>This article builds an ADEFF dataset for a Phase III atopic
+dermatitis trial — starting from raw ADSL and ADLB, deriving baseline
+and change from baseline, tracking every exclusion, and producing a
+CDISC Reviewer’s Guide-aligned provenance report.</p>
+<hr />
+</div>
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lineager)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
+<hr />
+</div>
+<div id="simulate-source-datasets" class="section level2">
+<h2>Simulate source datasets</h2>
+<p>We simulate CDISC ADaM-structured ADSL (subject-level) and ADLB (lab/
+assessment) datasets for a Phase III trial of dupilumab in
+moderate-to-severe atopic dermatitis. 320 randomised subjects, primary
+endpoint EASI score.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>n_total <span class="ot">&lt;-</span> <span class="dv">320</span><span class="dt">L</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="co"># ── ADSL ──────────────────────────────────────────────────────────────────</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>adsl_raw <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">STUDYID  =</span> <span class="st">&quot;DERM-DUP-301&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">USUBJID  =</span> <span class="fu">sprintf</span>(<span class="st">&quot;DUP301-%04d&quot;</span>, <span class="fu">seq_len</span>(n_total)),</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">TRT01P   =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&quot;Dupilumab 300mg Q2W&quot;</span>, <span class="st">&quot;Placebo Q2W&quot;</span>), <span class="at">each =</span> n_total <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>  <span class="at">AGE      =</span> <span class="fu">round</span>(<span class="fu">rnorm</span>(n_total, <span class="at">mean =</span> <span class="dv">36</span>, <span class="at">sd =</span> <span class="dv">14</span>)),</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  <span class="at">SEX      =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">&quot;M&quot;</span>, <span class="st">&quot;F&quot;</span>), n_total, <span class="at">replace =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>  <span class="at">ITTFL    =</span> <span class="fu">ifelse</span>(<span class="fu">runif</span>(n_total) <span class="sc">&lt;</span> <span class="fl">0.97</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;N&quot;</span>),</span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a>  <span class="at">SAFFL    =</span> <span class="fu">ifelse</span>(<span class="fu">runif</span>(n_total) <span class="sc">&lt;</span> <span class="fl">0.98</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;N&quot;</span>),</span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a>  <span class="at">PPROTFL  =</span> <span class="fu">ifelse</span>(<span class="fu">runif</span>(n_total) <span class="sc">&lt;</span> <span class="fl">0.91</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;N&quot;</span>),</span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a>  <span class="at">EASISCAT =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="st">&quot;MODERATE&quot;</span>, <span class="st">&quot;SEVERE&quot;</span>), n_total, <span class="at">replace =</span> <span class="cn">TRUE</span>, <span class="at">prob =</span> <span class="fu">c</span>(<span class="fl">0.55</span>, <span class="fl">0.45</span>)),</span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a>)</span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co"># ── ADLB: EASI scores at baseline and Week 16 ──────────────────────────────</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a>adlb_raw <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(</span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a>  <span class="at">USUBJID =</span> adsl_raw<span class="sc">$</span>USUBJID,</span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a>  <span class="at">AVISITN =</span> <span class="fu">c</span>(<span class="dv">0</span><span class="dt">L</span>, <span class="dv">16</span><span class="dt">L</span>),</span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a>  <span class="at">stringsAsFactors =</span> <span class="cn">FALSE</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a>  <span class="fu">merge</span>(adsl_raw[, <span class="fu">c</span>(<span class="st">&quot;USUBJID&quot;</span>, <span class="st">&quot;TRT01P&quot;</span>, <span class="st">&quot;EASISCAT&quot;</span>)], <span class="at">by =</span> <span class="st">&quot;USUBJID&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a>  <span class="fu">arrange</span>(USUBJID, AVISITN)</span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">2026</span>)</span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a>adlb_raw<span class="sc">$</span>AVAL <span class="ot">&lt;-</span> <span class="fu">mapply</span>(<span class="cf">function</span>(trt, vis, scat) {</span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a>  base_mean <span class="ot">&lt;-</span> <span class="cf">if</span> (scat <span class="sc">==</span> <span class="st">&quot;SEVERE&quot;</span>) <span class="dv">45</span> <span class="cf">else</span> <span class="dv">30</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a>  <span class="cf">if</span> (vis <span class="sc">==</span> <span class="dv">0</span><span class="dt">L</span>) <span class="fu">return</span>(<span class="fu">round</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, <span class="fu">rnorm</span>(<span class="dv">1</span>, base_mean, <span class="dv">8</span>)), <span class="dv">1</span>))</span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a>  reduction <span class="ot">&lt;-</span> <span class="cf">if</span> (trt <span class="sc">==</span> <span class="st">&quot;Dupilumab 300mg Q2W&quot;</span>) <span class="fl">0.55</span> <span class="cf">else</span> <span class="fl">0.12</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a>  <span class="fu">round</span>(<span class="fu">pmax</span>(<span class="dv">0</span>, base_mean <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> reduction) <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">5</span>)), <span class="dv">1</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a>}, adlb_raw<span class="sc">$</span>TRT01P, adlb_raw<span class="sc">$</span>AVISITN, adlb_raw<span class="sc">$</span>EASISCAT)</span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co"># Missingness at Week 16 (~6%)</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a>post_bl <span class="ot">&lt;-</span> adlb_raw<span class="sc">$</span>AVISITN <span class="sc">&gt;</span> <span class="dv">0</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a>miss_idx <span class="ot">&lt;-</span> <span class="fu">which</span>(post_bl)[<span class="fu">sample</span>(<span class="fu">sum</span>(post_bl), <span class="fu">round</span>(<span class="fu">sum</span>(post_bl) <span class="sc">*</span> <span class="fl">0.06</span>))]</span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a>adlb_raw<span class="sc">$</span>AVAL[miss_idx] <span class="ot">&lt;-</span> <span class="cn">NA_real_</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a>adlb_raw<span class="sc">$</span>PARAMCD <span class="ot">&lt;-</span> <span class="st">&quot;EASI&quot;</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(</span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a>  <span class="st">&quot;ADSL: %d subjects | ADLB: %d records</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="fu">nrow</span>(adsl_raw), <span class="fu">nrow</span>(adlb_raw)</span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a>))</span></code></pre></div>
+<pre><code>#&gt; ADSL: 320 subjects | ADLB: 640 records</code></pre>
+<hr />
+</div>
+<div id="start-the-lineager-session" class="section level2">
+<h2>Start the lineager session</h2>
+<p><code>lg_start()</code> initialises the session store. All
+<code>lg_*</code> functions write to this store automatically.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">lg_start</span>(<span class="at">study_id =</span> <span class="st">&quot;DERM-DUP-301&quot;</span>, <span class="at">analysis_id =</span> <span class="st">&quot;ADEFF-primary-efficacy&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; lineager: session started [study: DERM-DUP-301] [analysis: ADEFF-primary-efficacy]</code></pre>
+<hr />
+</div>
+<div id="tag-source-datasets" class="section level2">
+<h2>Tag source datasets</h2>
+<p><code>lg_tag()</code> assigns a unique lineage ID
+(<code>.__lid__</code>) to every row. The <code>USUBJID</code> is
+embedded automatically when present, making IDs human-readable.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>adsl <span class="ot">&lt;-</span> <span class="fu">lg_tag</span>(adsl_raw, <span class="at">dataset_id =</span> <span class="st">&quot;ADSL&quot;</span>, <span class="at">domain =</span> <span class="st">&quot;DM&quot;</span>, <span class="at">label =</span> <span class="st">&quot;Subject-Level&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; lineager: tagged &#39;ADSL&#39; — 320 rows, 9 cols</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>adlb <span class="ot">&lt;-</span> <span class="fu">lg_tag</span>(adlb_raw, <span class="at">dataset_id =</span> <span class="st">&quot;ADLB&quot;</span>, <span class="at">domain =</span> <span class="st">&quot;LB&quot;</span>, <span class="at">label =</span> <span class="st">&quot;Laboratory/Efficacy&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; lineager: tagged &#39;ADLB&#39; — 640 rows, 6 cols</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">head</span>(adsl[, <span class="fu">c</span>(<span class="st">&quot;.__lid__&quot;</span>, <span class="st">&quot;USUBJID&quot;</span>, <span class="st">&quot;TRT01P&quot;</span>, <span class="st">&quot;ITTFL&quot;</span>)], <span class="dv">4</span><span class="dt">L</span>)</span></code></pre></div>
+<pre><code>#&gt; &lt;lg_df&gt; &#39;ADSL&#39; (domain: DM)  [4 × 4]
+#&gt;       USUBJID              TRT01P ITTFL
+#&gt; 1 DUP301-0001 Dupilumab 300mg Q2W     Y
+#&gt; 2 DUP301-0002 Dupilumab 300mg Q2W     Y
+#&gt; 3 DUP301-0003 Dupilumab 300mg Q2W     Y
+#&gt; 4 DUP301-0004 Dupilumab 300mg Q2W     Y</code></pre>
+<hr />
+</div>
+<div id="build-the-adeff-derivation-pipeline" class="section level2">
+<h2>Build the ADEFF derivation pipeline</h2>
+<div id="step-1-document-and-apply-the-safety-population" class="section level3">
+<h3>Step 1: Document and apply the safety population</h3>
+<p><code>lg_population()</code> registers the population flag definition
+— inclusion criteria, exclusion criteria, and a plain-English
+description — directly linking to the flag already present in the
+data.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">lg_population</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>  adsl,</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">flag_var      =</span> <span class="st">&quot;SAFFL&quot;</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">label         =</span> <span class="st">&quot;Safety Analysis Flag&quot;</span>,</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>  <span class="at">definition    =</span> <span class="st">&quot;All randomised subjects who received at least one dose of study treatment&quot;</span>,</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a>  <span class="at">incl_criteria =</span> <span class="fu">c</span>(<span class="st">&quot;Randomised&quot;</span>, <span class="st">&quot;Received &gt;= 1 dose of study treatment&quot;</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>  <span class="at">excl_criteria =</span> <span class="st">&quot;No study drug administered&quot;</span></span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: population &#39;SAFFL&#39; (Safety Analysis Flag) — 314 included, 6 excluded</code></pre>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>adsl_saf <span class="ot">&lt;-</span> <span class="fu">lg_filter</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  adsl, SAFFL <span class="sc">==</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>  <span class="at">reason     =</span> <span class="st">&quot;Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1&quot;</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a>  <span class="at">population =</span> <span class="st">&quot;SAFFL&quot;</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADSL] filter &#39;Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1&#39; — 320 in, 314 out, 6 excluded</code></pre>
+</div>
+<div id="step-2-itt-population" class="section level3">
+<h3>Step 2: ITT population</h3>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>adsl_itt <span class="ot">&lt;-</span> <span class="fu">lg_filter</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  adsl_saf, ITTFL <span class="sc">==</span> <span class="st">&quot;Y&quot;</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>  <span class="at">reason     =</span> <span class="st">&quot;Restrict to ITT population (ITTFL = Y) per SAP Section 4.2&quot;</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>  <span class="at">population =</span> <span class="st">&quot;ITTFL&quot;</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADSL] filter &#39;Restrict to ITT population (ITTFL = Y) per SAP Section 4.2&#39; — 314 in, 304 out, 10 excluded</code></pre>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;After ITT filter: %d subjects</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="fu">nrow</span>(adsl_itt)))</span></code></pre></div>
+<pre><code>#&gt; After ITT filter: 304 subjects</code></pre>
+</div>
+<div id="step-3-join-easi-assessments-to-adsl-covariates" class="section level3">
+<h3>Step 3: Join EASI assessments to ADSL covariates</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>adeff <span class="ot">&lt;-</span> <span class="fu">lg_join</span>(</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>  adlb, adsl_itt[, <span class="fu">c</span>(<span class="st">&quot;USUBJID&quot;</span>, <span class="st">&quot;TRT01P&quot;</span>, <span class="st">&quot;EASISCAT&quot;</span>)],</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>  <span class="at">by          =</span> <span class="st">&quot;USUBJID&quot;</span>,</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>  <span class="at">type        =</span> <span class="st">&quot;inner&quot;</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">&quot;Join ADLB EASI assessments to ITT-restricted ADSL covariates&quot;</span></span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADLB + ADSL] inner join — 608 rows out</code></pre>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;After join: %d records</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="fu">nrow</span>(adeff)))</span></code></pre></div>
+<pre><code>#&gt; After join: 608 records</code></pre>
+</div>
+<div id="step-4-derive-baseline-and-change-from-baseline" class="section level3">
+<h3>Step 4: Derive baseline and change from baseline</h3>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a>adeff <span class="ot">&lt;-</span> adeff <span class="sc">|&gt;</span></span>
+<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="fu">group_by</span>(USUBJID) <span class="sc">|&gt;</span></span>
+<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">BASE =</span> AVAL[AVISITN <span class="sc">==</span> <span class="dv">0</span><span class="dt">L</span>][<span class="dv">1</span><span class="dt">L</span>]) <span class="sc">|&gt;</span></span>
+<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="fu">ungroup</span>()</span>
+<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" tabindex="-1"></a><span class="co"># Re-tag after the dplyr grouping pipeline to keep lg_df class intact</span></span>
+<span id="cb24-7"><a href="#cb24-7" tabindex="-1"></a><span class="co"># Drop any existing .__lid__ before re-tagging to avoid duplicate columns</span></span>
+<span id="cb24-8"><a href="#cb24-8" tabindex="-1"></a>adeff_df <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(adeff)</span>
+<span id="cb24-9"><a href="#cb24-9" tabindex="-1"></a>adeff_df <span class="ot">&lt;-</span> adeff_df[, <span class="sc">!</span><span class="fu">names</span>(adeff_df) <span class="sc">%in%</span> <span class="st">&quot;.__lid__&quot;</span>]</span>
+<span id="cb24-10"><a href="#cb24-10" tabindex="-1"></a>adeff <span class="ot">&lt;-</span> <span class="fu">lg_tag</span>(adeff_df, <span class="at">dataset_id =</span> <span class="st">&quot;ADEFF&quot;</span>, <span class="at">domain =</span> <span class="st">&quot;ADLB&quot;</span>,</span>
+<span id="cb24-11"><a href="#cb24-11" tabindex="-1"></a>                <span class="at">label =</span> <span class="st">&quot;Efficacy Analysis Dataset&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt; lineager: tagged &#39;ADEFF&#39; — 608 rows, 9 cols</code></pre>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>n_miss_base <span class="ot">&lt;-</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(adeff<span class="sc">$</span>BASE[adeff<span class="sc">$</span>AVISITN <span class="sc">==</span> <span class="dv">0</span><span class="dt">L</span>]))</span>
+<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" tabindex="-1"></a>adeff <span class="ot">&lt;-</span> <span class="fu">lg_filter</span>(</span>
+<span id="cb26-4"><a href="#cb26-4" tabindex="-1"></a>  adeff, <span class="sc">!</span><span class="fu">is.na</span>(BASE),</span>
+<span id="cb26-5"><a href="#cb26-5" tabindex="-1"></a>  <span class="at">reason =</span> <span class="st">&quot;Exclude records with missing baseline EASI score per SAP Section 5.1&quot;</span>,</span>
+<span id="cb26-6"><a href="#cb26-6" tabindex="-1"></a>  <span class="at">population =</span> <span class="st">&quot;ITTFL&quot;</span></span>
+<span id="cb26-7"><a href="#cb26-7" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADEFF] filter &#39;Exclude records with missing baseline EASI score per SAP Section 5.1&#39; — 608 in, 608 out, 0 excluded</code></pre>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a>adeff <span class="ot">&lt;-</span> <span class="fu">lg_derive</span>(</span>
+<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>  adeff,</span>
+<span id="cb28-3"><a href="#cb28-3" tabindex="-1"></a>  <span class="at">CHG  =</span> AVAL <span class="sc">-</span> BASE,</span>
+<span id="cb28-4"><a href="#cb28-4" tabindex="-1"></a>  <span class="at">PCHG =</span> (AVAL <span class="sc">-</span> BASE) <span class="sc">/</span> BASE <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb28-5"><a href="#cb28-5" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">&quot;Derive change from baseline (CHG) and percent change (PCHG) per CDISC ADaM IG Section 3.2.7&quot;</span></span>
+<span id="cb28-6"><a href="#cb28-6" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADEFF] derive — Derive change from baseline (CHG) and percent change (PCHG) per CDISC ADaM IG Section 3.2.7</code></pre>
+</div>
+<div id="step-5-restrict-to-week-16-non-missing" class="section level3">
+<h3>Step 5: Restrict to Week 16, non-missing</h3>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>adeff_w16 <span class="ot">&lt;-</span> <span class="fu">lg_filter</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" tabindex="-1"></a>  adeff, AVISITN <span class="sc">==</span> <span class="dv">16</span><span class="dt">L</span>, <span class="sc">!</span><span class="fu">is.na</span>(AVAL),</span>
+<span id="cb30-3"><a href="#cb30-3" tabindex="-1"></a>  <span class="at">reason     =</span> <span class="st">&quot;Restrict to Week 16 primary timepoint with non-missing EASI assessment&quot;</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" tabindex="-1"></a>  <span class="at">population =</span> <span class="st">&quot;ITTFL&quot;</span></span>
+<span id="cb30-5"><a href="#cb30-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADEFF] filter &#39;Restrict to Week 16 primary timepoint with non-missing EASI assessment&#39; — 608 in, 285 out, 323 excluded</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">cat</span>(<span class="fu">sprintf</span>(<span class="st">&quot;Week 16 primary analysis records: %d</span><span class="sc">\n</span><span class="st">&quot;</span>, <span class="fu">nrow</span>(adeff_w16)))</span></code></pre></div>
+<pre><code>#&gt; Week 16 primary analysis records: 285</code></pre>
+</div>
+<div id="step-6-derive-easi-75-responder-flag" class="section level3">
+<h3>Step 6: Derive EASI-75 responder flag</h3>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a>adeff_final <span class="ot">&lt;-</span> <span class="fu">lg_derive</span>(</span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>  adeff_w16,</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>  <span class="at">EASI75FL =</span> <span class="fu">ifelse</span>(PCHG <span class="sc">&lt;=</span> <span class="sc">-</span><span class="dv">75</span>, <span class="st">&quot;Y&quot;</span>, <span class="st">&quot;N&quot;</span>),</span>
+<span id="cb34-4"><a href="#cb34-4" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">&quot;Derive EASI-75 responder flag: Y if percent change &lt;= -75% per SAP Section 5.3&quot;</span></span>
+<span id="cb34-5"><a href="#cb34-5" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>#&gt; lineager: [ADEFF] derive — Derive EASI-75 responder flag: Y if percent change &lt;= -75% per SAP Section 5.3</code></pre>
+<hr />
+</div>
+</div>
+<div id="document-the-sdtm-to-adam-derivation" class="section level2">
+<h2>Document the SDTM-to-ADaM derivation</h2>
+<p><code>lg_spec()</code> records the structured derivation
+specification linking the ADaM variable back to its SDTM source — the
+basis for the CDISC Reviewer’s Guide derivation section.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">lg_spec</span>(</span>
+<span id="cb36-2"><a href="#cb36-2" tabindex="-1"></a>  <span class="at">adam_dataset  =</span> <span class="st">&quot;ADEFF&quot;</span>,</span>
+<span id="cb36-3"><a href="#cb36-3" tabindex="-1"></a>  <span class="at">adam_var      =</span> <span class="st">&quot;CHG&quot;</span>,</span>
+<span id="cb36-4"><a href="#cb36-4" tabindex="-1"></a>  <span class="at">label         =</span> <span class="st">&quot;Change from Baseline EASI Score&quot;</span>,</span>
+<span id="cb36-5"><a href="#cb36-5" tabindex="-1"></a>  <span class="at">source_domain =</span> <span class="st">&quot;LB&quot;</span>,</span>
+<span id="cb36-6"><a href="#cb36-6" tabindex="-1"></a>  <span class="at">source_var    =</span> <span class="st">&quot;LBSTRESN&quot;</span>,</span>
+<span id="cb36-7"><a href="#cb36-7" tabindex="-1"></a>  <span class="at">derivation    =</span> <span class="st">&quot;AVAL - BASE, where BASE is the Visit 0 (Baseline) EASI assessment&quot;</span>,</span>
+<span id="cb36-8"><a href="#cb36-8" tabindex="-1"></a>  <span class="at">conditions    =</span> <span class="st">&quot;Subjects with non-missing baseline EASI score&quot;</span></span>
+<span id="cb36-9"><a href="#cb36-9" tabindex="-1"></a>)</span></code></pre></div>
+<hr />
+</div>
+<div id="subject-disposition" class="section level2">
+<h2>Subject disposition</h2>
+<p><code>lg_disposition()</code> summarises the exclusion registry
+automatically — no manual group definitions needed. Every
+<code>lg_filter()</code> call above contributed its exclusions to this
+summary.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">lg_disposition</span>(<span class="at">by =</span> <span class="st">&quot;reason&quot;</span>)</span></code></pre></div>
+<pre><code>#&gt;                                                                    group
+#&gt; 1 Restrict to Week 16 primary timepoint with non-missing EASI assessment
+#&gt; 2             Restrict to ITT population (ITTFL = Y) per SAP Section 4.2
+#&gt; 3        Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1
+#&gt;   n_excluded
+#&gt; 1        323
+#&gt; 2         10
+#&gt; 3          6</code></pre>
+<hr />
+</div>
+<div id="exclusion-registry" class="section level2">
+<h2>Exclusion registry</h2>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a>excl <span class="ot">&lt;-</span> <span class="fu">lg_exclusions</span>()</span></code></pre></div>
+<pre><code>#&gt; lineager: 339 exclusion(s) retrieved</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a>excl <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" tabindex="-1"></a>  <span class="fu">select</span>(dataset_id, reason, population) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;ADEFF derivation exclusion registry — DERM-DUP-301&quot;</span>)</span></code></pre></div>
+<table>
+<caption>ADEFF derivation exclusion registry — DERM-DUP-301</caption>
+<colgroup>
+<col width="11%" />
+<col width="76%" />
+<col width="11%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">dataset_id</th>
+<th align="left">reason</th>
+<th align="left">population</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to safety analysis set (SAFFL = Y) per SAP
+Section 4.1</td>
+<td align="left">SAFFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADSL</td>
+<td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
+4.2</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="even">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADEFF</td>
+<td align="left">Restrict to Week 16 primary timepoint with non-missing
+EASI assessment</td>
+<td align="left">ITTFL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="trace-a-subject-through-the-pipeline" class="section level2">
+<h2>Trace a subject through the pipeline</h2>
+<p><code>lg_trace()</code> returns the complete provenance history for
+any subject — every dataset it appeared in, every operation that touched
+it, and any exclusion records.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>example_subj <span class="ot">&lt;-</span> adeff_final<span class="sc">$</span>USUBJID[<span class="dv">1</span><span class="dt">L</span>]</span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a><span class="fu">lg_trace</span>(example_subj)</span></code></pre></div>
+<pre><code>#&gt; 
+#&gt; ── lineager trace: USUBJID &#39;DUP301-0001&#39; ──
+#&gt; 
+#&gt;   Appears in: ADSL, ADLB, ADEFF
+#&gt; 
+#&gt;   Operations:
+#&gt;     [FILTER] ADSL: Restrict to safety analysis set (SAFFL = Y) per SAP Section  (320→314)
+#&gt;     [FILTER] ADSL: Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 (314→304)
+#&gt;     [JOIN_INNER] ADLB: Join ADLB EASI assessments to ITT-restricted ADSL covariates (640→608)
+#&gt;     [FILTER] ADEFF: Exclude records with missing baseline EASI score per SAP Sec (608→608)
+#&gt;     [DERIVE] ADEFF: Derive change from baseline (CHG) and percent change (PCHG)  (608→608)
+#&gt;     [FILTER] ADEFF: Restrict to Week 16 primary timepoint with non-missing EASI  (608→285)
+#&gt;     [DERIVE] ADEFF: Derive EASI-75 responder flag: Y if percent change &lt;= -75% p (285→285)
+#&gt; 
+#&gt;   Exclusions (1):
+#&gt;     ✗ [ADEFF] Restrict to Week 16 primary timepoint with non-missing EASI assessment [pop: ITTFL]
+#&gt; 
+#&gt;   Registered populations:
+#&gt;     SAFFL: Safety Analysis Flag</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a>excluded_subj <span class="ot">&lt;-</span> adsl_raw<span class="sc">$</span>USUBJID[adsl_raw<span class="sc">$</span>ITTFL <span class="sc">==</span> <span class="st">&quot;N&quot;</span>][<span class="dv">1</span><span class="dt">L</span>]</span>
+<span id="cb44-2"><a href="#cb44-2" tabindex="-1"></a><span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.na</span>(excluded_subj)) <span class="fu">lg_trace</span>(excluded_subj)</span></code></pre></div>
+<pre><code>#&gt; 
+#&gt; ── lineager trace: USUBJID &#39;DUP301-0021&#39; ──
+#&gt; 
+#&gt;   Appears in: ADSL, ADLB
+#&gt; 
+#&gt;   Operations:
+#&gt;     [FILTER] ADSL: Restrict to safety analysis set (SAFFL = Y) per SAP Section  (320→314)
+#&gt;     [FILTER] ADSL: Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 (314→304)
+#&gt;     [JOIN_INNER] ADLB: Join ADLB EASI assessments to ITT-restricted ADSL covariates (640→608)
+#&gt; 
+#&gt;   Exclusions (1):
+#&gt;     ✗ [ADSL] Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 [pop: ITTFL]
+#&gt; 
+#&gt;   Registered populations:
+#&gt;     SAFFL: Safety Analysis Flag</code></pre>
+<hr />
+</div>
+<div id="pipeline-lineage-graph" class="section level2">
+<h2>Pipeline lineage graph</h2>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>lin <span class="ot">&lt;-</span> <span class="fu">lg_lineage</span>()</span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="fu">print</span>(lin)</span></code></pre></div>
+<pre><code>#&gt; &lt;lg_lineage&gt;  3 source dataset(s), 7 operation(s), 3 exclusion branch(es)
+#&gt; Use lg_plot(lin) to render. DOT source:
+#&gt; 
+#&gt; digraph lineage {
+#&gt;   rankdir = TB;
+#&gt;   graph [fontname=&quot;Helvetica&quot;, splines=ortho, nodesep=0.4, ranksep=0.6];
+#&gt;   node  [fontname=&quot;Helvetica&quot;, fontsize=10, margin=&quot;0.15,0.08&quot;];
+#&gt;   edge  [fontname=&quot;Helvetica&quot;, fontsize=9, color=&quot;#6b6f80&quot;];
+#&gt; 
+#&gt;   SRC_ADSL [label=&quot;ADSL\nn = 320&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#e8effe&quot;, color=&quot;#1a56db&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   SRC_ADLB [label=&quot;ADLB\nn = 640&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#e8effe&quot;, color=&quot;#1a56db&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   SRC_ADEFF [label=&quot;ADEFF\nn = 608&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#e8effe&quot;, color=&quot;#1a56db&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   OP_op_0001 [label=&quot;FILTER\nRestrict to safety analysis set ...\n−6 rows&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff3e0&quot;, color=&quot;#ea8c00&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADSL_op_0001 [label=&quot;ADSL\nn = 314&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   EXCL_op_0001 [label=&quot;excluded\nn = 6&quot;, shape=plaintext, fontcolor=&quot;#dc2626&quot;, fontsize=9];
+#&gt;   OP_op_0002 [label=&quot;FILTER\nRestrict to ITT population (ITTF...\n−10 rows&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff3e0&quot;, color=&quot;#ea8c00&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADSL_op_0002 [label=&quot;ADSL\nn = 304&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   EXCL_op_0002 [label=&quot;excluded\nn = 10&quot;, shape=plaintext, fontcolor=&quot;#dc2626&quot;, fontsize=9];
+#&gt;   OP_op_0003 [label=&quot;JOIN (inner)\nby: USUBJID&quot;, shape=diamond, style=&quot;filled,rounded&quot;, fillcolor=&quot;#e8f5e9&quot;, color=&quot;#0e7a4f&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADLB_op_0003 [label=&quot;ADLB\nn = 608&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   OP_op_0004 [label=&quot;FILTER\nExclude records with missing bas...\n−0 rows&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff3e0&quot;, color=&quot;#ea8c00&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADEFF_op_0004 [label=&quot;ADEFF\nn = 608&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   OP_op_0005 [label=&quot;DERIVE\nDerive change from baseline (CHG...&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff8e1&quot;, color=&quot;#f59e0b&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADEFF_op_0005 [label=&quot;ADEFF\nn = 608&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   OP_op_0006 [label=&quot;FILTER\nRestrict to Week 16 primary time...\n−323 rows&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff3e0&quot;, color=&quot;#ea8c00&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADEFF_op_0006 [label=&quot;ADEFF\nn = 285&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   EXCL_op_0006 [label=&quot;excluded\nn = 323&quot;, shape=plaintext, fontcolor=&quot;#dc2626&quot;, fontsize=9];
+#&gt;   OP_op_0007 [label=&quot;DERIVE\nDerive EASI-75 responder flag: Y...&quot;, shape=ellipse, style=&quot;filled,rounded&quot;, fillcolor=&quot;#fff8e1&quot;, color=&quot;#f59e0b&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt;   DS_ADEFF_op_0007 [label=&quot;ADEFF\nn = 285&quot;, shape=box, style=&quot;filled,rounded&quot;, fillcolor=&quot;#ffffff&quot;, color=&quot;#6b6f80&quot;, fontcolor=&quot;#0f1117&quot;];
+#&gt; 
+#&gt;   SRC_ADSL -&gt; OP_op_0001 [label=&quot; n=320 &quot;];
+#&gt;   OP_op_0001 -&gt; DS_ADSL_op_0001;
+#&gt;   OP_op_0001 -&gt; EXCL_op_0001;
+#&gt;   DS_ADSL_op_0001 -&gt; OP_op_0002 [label=&quot; n=314 &quot;];
+#&gt;   OP_op_0002 -&gt; DS_ADSL_op_0002;
+#&gt;   OP_op_0002 -&gt; EXCL_op_0002;
+#&gt;   SRC_ADLB -&gt; OP_op_0003 [label=&quot; x &quot;];
+#&gt;   DS_ADSL_op_0002 -&gt; OP_op_0003 [label=&quot; y &quot;];
+#&gt;   OP_op_0003 -&gt; DS_ADLB_op_0003;
+#&gt;   SRC_ADEFF -&gt; OP_op_0004 [label=&quot; n=608 &quot;];
+#&gt;   OP_op_0004 -&gt; DS_ADEFF_op_0004;
+#&gt;   DS_ADEFF_op_0004 -&gt; OP_op_0005;
+#&gt;   OP_op_0005 -&gt; DS_ADEFF_op_0005;
+#&gt;   DS_ADEFF_op_0005 -&gt; OP_op_0006 [label=&quot; n=608 &quot;];
+#&gt;   OP_op_0006 -&gt; DS_ADEFF_op_0006;
+#&gt;   OP_op_0006 -&gt; EXCL_op_0006;
+#&gt;   DS_ADEFF_op_0006 -&gt; OP_op_0007;
+#&gt;   OP_op_0007 -&gt; DS_ADEFF_op_0007;
+#&gt; }</code></pre>
+<hr />
+</div>
+<div id="provenance-report" class="section level2">
+<h2>Provenance report</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">lg_report</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" tabindex="-1"></a>  <span class="at">output   =</span> <span class="st">&quot;outputs/DERM-DUP-301_ADEFF_provenance_v1.html&quot;</span>,</span>
+<span id="cb48-3"><a href="#cb48-3" tabindex="-1"></a>  <span class="at">title    =</span> <span class="st">&quot;ADEFF Provenance Report — DERM-DUP-301&quot;</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" tabindex="-1"></a>  <span class="at">study_id =</span> <span class="st">&quot;DERM-DUP-301&quot;</span>,</span>
+<span id="cb48-5"><a href="#cb48-5" tabindex="-1"></a>  <span class="at">sponsor  =</span> <span class="st">&quot;Example Pharma Ltd&quot;</span>,</span>
+<span id="cb48-6"><a href="#cb48-6" tabindex="-1"></a>  <span class="at">author   =</span> <span class="st">&quot;J. Smith, Biostatistician&quot;</span></span>
+<span id="cb48-7"><a href="#cb48-7" tabindex="-1"></a>)</span></code></pre></div>
+<hr />
+</div>
+<div id="end-the-session" class="section level2">
+<h2>End the session</h2>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" tabindex="-1"></a><span class="fu">lg_end</span>()</span></code></pre></div>
+<pre><code>#&gt; lineager: session ended — 7 operation(s), 339 exclusion(s), 1 population(s), 1 var spec(s)</code></pre>
+<hr />
+</div>
+<div id="what-the-provenance-record-proves" class="section level2">
+<h2>What the provenance record proves</h2>
+<p>Every row in the final ADEFF dataset carries a lineage ID tracing it
+to its source record in ADSL or ADLB. The exclusion registry — built
+automatically from each <code>lg_filter()</code> call, not maintained
+separately — documents which subjects were excluded at each step, why,
+and which population the exclusion relates to.
+<code>lg_disposition()</code> produces the population flow table
+directly from these records, so the numbers can never drift out of sync
+with the derivation code that produced them.</p>
+<hr />
+</div>
+<div id="session-information" class="section level2">
+<h2>Session information</h2>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>#&gt; R version 4.4.2 (2024-10-31)
+#&gt; Platform: aarch64-apple-darwin20
+#&gt; Running under: macOS 26.5.1
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS:   /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework/Versions/A/libBLAS.dylib 
+#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/4.4-arm64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
+#&gt; 
+#&gt; locale:
+#&gt; [1] C.UTF-8/C.UTF-8/C.UTF-8/C/C.UTF-8/C.UTF-8
+#&gt; 
+#&gt; time zone: Europe/Brussels
+#&gt; tzcode source: internal
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
+#&gt; 
+#&gt; other attached packages:
+#&gt; [1] dplyr_1.2.0    lineager_0.1.0
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;  [1] gtable_0.3.6       bslib_0.10.0       xfun_0.57         
+#&gt;  [4] ggplot2_4.0.2      devtools_2.5.0     processx_3.8.6    
+#&gt;  [7] callr_3.7.6        vctrs_0.7.2        tools_4.4.2       
+#&gt; [10] ps_1.9.1           generics_0.1.4     curl_7.0.0        
+#&gt; [13] tibble_3.3.1       pkgconfig_2.0.3    xopen_1.0.1       
+#&gt; [16] RColorBrewer_1.1-3 S7_0.2.1           desc_1.4.3        
+#&gt; [19] lifecycle_1.0.5    compiler_4.4.2     farver_2.1.2      
+#&gt; [22] stringr_1.6.0      credentials_2.0.3  brio_1.1.5        
+#&gt; [25] codetools_0.2-20   sass_0.4.10        htmltools_0.5.9   
+#&gt; [28] sys_3.4.3          usethis_3.2.1      yaml_2.3.12       
+#&gt; [31] lazyeval_0.2.2     jquerylib_0.1.4    pillar_1.11.1     
+#&gt; [34] ellipsis_0.3.2     openssl_2.3.5      cachem_1.1.0      
+#&gt; [37] sessioninfo_1.2.3  xmlparsedata_1.0.5 lintr_3.3.0-1     
+#&gt; [40] commonmark_2.0.0   tidyselect_1.2.1   digest_0.6.39     
+#&gt; [43] stringi_1.8.7      purrr_1.2.1        rprojroot_2.1.1   
+#&gt; [46] fastmap_1.2.0      grid_4.4.2         cli_3.6.5         
+#&gt; [49] magrittr_2.0.4     pkgbuild_1.4.8     withr_3.0.2       
+#&gt; [52] prettyunits_1.2.0  scales_1.4.0       backports_1.5.0   
+#&gt; [55] rmarkdown_2.30     roxygen2_7.3.3     otel_0.2.0        
+#&gt; [58] askpass_1.2.1      spelling_2.3.2     memoise_2.0.1     
+#&gt; [61] evaluate_1.0.5     knitr_1.51         rcmdcheck_1.4.0   
+#&gt; [64] testthat_3.3.2     rex_1.2.1          rlang_1.2.0       
+#&gt; [67] Rcpp_1.1.1         gert_2.3.1         glue_1.8.0        
+#&gt; [70] xml2_1.5.2         hunspell_3.0.6     pkgload_1.5.0     
+#&gt; [73] jsonlite_2.0.0     rstudioapi_0.18.0  R6_2.6.1          
+#&gt; [76] fs_1.6.7</code></pre>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
