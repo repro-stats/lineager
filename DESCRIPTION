@@ -16,9 +16,8 @@ Description: Provides row-level data provenance tracking for analytical
     regulatory submissions, internal audit, or analytical documentation.
     General-purpose: works for clinical data, machine learning pipelines,
     financial modelling, epidemiology, or any workflow where row-level
-    accountability matters. Optional CDISC-specific features support
-    pharmaceutical users: SDTM domain codes, ADaM population flag
-    documentation (SAFFL, ITTFL, PPROTFL), SDTM-to-ADaM variable
+    accountability matters. Optional features support pharmaceutical
+    users including population flag definitions, source-to-analysis variable 
     mapping, and Reviewer's Guide-aligned report output. Complements
     the 'regulog' package for tamper-evident session-level audit logging.
     For more details see <https://reprostats.org/lineager/>.
