@@ -32,7 +32,7 @@ available as optional enrichment for pharmaceutical users.
 
 ```r
 # Install from GitHub
-> pak::pak("repro-stats/lineager")
+pak::pak("repro-stats/lineager")
 ```
 
 ## Quick start
@@ -40,20 +40,29 @@ available as optional enrichment for pharmaceutical users.
 ```r
 library(lineager)
 
+# Start a tracked session
 lg_start(study_id = "TRIAL-001", analysis_id = "primary")
 
-# Tag source data
-adsl <- lg_tag(haven::read_sas("sdtm/dm.sas7bdat"),
-               dataset_id = "DM", domain = "DM")
+# Use any data frame — here we simulate a small ADSL
+adsl_raw <- data.frame(
+  USUBJID = c("01-001", "01-002", "01-003", "01-004", "01-005"),
+  ARMCD   = c("TRT", "TRT", "SCRNFAIL", "TRT", "TRT"),
+  EXOCCUR = c("Y", "Y", "N", "Y", "N"),
+  stringsAsFactors = FALSE
+)
 
-# Derive variables with documented descriptions
+# Tag the dataset — every row gets a unique lineage identifier
+adsl <- lg_tag(adsl_raw, dataset_id = "ADSL", domain = "DM",
+               label = "Subject-Level Analysis Dataset")
+
+# Derive variables with a documented reason
 adsl <- lg_derive(adsl,
   RANDFL = ifelse(ARMCD != "SCRNFAIL", "Y", "N"),
   SAFFL  = ifelse(ARMCD != "SCRNFAIL" & EXOCCUR == "Y", "Y", "N"),
-  description = "RANDFL: not screen failure. SAFFL: randomised AND dosed."
+  description = "RANDFL: not a screen failure. SAFFL: randomised and dosed."
 )
 
-# Filter with mandatory exclusion reasons
+# Filter with a mandatory exclusion reason — no silent row drops
 adsl_safety <- lg_filter(
   adsl,
   SAFFL == "Y",
@@ -62,22 +71,22 @@ adsl_safety <- lg_filter(
   population  = "SAFFL"
 )
 
-# Trace any subject across the pipeline
-lg_trace("01-042")
+# Trace any subject's complete journey across the pipeline
+lg_trace(adsl_safety$USUBJID[1L])
 
 # Exclusion registry and disposition table
 lg_exclusions()
 lg_disposition(by = "reason")
 
-# Visualise the pipeline
+# Visualise the full pipeline graph
 lin <- lg_lineage()
 lg_plot(lin)
 
-# Generate provenance report
+# Generate a structured provenance report
 lg_report(
-  output  = "outputs/provenance.html",
+  output  = tempfile(fileext = ".html"),
   title   = "Data Provenance Report",
-  sponsor = "Example Pharma Ltd",
+  sponsor = "Sponsor name",
   author  = "Your name"
 )
 
@@ -139,3 +148,7 @@ tamper-evident session-level audit trail (who ran what, when, and why),
 and `lineager` for row-level data provenance within that session. The
 `lg_report()` output can be referenced in the `regulog` audit trail via
 `log_action()`.
+
+## License
+
+MIT © ReproStats
