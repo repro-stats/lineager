@@ -136,7 +136,7 @@ cat(sprintf("Tagged %d patient records\n", nrow(claims)))
 
 ``` r
 
-head(claims[, c(".__lid__", "PATID", "INDEX_DRUG", "AGE_INDEX")], 4L)
+head(claims[, c("lineage_id", "PATID", "INDEX_DRUG", "AGE_INDEX")], 4L)
 ```
 
     #> <lg_df> 'CLAIMS_RAW'  [4 × 4]

@@ -82,7 +82,7 @@ per-protocol population.” But regulators increasingly ask for more:
 which rows? Why? And can you trace any subject through the complete
 derivation pipeline?</p>
 <p><code>lineager</code> answers these questions at the row level. Every
-row in every dataset carries a lineage ID (<code>.__lid__</code>) that
+row in every dataset carries a lineage ID (<code>lineage_id</code>) that
 survives filters, joins, and derivations. Every <code><a href="../reference/lg_filter.html">lg_filter()</a></code>
 call requires a documented reason, and the session automatically
 accumulates an exclusion registry as the pipeline runs — no manual
@@ -177,7 +177,7 @@ endpoint EASI score.</p>
 <h2 id="tag-source-datasets">Tag source datasets<a class="anchor" aria-label="anchor" href="#tag-source-datasets"></a>
 </h2>
 <p><code><a href="../reference/lg_tag.html">lg_tag()</a></code> assigns a unique lineage ID
-(<code>.__lid__</code>) to every row. The <code>USUBJID</code> is
+(<code>lineage_id</code>) to every row. The <code>USUBJID</code> is
 embedded automatically when present, making IDs human-readable.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_tag.html">lg_tag</a></span><span class="op">(</span><span class="va">adsl_raw</span>, dataset_id <span class="op">=</span> <span class="st">"ADSL"</span>, domain <span class="op">=</span> <span class="st">"DM"</span>, label <span class="op">=</span> <span class="st">"Subject-Level"</span><span class="op">)</span></span></code></pre></div>
@@ -186,7 +186,7 @@ embedded automatically when present, making IDs human-readable.</p>
 <code class="sourceCode R"><span><span class="va">adlb</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_tag.html">lg_tag</a></span><span class="op">(</span><span class="va">adlb_raw</span>, dataset_id <span class="op">=</span> <span class="st">"ADLB"</span>, domain <span class="op">=</span> <span class="st">"LB"</span>, label <span class="op">=</span> <span class="st">"Laboratory/Efficacy"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; lineager: tagged 'ADLB' — 640 rows, 6 cols</span></span></code></pre>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">adsl</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".__lid__"</span>, <span class="st">"USUBJID"</span>, <span class="st">"TRT01P"</span>, <span class="st">"ITTFL"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">4L</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">adsl</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lineage_id"</span>, <span class="st">"USUBJID"</span>, <span class="st">"TRT01P"</span>, <span class="st">"ITTFL"</span><span class="op">)</span><span class="op">]</span>, <span class="fl">4L</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; &lt;lg_df&gt; 'ADSL' (domain: DM)  [4 × 4]</span></span>
 <span><span class="co">#&gt;       USUBJID              TRT01P ITTFL</span></span>
 <span><span class="co">#&gt; 1 DUP301-0001 Dupilumab 300mg Q2W     Y</span></span>
@@ -262,9 +262,9 @@ data.</p>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html" class="external-link">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Re-tag after the dplyr grouping pipeline to keep lg_df class intact</span></span>
-<span><span class="co"># Drop any existing .__lid__ before re-tagging to avoid duplicate columns</span></span>
+<span><span class="co"># Drop any existing lineage_id before re-tagging to avoid duplicate columns</span></span>
 <span><span class="va">adeff_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">adeff</span><span class="op">)</span></span>
-<span><span class="va">adeff_df</span> <span class="op">&lt;-</span> <span class="va">adeff_df</span><span class="op">[</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">adeff_df</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">".__lid__"</span><span class="op">]</span></span>
+<span><span class="va">adeff_df</span> <span class="op">&lt;-</span> <span class="va">adeff_df</span><span class="op">[</span>, <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">adeff_df</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="st">"lineage_id"</span><span class="op">]</span></span>
 <span><span class="va">adeff</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_tag.html">lg_tag</a></span><span class="op">(</span><span class="va">adeff_df</span>, dataset_id <span class="op">=</span> <span class="st">"ADEFF"</span>, domain <span class="op">=</span> <span class="st">"ADLB"</span>,</span>
 <span>                label <span class="op">=</span> <span class="st">"Efficacy Analysis Dataset"</span><span class="op">)</span></span></code></pre></div>
 <pre><code><span><span class="co">#&gt; lineager: tagged 'ADEFF' — 608 rows, 9 cols</span></span></code></pre>

@@ -10,8 +10,8 @@ which rows? Why? And can you trace any subject through the complete
 derivation pipeline?
 
 `lineager` answers these questions at the row level. Every row in every
-dataset carries a lineage ID (`.__lid__`) that survives filters, joins,
-and derivations. Every
+dataset carries a lineage ID (`lineage_id`) that survives filters,
+joins, and derivations. Every
 [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
 call requires a documented reason, and the session automatically
 accumulates an exclusion registry as the pipeline runs — no manual
@@ -121,8 +121,8 @@ lg_start(study_id = "DERM-DUP-301", analysis_id = "ADEFF-primary-efficacy")
 ## Tag source datasets
 
 [`lg_tag()`](https://reprostats.org/lineager/reference/lg_tag.md)
-assigns a unique lineage ID (`.__lid__`) to every row. The `USUBJID` is
-embedded automatically when present, making IDs human-readable.
+assigns a unique lineage ID (`lineage_id`) to every row. The `USUBJID`
+is embedded automatically when present, making IDs human-readable.
 
 ``` r
 
@@ -140,7 +140,7 @@ adlb <- lg_tag(adlb_raw, dataset_id = "ADLB", domain = "LB", label = "Laboratory
 
 ``` r
 
-head(adsl[, c(".__lid__", "USUBJID", "TRT01P", "ITTFL")], 4L)
+head(adsl[, c("lineage_id", "USUBJID", "TRT01P", "ITTFL")], 4L)
 ```
 
     #> <lg_df> 'ADSL' (domain: DM)  [4 × 4]
@@ -237,9 +237,9 @@ adeff <- adeff |>
   ungroup()
 
 # Re-tag after the dplyr grouping pipeline to keep lg_df class intact
-# Drop any existing .__lid__ before re-tagging to avoid duplicate columns
+# Drop any existing lineage_id before re-tagging to avoid duplicate columns
 adeff_df <- as.data.frame(adeff)
-adeff_df <- adeff_df[, !names(adeff_df) %in% ".__lid__"]
+adeff_df <- adeff_df[, !names(adeff_df) %in% "lineage_id"]
 adeff <- lg_tag(adeff_df, dataset_id = "ADEFF", domain = "ADLB",
                 label = "Efficacy Analysis Dataset")
 ```

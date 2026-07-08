@@ -228,7 +228,7 @@
 <div class="section level2">
 <h2 id="the-lineage-id">The lineage ID<a class="anchor" aria-label="anchor" href="#the-lineage-id"></a>
 </h2>
-<p>Every row carries a <code>.__lid__</code> column. For CDISC datasets with USUBJID:</p>
+<p>Every row carries a <code>lineage_id</code> column. For CDISC datasets with USUBJID:</p>
 <pre><code><span><span class="va">DM_0001_01</span><span class="op">-</span><span class="fl">042</span>    <span class="co"># row 1 from DM domain, subject 01-042</span></span>
 <span><span class="va">ADLB_0047_01</span><span class="op">-</span><span class="fl">042</span>  <span class="co"># row 47 from ADLB, same subject</span></span></code></pre>
 <p>For general datasets:</p>
@@ -255,11 +255,6 @@
 <h2 id="integration-with-regulog">Integration with regulog<a class="anchor" aria-label="anchor" href="#integration-with-regulog"></a>
 </h2>
 <p><code>lineager</code> and <code>regulog</code> are complementary. Use <code>regulog</code> for a tamper-evident session-level audit trail (who ran what, when, and why), and <code>lineager</code> for row-level data provenance within that session. The <code><a href="reference/lg_report.html">lg_report()</a></code> output can be referenced in the <code>regulog</code> audit trail via <code>log_action()</code>.</p>
-</div>
-<div class="section level2">
-<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
-</h2>
-<p>MIT © ReproStats</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -297,7 +292,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://codecov.io/gh/repro-stats/lineager" class="external-link"><img src="https://codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg" alt="Codecov"></a></li>
+<li><a href="https://app.codecov.io/gh/repro-stats/lineager" class="external-link"><img src="https://app.codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg" alt="Codecov"></a></li>
 </ul>
 </div>
 

@@ -12,6 +12,8 @@
   : Retrieve the exclusion registry
 - [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
   : Filter a tagged dataset with mandatory exclusion documentation
+- [`lg_id()`](https://reprostats.org/lineager/reference/lg_id.md) :
+  Retrieve lineage IDs from a tagged dataset
 - [`lg_join()`](https://reprostats.org/lineager/reference/lg_join.md) :
   Join two tagged datasets with lineage tracking
 - [`lg_lineage()`](https://reprostats.org/lineager/reference/lg_lineage.md)

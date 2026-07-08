@@ -51,7 +51,7 @@
 <li><p><code><a href="../reference/lg_tag.html">lg_tag()</a></code> — entry point. Assigns a unique lineage ID (<code>.__lid__</code>) to every row. For datasets with a <code>USUBJID</code> column, the ID embeds the subject identifier for human readability (<code>DM_0001_01-042</code>). For general datasets, a zero-padded sequence is used (<code>patients_000001</code>).</p></li>
 <li><p><code><a href="../reference/lg_filter.html">lg_filter()</a></code> — tracked filter with mandatory <code>reason</code>. Every row removal is documented and captured in the session exclusion registry. Optional <code>reason_code</code> and <code>population</code> arguments enrich the record.</p></li>
 <li><p><code><a href="../reference/lg_derive.html">lg_derive()</a></code> — tracked <code><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">dplyr::mutate()</a></code> with mandatory <code>description</code>. Every variable derivation is recorded in the operation log.</p></li>
-<li><p><code><a href="../reference/lg_join.html">lg_join()</a></code> — tracked join (left, inner, full, right). Preserves <code>.__lid__</code> from <code>x</code>; adds <code>.__lid_y__</code> to record which rows of <code>y</code> contributed, enabling bilateral tracing.</p></li>
+<li><p><code><a href="../reference/lg_join.html">lg_join()</a></code> — tracked join (left, inner, full, right). Preserves <code>.__lid__</code> from <code>x</code>; adds <code>lineage_id_y</code> to record which rows of <code>y</code> contributed, enabling bilateral tracing.</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-functions-0-1-0">Documentation functions<a class="anchor" aria-label="anchor" href="#documentation-functions-0-1-0"></a></h3>

@@ -34,7 +34,7 @@ any strings — or omitted entirely.
 ## 2. Tag your source datasets
 
 [`lg_tag()`](https://reprostats.org/lineager/reference/lg_tag.md) is the
-entry point. It assigns a `.__lid__` (lineage ID) to every row at
+entry point. It assigns a `lineage_id` (lineage ID) to every row at
 position 1. This ID persists through all operations.
 
 ``` r
@@ -121,11 +121,11 @@ derived[, c("USUBJID", "age", "age_group", "adult")]
 #> 6    P006  44      >=40  TRUE
 ```
 
-The `.__lid__` column is preserved unchanged through derivations:
+The `lineage_id` column is preserved unchanged through derivations:
 
 ``` r
 
-all(derived[[".__lid__"]] == tagged[[".__lid__"]])
+all(derived[["lineage_id"]] == tagged[["lineage_id"]])
 #> [1] TRUE
 ```
 
@@ -139,7 +139,7 @@ derived2 <- lg_derive(derived,
 )
 #> lineager: [PATIENTS] derive — Display label combining USUBJID and group
 
-derived2[, c(".__lid__", "USUBJID", "group", "label")]
+derived2[, c("lineage_id", "USUBJID", "group", "label")]
 #> <lg_df> 'PATIENTS'  [6 × 4]
 #>   USUBJID group    label
 #> 1    P001     A P001 (A)
@@ -155,8 +155,8 @@ Each call adds one `DERIVE` operation to the session log.
 ## 4. Join datasets with lineage tracking
 
 [`lg_join()`](https://reprostats.org/lineager/reference/lg_join.md)
-performs a tracked join. It preserves `.__lid__` from the left dataset
-and adds `.__lid_y__` to record which rows from the right dataset
+performs a tracked join. It preserves `lineage_id` from the left dataset
+and adds `lineage_id_y` to record which rows from the right dataset
 contributed — enabling bilateral tracing.
 
 ``` r
@@ -168,9 +168,9 @@ joined <- lg_join(tagged, labs_tagged,
 )
 #> lineager: [PATIENTS + LABS] left join — 7 rows out
 
-joined[, c(".__lid__", "USUBJID", "eligible", "test", "value", ".__lid_y__")]
+joined[, c("lineage_id", "USUBJID", "eligible", "test", "value", "lineage_id_y")]
 #> <lg_df> 'PATIENTS'  [7 × 6]
-#>   USUBJID eligible test value     .__lid_y__
+#>   USUBJID eligible test value   lineage_id_y
 #> 1    P001     TRUE  ALT  28.4 LABS_0001_P001
 #> 2    P001     TRUE  AST  31.2 LABS_0002_P001
 #> 3    P002    FALSE <NA>    NA           <NA>
@@ -180,9 +180,9 @@ joined[, c(".__lid__", "USUBJID", "eligible", "test", "value", ".__lid_y__")]
 #> # … 1 more rows
 ```
 
-The `.__lid_y__` column shows which LABS row contributed to each
+The `lineage_id_y` column shows which LABS row contributed to each
 PATIENTS row. Rows with no matching lab record have `NA` in
-`.__lid_y__`.
+`lineage_id_y`.
 
 Supported join types:
 

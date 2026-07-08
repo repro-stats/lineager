@@ -37,7 +37,7 @@ Initial release.
 
 - [`lg_join()`](https://reprostats.org/lineager/reference/lg_join.md) —
   tracked join (left, inner, full, right). Preserves `.__lid__` from
-  `x`; adds `.__lid_y__` to record which rows of `y` contributed,
+  `x`; adds `lineage_id_y` to record which rows of `y` contributed,
   enabling bilateral tracing.
 
 ### Documentation functions

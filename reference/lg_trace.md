@@ -1,9 +1,9 @@
 # Trace a subject's complete lineage journey
 
-Given a USUBJID (or a `.__lid__` value), returns the complete history of
-that subject across all tagged datasets and operations in the session:
-which datasets they appear in, which operations they passed through or
-were excluded by, and which population flags apply to them.
+Given a USUBJID (or a `lineage_id` value), returns the complete history
+of that subject across all tagged datasets and operations in the
+session: which datasets they appear in, which operations they passed
+through or were excluded by, and which population flags apply to them.
 
 ## Usage
 

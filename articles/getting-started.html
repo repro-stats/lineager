@@ -96,7 +96,7 @@ appear in reports. They can be any strings — or omitted entirely.</p>
 <h2 id="tag-your-source-datasets">2. Tag your source datasets<a class="anchor" aria-label="anchor" href="#tag-your-source-datasets"></a>
 </h2>
 <p><code><a href="../reference/lg_tag.html">lg_tag()</a></code> is the entry point. It assigns a
-<code>.__lid__</code> (lineage ID) to every row at position 1. This ID
+<code>lineage_id</code> (lineage ID) to every row at position 1. This ID
 persists through all operations.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">patients</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
@@ -171,10 +171,10 @@ operation log.</p>
 <span><span class="co">#&gt; 4    P004  28       &lt;40  TRUE</span></span>
 <span><span class="co">#&gt; 5    P005  61      &gt;=40  TRUE</span></span>
 <span><span class="co">#&gt; 6    P006  44      &gt;=40  TRUE</span></span></code></pre></div>
-<p>The <code>.__lid__</code> column is preserved unchanged through
+<p>The <code>lineage_id</code> column is preserved unchanged through
 derivations:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">derived</span><span class="op">[[</span><span class="st">".__lid__"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="va">tagged</span><span class="op">[[</span><span class="st">".__lid__"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">derived</span><span class="op">[[</span><span class="st">"lineage_id"</span><span class="op">]</span><span class="op">]</span> <span class="op">==</span> <span class="va">tagged</span><span class="op">[[</span><span class="st">"lineage_id"</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 <p>Chain derivations naturally:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -184,7 +184,7 @@ derivations:</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; lineager: [PATIENTS] derive — Display label combining USUBJID and group</span></span>
 <span></span>
-<span><span class="va">derived2</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".__lid__"</span>, <span class="st">"USUBJID"</span>, <span class="st">"group"</span>, <span class="st">"label"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">derived2</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lineage_id"</span>, <span class="st">"USUBJID"</span>, <span class="st">"group"</span>, <span class="st">"label"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; &lt;lg_df&gt; 'PATIENTS'  [6 × 4]</span></span>
 <span><span class="co">#&gt;   USUBJID group    label</span></span>
 <span><span class="co">#&gt; 1    P001     A P001 (A)</span></span>
@@ -200,8 +200,8 @@ log.</p>
 <h2 id="join-datasets-with-lineage-tracking">4. Join datasets with lineage tracking<a class="anchor" aria-label="anchor" href="#join-datasets-with-lineage-tracking"></a>
 </h2>
 <p><code><a href="../reference/lg_join.html">lg_join()</a></code> performs a tracked join. It preserves
-<code>.__lid__</code> from the left dataset and adds
-<code>.__lid_y__</code> to record which rows from the right dataset
+<code>lineage_id</code> from the left dataset and adds
+<code>lineage_id_y</code> to record which rows from the right dataset
 contributed — enabling bilateral tracing.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">joined</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_join.html">lg_join</a></span><span class="op">(</span><span class="va">tagged</span>, <span class="va">labs_tagged</span>,</span>
@@ -211,9 +211,9 @@ contributed — enabling bilateral tracing.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; lineager: [PATIENTS + LABS] left join — 7 rows out</span></span>
 <span></span>
-<span><span class="va">joined</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">".__lid__"</span>, <span class="st">"USUBJID"</span>, <span class="st">"eligible"</span>, <span class="st">"test"</span>, <span class="st">"value"</span>, <span class="st">".__lid_y__"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">joined</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"lineage_id"</span>, <span class="st">"USUBJID"</span>, <span class="st">"eligible"</span>, <span class="st">"test"</span>, <span class="st">"value"</span>, <span class="st">"lineage_id_y"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt; &lt;lg_df&gt; 'PATIENTS'  [7 × 6]</span></span>
-<span><span class="co">#&gt;   USUBJID eligible test value     .__lid_y__</span></span>
+<span><span class="co">#&gt;   USUBJID eligible test value   lineage_id_y</span></span>
 <span><span class="co">#&gt; 1    P001     TRUE  ALT  28.4 LABS_0001_P001</span></span>
 <span><span class="co">#&gt; 2    P001     TRUE  AST  31.2 LABS_0002_P001</span></span>
 <span><span class="co">#&gt; 3    P002    FALSE &lt;NA&gt;    NA           &lt;NA&gt;</span></span>
@@ -221,9 +221,9 @@ contributed — enabling bilateral tracing.</p>
 <span><span class="co">#&gt; 5    P004     TRUE  ALT  22.8 LABS_0004_P004</span></span>
 <span><span class="co">#&gt; 6    P005    FALSE &lt;NA&gt;    NA           &lt;NA&gt;</span></span>
 <span><span class="co">#&gt; # … 1 more rows</span></span></code></pre></div>
-<p>The <code>.__lid_y__</code> column shows which LABS row contributed
+<p>The <code>lineage_id_y</code> column shows which LABS row contributed
 to each PATIENTS row. Rows with no matching lab record have
-<code>NA</code> in <code>.__lid_y__</code>.</p>
+<code>NA</code> in <code>lineage_id_y</code>.</p>
 <p>Supported join types:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_join.html">lg_join</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, by <span class="op">=</span> <span class="st">"USUBJID"</span>, type <span class="op">=</span> <span class="st">"left"</span><span class="op">)</span> <span class="co"># all rows of x</span></span>

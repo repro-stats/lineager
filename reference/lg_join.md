@@ -1,8 +1,8 @@
 # Join two tagged datasets with lineage tracking
 
 Performs a left, inner, full, or right join and records the operation in
-the session log. The `.__lid__` column from `x` is preserved. A
-secondary column `.__lid_y__` records which rows of `y` contributed to
+the session log. The `lineage_id` column from `x` is preserved. A
+secondary column `lineage_id_y` records which rows of `y` contributed to
 each output row, enabling full bilateral tracing.
 
 ## Usage
@@ -40,7 +40,7 @@ lg_join(
 
 ## Value
 
-An `lg_df` with the joined result. `.__lid_y__` is added to record the
+An `lg_df` with the joined result. `lineage_id_y` is added to record the
 contributing row IDs from `y`.
 
 ## See also
@@ -65,9 +65,7 @@ ex_summary <- lg_tag(
 )
 #> lineager: tagged 'EX_SUMM' — 2 rows, 2 cols
 
-adsl_ex <- lg_join(adsl, ex_summary,
-  by = "USUBJID",
-  description = "First dose date from EX domain"
-)
+adsl_ex <- lg_join(adsl, ex_summary, by = "USUBJID",
+                   description = "First dose date from EX domain")
 #> lineager: [ADSL + EX_SUMM] left join — 2 rows out
 ```

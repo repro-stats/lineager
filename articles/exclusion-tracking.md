@@ -215,7 +215,7 @@ Each exclusion record contains:
 | `excl_id` | Unique exclusion identifier (`op_0001_excl_0001`) |
 | `op_id` | Which [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md) operation caused this |
 | `dataset_id` | Which dataset the row was removed from |
-| `lid` | The `.__lid__` of the excluded row |
+| `lid` | The `lineage_id` of the excluded row |
 | `usubjid` | Subject identifier (from USUBJID column if present) |
 | `reason` | The documented exclusion reason |
 | `reason_code` | Short code for programmatic grouping |

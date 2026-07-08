@@ -135,7 +135,8 @@ lg_end()
 
 ## The lineage ID
 
-Every row carries a `.__lid__` column. For CDISC datasets with USUBJID:
+Every row carries a `lineage_id` column. For CDISC datasets with
+USUBJID:
 
     DM_0001_01-042    # row 1 from DM domain, subject 01-042
     ADLB_0047_01-042  # row 47 from ADLB, same subject
@@ -174,7 +175,3 @@ and `lineager` for row-level data provenance within that session. The
 [`lg_report()`](https://reprostats.org/lineager/reference/lg_report.md)
 output can be referenced in the `regulog` audit trail via
 `log_action()`.
-
-## License
-
-MIT © ReproStats

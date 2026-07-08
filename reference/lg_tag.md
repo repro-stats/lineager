@@ -1,6 +1,6 @@
 # Tag a dataset to begin lineage tracking
 
-Assigns a unique lineage identifier (`.__lid__`) to every row and
+Assigns a unique lineage identifier (`lineage_id`) to every row and
 registers the dataset in the active session store. This is the entry
 point to `lineager` : all other functions require a tagged data frame.
 
@@ -38,12 +38,12 @@ lg_tag(data, dataset_id, domain = NULL, label = NULL, source = NULL)
 
 ## Value
 
-An `lg_df` object : a `data.frame` with a `.__lid__` column and lineage
-metadata stored in attributes.
+An `lg_df` object : a `data.frame` with a `lineage_id` column and
+lineage metadata stored in attributes.
 
 ## Details
 
-The `.__lid__` column is added at position 1 and is preserved through
+The `lineage_id` column is added at position 1 and is preserved through
 [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md),
 [`lg_derive()`](https://reprostats.org/lineager/reference/lg_derive.md),
 and [`lg_join()`](https://reprostats.org/lineager/reference/lg_join.md)
@@ -68,10 +68,8 @@ dm <- data.frame(
   SEX     = c("M", "F", "M")
 )
 
-dm_tagged <- lg_tag(dm,
-  dataset_id = "DM", domain = "DM",
-  label = "Demographics"
-)
+dm_tagged <- lg_tag(dm, dataset_id = "DM", domain = "DM",
+                    label = "Demographics")
 #> lineager: tagged 'DM' — 3 rows, 3 cols
 dm_tagged
 #> <lg_df> 'DM' (domain: DM)  [3 × 4]

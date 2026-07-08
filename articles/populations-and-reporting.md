@@ -361,8 +361,8 @@ For pharmaceutical users:
   [`lg_tag()`](https://reprostats.org/lineager/reference/lg_tag.md) —
   domain appears in dataset inventory and distinguishes SDTM domains
   from ADaM datasets
-- `USUBJID` column is detected automatically and embedded in `.__lid__`
-  values for human readability
+- `USUBJID` column is detected automatically and embedded in
+  `lineage_id` values for human readability
 - [`lg_population()`](https://reprostats.org/lineager/reference/lg_population.md)
   naturally documents SAFFL, ITTFL, PPROTFL — the labels and definitions
   become the Reviewer’s Guide population section
