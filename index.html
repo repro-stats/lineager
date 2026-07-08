@@ -72,8 +72,9 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># Install from GitHub</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="sc">&gt;</span> pak<span class="sc">::</span><span class="fu">pak</span>(<span class="st">"repro-stats/lineager"</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install from GitHub</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"repro-stats/lineager"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -81,20 +82,29 @@
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://reprostats.org" class="external-link">lineager</a></span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Start a tracked session</span></span>
 <span><span class="fu"><a href="reference/lg_start.html">lg_start</a></span><span class="op">(</span>study_id <span class="op">=</span> <span class="st">"TRIAL-001"</span>, analysis_id <span class="op">=</span> <span class="st">"primary"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Tag source data</span></span>
-<span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_tag.html">lg_tag</a></span><span class="op">(</span><span class="fu">haven</span><span class="fu">::</span><span class="fu"><a href="https://haven.tidyverse.org/reference/read_sas.html" class="external-link">read_sas</a></span><span class="op">(</span><span class="st">"sdtm/dm.sas7bdat"</span><span class="op">)</span>,</span>
-<span>               dataset_id <span class="op">=</span> <span class="st">"DM"</span>, domain <span class="op">=</span> <span class="st">"DM"</span><span class="op">)</span></span>
+<span><span class="co"># Use any data frame — here we simulate a small ADSL</span></span>
+<span><span class="va">adsl_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  USUBJID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"01-001"</span>, <span class="st">"01-002"</span>, <span class="st">"01-003"</span>, <span class="st">"01-004"</span>, <span class="st">"01-005"</span><span class="op">)</span>,</span>
+<span>  ARMCD   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"TRT"</span>, <span class="st">"TRT"</span>, <span class="st">"SCRNFAIL"</span>, <span class="st">"TRT"</span>, <span class="st">"TRT"</span><span class="op">)</span>,</span>
+<span>  EXOCCUR <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Y"</span>, <span class="st">"Y"</span>, <span class="st">"N"</span>, <span class="st">"Y"</span>, <span class="st">"N"</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Derive variables with documented descriptions</span></span>
+<span><span class="co"># Tag the dataset — every row gets a unique lineage identifier</span></span>
+<span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_tag.html">lg_tag</a></span><span class="op">(</span><span class="va">adsl_raw</span>, dataset_id <span class="op">=</span> <span class="st">"ADSL"</span>, domain <span class="op">=</span> <span class="st">"DM"</span>,</span>
+<span>               label <span class="op">=</span> <span class="st">"Subject-Level Analysis Dataset"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Derive variables with a documented reason</span></span>
 <span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_derive.html">lg_derive</a></span><span class="op">(</span><span class="va">adsl</span>,</span>
 <span>  RANDFL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">ARMCD</span> <span class="op">!=</span> <span class="st">"SCRNFAIL"</span>, <span class="st">"Y"</span>, <span class="st">"N"</span><span class="op">)</span>,</span>
 <span>  SAFFL  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">ARMCD</span> <span class="op">!=</span> <span class="st">"SCRNFAIL"</span> <span class="op">&amp;</span> <span class="va">EXOCCUR</span> <span class="op">==</span> <span class="st">"Y"</span>, <span class="st">"Y"</span>, <span class="st">"N"</span><span class="op">)</span>,</span>
-<span>  description <span class="op">=</span> <span class="st">"RANDFL: not screen failure. SAFFL: randomised AND dosed."</span></span>
+<span>  description <span class="op">=</span> <span class="st">"RANDFL: not a screen failure. SAFFL: randomised and dosed."</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Filter with mandatory exclusion reasons</span></span>
+<span><span class="co"># Filter with a mandatory exclusion reason — no silent row drops</span></span>
 <span><span class="va">adsl_safety</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_filter.html">lg_filter</a></span><span class="op">(</span></span>
 <span>  <span class="va">adsl</span>,</span>
 <span>  <span class="va">SAFFL</span> <span class="op">==</span> <span class="st">"Y"</span>,</span>
@@ -103,22 +113,22 @@
 <span>  population  <span class="op">=</span> <span class="st">"SAFFL"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Trace any subject across the pipeline</span></span>
-<span><span class="fu"><a href="reference/lg_trace.html">lg_trace</a></span><span class="op">(</span><span class="st">"01-042"</span><span class="op">)</span></span>
+<span><span class="co"># Trace any subject's complete journey across the pipeline</span></span>
+<span><span class="fu"><a href="reference/lg_trace.html">lg_trace</a></span><span class="op">(</span><span class="va">adsl_safety</span><span class="op">$</span><span class="va">USUBJID</span><span class="op">[</span><span class="fl">1L</span><span class="op">]</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Exclusion registry and disposition table</span></span>
 <span><span class="fu"><a href="reference/lg_exclusions.html">lg_exclusions</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"reason"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Visualise the pipeline</span></span>
+<span><span class="co"># Visualise the full pipeline graph</span></span>
 <span><span class="va">lin</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_lineage.html">lg_lineage</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/lg_plot.html">lg_plot</a></span><span class="op">(</span><span class="va">lin</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Generate provenance report</span></span>
+<span><span class="co"># Generate a structured provenance report</span></span>
 <span><span class="fu"><a href="reference/lg_report.html">lg_report</a></span><span class="op">(</span></span>
-<span>  output  <span class="op">=</span> <span class="st">"outputs/provenance.html"</span>,</span>
+<span>  output  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempfile</a></span><span class="op">(</span>fileext <span class="op">=</span> <span class="st">".html"</span><span class="op">)</span>,</span>
 <span>  title   <span class="op">=</span> <span class="st">"Data Provenance Report"</span>,</span>
-<span>  sponsor <span class="op">=</span> <span class="st">"Example Pharma Ltd"</span>,</span>
+<span>  sponsor <span class="op">=</span> <span class="st">"Sponsor name"</span>,</span>
 <span>  author  <span class="op">=</span> <span class="st">"Your name"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -224,6 +234,11 @@
 <h2 id="integration-with-regulog">Integration with regulog<a class="anchor" aria-label="anchor" href="#integration-with-regulog"></a>
 </h2>
 <p><code>lineager</code> and <code>regulog</code> are complementary. Use <code>regulog</code> for a tamper-evident session-level audit trail (who ran what, when, and why), and <code>lineager</code> for row-level data provenance within that session. The <code><a href="reference/lg_report.html">lg_report()</a></code> output can be referenced in the <code>regulog</code> audit trail via <code>log_action()</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
+</h2>
+<p>MIT © ReproStats</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
