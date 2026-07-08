@@ -99,6 +99,6 @@ lg_report(
   sponsor  = "Example Pharma Ltd",
   author   = "J. Smith, Biostatistician"
 )
-#> lineager: report written to /tmp/RtmpFx6jAK/file1ac61fbca2d0.html
+#> lineager: report written to /tmp/RtmpFbnEWs/file1a9c7cadcfe9.html
 # }
 ```

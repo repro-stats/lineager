@@ -62,6 +62,15 @@ adsl <- lg_derive(adsl,
   description = "RANDFL: not a screen failure. SAFFL: randomised and dosed."
 )
 
+# Register the population definition before filtering
+lg_population(
+  adsl,
+  flag_var      = "SAFFL",
+  label         = "Safety Analysis Set",
+  definition    = "Randomised subjects who received at least one dose",
+  incl_criteria = c("Randomised (ARMCD != SCRNFAIL)", "Dosed (EXOCCUR = Y)")
+)
+
 # Filter with a mandatory exclusion reason — no silent row drops
 adsl_safety <- lg_filter(
   adsl,
@@ -69,6 +78,16 @@ adsl_safety <- lg_filter(
   reason      = "Not in safety population (SAFFL != 'Y')",
   reason_code = "NOT_SAFETY",
   population  = "SAFFL"
+)
+
+# Document a source-to-analysis variable derivation spec
+lg_spec(
+  dataset_id  = "ADSL",
+  variable    = "SAFFL",
+  label       = "Safety Analysis Set Flag",
+  source_dom  = "DM",
+  source_var  = "ARMCD",
+  derivation  = "Y if ARMCD != 'SCRNFAIL' and EXOCCUR = Y, else N"
 )
 
 # Trace any subject's complete journey across the pipeline
@@ -79,6 +98,8 @@ lg_exclusions()
 lg_disposition(by = "reason")
 
 # Visualise the full pipeline graph
+# Requires DiagrammeR: install.packages("DiagrammeR")
+# Without it, lg_plot() writes a .dot file you can render externally
 lin <- lg_lineage()
 lg_plot(lin)
 

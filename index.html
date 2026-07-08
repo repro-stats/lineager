@@ -104,6 +104,15 @@
 <span>  description <span class="op">=</span> <span class="st">"RANDFL: not a screen failure. SAFFL: randomised and dosed."</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Register the population definition before filtering</span></span>
+<span><span class="fu"><a href="reference/lg_population.html">lg_population</a></span><span class="op">(</span></span>
+<span>  <span class="va">adsl</span>,</span>
+<span>  flag_var      <span class="op">=</span> <span class="st">"SAFFL"</span>,</span>
+<span>  label         <span class="op">=</span> <span class="st">"Safety Analysis Set"</span>,</span>
+<span>  definition    <span class="op">=</span> <span class="st">"Randomised subjects who received at least one dose"</span>,</span>
+<span>  incl_criteria <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Randomised (ARMCD != SCRNFAIL)"</span>, <span class="st">"Dosed (EXOCCUR = Y)"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># Filter with a mandatory exclusion reason — no silent row drops</span></span>
 <span><span class="va">adsl_safety</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_filter.html">lg_filter</a></span><span class="op">(</span></span>
 <span>  <span class="va">adsl</span>,</span>
@@ -111,6 +120,16 @@
 <span>  reason      <span class="op">=</span> <span class="st">"Not in safety population (SAFFL != 'Y')"</span>,</span>
 <span>  reason_code <span class="op">=</span> <span class="st">"NOT_SAFETY"</span>,</span>
 <span>  population  <span class="op">=</span> <span class="st">"SAFFL"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Document a source-to-analysis variable derivation spec</span></span>
+<span><span class="fu"><a href="reference/lg_spec.html">lg_spec</a></span><span class="op">(</span></span>
+<span>  dataset_id  <span class="op">=</span> <span class="st">"ADSL"</span>,</span>
+<span>  variable    <span class="op">=</span> <span class="st">"SAFFL"</span>,</span>
+<span>  label       <span class="op">=</span> <span class="st">"Safety Analysis Set Flag"</span>,</span>
+<span>  source_dom  <span class="op">=</span> <span class="st">"DM"</span>,</span>
+<span>  source_var  <span class="op">=</span> <span class="st">"ARMCD"</span>,</span>
+<span>  derivation  <span class="op">=</span> <span class="st">"Y if ARMCD != 'SCRNFAIL' and EXOCCUR = Y, else N"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Trace any subject's complete journey across the pipeline</span></span>
@@ -121,6 +140,8 @@
 <span><span class="fu"><a href="reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"reason"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Visualise the full pipeline graph</span></span>
+<span><span class="co"># Requires DiagrammeR: install.packages("DiagrammeR")</span></span>
+<span><span class="co"># Without it, lg_plot() writes a .dot file you can render externally</span></span>
 <span><span class="va">lin</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/lg_lineage.html">lg_lineage</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/lg_plot.html">lg_plot</a></span><span class="op">(</span><span class="va">lin</span><span class="op">)</span></span>
 <span></span>
@@ -276,7 +297,7 @@
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://app.codecov.io/gh/repro-stats/lineager" class="external-link"><img src="https://codecov.io/gh/repro-stats/lineager/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://codecov.io/gh/repro-stats/lineager" class="external-link"><img src="https://codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg" alt="Codecov"></a></li>
 </ul>
 </div>
 
