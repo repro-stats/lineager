@@ -100,7 +100,7 @@
 #'
 #' @section The lineage ID:
 #'
-#' Every row in every tagged dataset carries a `.__lid__` column. For
+#' Every row in every tagged dataset carries a `lineage_id` column. For
 #' datasets with a `USUBJID` column, the ID embeds the subject identifier
 #' for human readability:
 #'

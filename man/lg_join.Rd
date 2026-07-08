@@ -25,13 +25,13 @@ lg_join(
 purpose (e.g. \code{"Merge first dose date from EX domain"}).}
 }
 \value{
-An \code{lg_df} with the joined result. \code{.__lid_y__} is added to record
+An \code{lg_df} with the joined result. \code{lineage_id_y} is added to record
 the contributing row IDs from \code{y}.
 }
 \description{
 Performs a left, inner, full, or right join and records the operation in the
-session log. The \code{.__lid__} column from \code{x} is preserved. A secondary
-column \code{.__lid_y__} records which rows of \code{y} contributed to each output
+session log. The \code{lineage_id} column from \code{x} is preserved. A secondary
+column \code{lineage_id_y} records which rows of \code{y} contributed to each output
 row, enabling full bilateral tracing.
 }
 \examples{
@@ -46,10 +46,8 @@ ex_summary <- lg_tag(
   dataset_id = "EX_SUMM"
 )
 
-adsl_ex <- lg_join(adsl, ex_summary,
-  by = "USUBJID",
-  description = "First dose date from EX domain"
-)
+adsl_ex <- lg_join(adsl, ex_summary, by = "USUBJID",
+                   description = "First dose date from EX domain")
 
 }
 \seealso{

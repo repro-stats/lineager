@@ -16,21 +16,21 @@
 # Reset with lg_start(); accessed by all lg_* functions implicitly.
 .lg <- new.env(parent = emptyenv())
 .lg_reset <- function() {
-  .lg$active <- FALSE
-  .lg$study_id <- NULL
+  .lg$active      <- FALSE
+  .lg$study_id    <- NULL
   .lg$analysis_id <- NULL
-  .lg$datasets <- list() # named list of lg_dataset metadata
-  .lg$operations <- list() # ordered list of lg_operation
-  .lg$exclusions <- list() # flat list of lg_exclusion
-  .lg$populations <- list() # named list of lg_population (by flag_var)
-  .lg$var_specs <- list() # list of lg_var_spec
-  .lg$op_counter <- 0L
+  .lg$datasets    <- list()   # named list of lg_dataset metadata
+  .lg$operations  <- list()   # ordered list of lg_operation
+  .lg$exclusions  <- list()   # flat list of lg_exclusion
+  .lg$populations <- list()   # named list of lg_population (by flag_var)
+  .lg$var_specs   <- list()   # list of lg_var_spec
+  .lg$op_counter  <- 0L
 }
 .lg_reset()
 
 
 # --------------------------------------------------------------------------- #
-#  lg_start / lg_end                                                          # # nolint
+#  lg_start / lg_end                                                           # nolint: commented_code_linter
 # --------------------------------------------------------------------------- #
 
 #' Start a lineager provenance session
@@ -53,12 +53,12 @@
 #' @export
 lg_start <- function(study_id = NULL, analysis_id = NULL) {
   .lg_reset()
-  .lg$active <- TRUE
-  .lg$study_id <- study_id
+  .lg$active      <- TRUE
+  .lg$study_id    <- study_id
   .lg$analysis_id <- analysis_id
   message(sprintf(
     "lineager: session started%s%s",
-    if (!is.null(study_id)) sprintf(" [study: %s]", study_id) else "",
+    if (!is.null(study_id))    sprintf(" [study: %s]",    study_id)    else "",
     if (!is.null(analysis_id)) sprintf(" [analysis: %s]", analysis_id) else ""
   ))
   invisible(NULL)
@@ -82,9 +82,9 @@ lg_start <- function(study_id = NULL, analysis_id = NULL) {
 #' @export
 lg_end <- function() {
   .assert_active()
-  n_ops <- length(.lg$operations)
+  n_ops  <- length(.lg$operations)
   n_excl <- length(.lg$exclusions)
-  n_pop <- length(.lg$populations)
+  n_pop  <- length(.lg$populations)
   n_spec <- length(.lg$var_specs)
   message(sprintf(
     "lineager: session ended \u2014 %d operation(s), %d exclusion(s), %d population(s), %d var spec(s)",
@@ -140,7 +140,7 @@ lg_end <- function() {
 }
 
 #' @noRd
-.lid_col <- ".__lid__"
+.lid_col <- "lineage_id"
 
 #' @noRd
 .register_operation <- function(op) {

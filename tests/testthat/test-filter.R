@@ -21,11 +21,11 @@ test_that("lg_filter() returns only rows matching the condition", {
   expect_equal(nrow(result), sum(adsl_raw()$RANDFL == "Y"))
 })
 
-test_that("lg_filter() preserves .__lid__ column", {
+test_that("lg_filter() preserves lineage_id column", {
   new_session()
   adsl <- adsl_tagged()
   result <- lg_filter(adsl, RANDFL == "Y", reason = "Not randomised")
-  expect_true(".__lid__" %in% names(result))
+  expect_true("lineage_id" %in% names(result))
 })
 
 test_that("lg_filter() preserves lg_df class", {

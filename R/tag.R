@@ -1,9 +1,9 @@
 # tag.R
 # lg_tag(): entry point to the lineager system.
-# Assigns a unique lineage ID (.__lid__) to every row of a dataset and
+# Assigns a unique lineage ID (lineage_id) to every row of a dataset and
 # registers it in the session store.
 #
-# .__lid__ format: {dataset_id}_{zero-padded sequence}
+# lineage_id format: {dataset_id}_{zero-padded sequence}
 # For CDISC SDTM datasets with USUBJID, the USUBJID is embedded:
 #   LB_0001_STUDY-001-042
 # This makes IDs human-inspectable without needing a lookup table.
@@ -11,11 +11,11 @@
 
 #' Tag a dataset to begin lineage tracking
 #'
-#' Assigns a unique lineage identifier (`.__lid__`) to every row and registers
+#' Assigns a unique lineage identifier (`lineage_id`) to every row and registers
 #' the dataset in the active session store. This is the entry point to
 #' `lineager` : all other functions require a tagged data frame.
 #'
-#' The `.__lid__` column is added at position 1 and is preserved through
+#' The `lineage_id` column is added at position 1 and is preserved through
 #' [lg_filter()], [lg_derive()], and [lg_join()] operations. It allows
 #' every row in any downstream dataset to be traced back to its origin.
 #'
@@ -30,7 +30,7 @@
 #'   (e.g. `"Laboratory test results"`). Used in reports.
 #' @param source Character or `NULL`. Source file or system description.
 #'
-#' @return An `lg_df` object : a `data.frame` with a `.__lid__` column and
+#' @return An `lg_df` object : a `data.frame` with a `lineage_id` column and
 #'   lineage metadata stored in attributes.
 #'
 #' @examples
@@ -42,10 +42,8 @@
 #'   SEX     = c("M", "F", "M")
 #' )
 #'
-#' dm_tagged <- lg_tag(dm,
-#'   dataset_id = "DM", domain = "DM",
-#'   label = "Demographics"
-#' )
+#' dm_tagged <- lg_tag(dm, dataset_id = "DM", domain = "DM",
+#'                     label = "Demographics")
 #' dm_tagged
 #'
 #' @seealso [lg_filter()], [lg_derive()], [lg_trace()]
@@ -54,7 +52,7 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
                    source = NULL) {
   .assert_active()
 
-  if (!is.data.frame(data)) stop("`data` must be a data.frame or tibble.")
+  if (!is.data.frame(data))   stop("`data` must be a data.frame or tibble.")
   if (!is.character(dataset_id) || !nzchar(dataset_id)) {
     stop("`dataset_id` must be a non-empty character string.")
   }
@@ -75,21 +73,19 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
     lids <- sprintf("%s_%06d", dataset_id, seq_len(n))
   }
 
-  # Insert .__lid__ at position 1
-  out <- data.frame(
-    .lid_placeholder_ = lids, data, stringsAsFactors = FALSE,
-    check.names = FALSE
-  )
+  # Insert lineage_id at position 1
+  out <- data.frame(.lid_placeholder_ = lids, data, stringsAsFactors = FALSE,
+                    check.names = FALSE)
   names(out)[1L] <- .lid_col
 
   # Attach lineage metadata as attributes
   attr(out, "lg_dataset_id") <- dataset_id
-  attr(out, "lg_domain") <- domain
-  attr(out, "lg_label") <- label %||% dataset_id
-  attr(out, "lg_source") <- source
-  attr(out, "lg_row_count") <- n
-  attr(out, "lg_tagged_at") <- .utc_now()
-  attr(out, "lg_history") <- list()
+  attr(out, "lg_domain")     <- domain
+  attr(out, "lg_label")      <- label %||% dataset_id
+  attr(out, "lg_source")     <- source
+  attr(out, "lg_row_count")  <- n
+  attr(out, "lg_tagged_at")  <- .utc_now()
+  attr(out, "lg_history")    <- list()
 
   class(out) <- c("lg_df", "data.frame")
 
@@ -104,10 +100,8 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
     tagged_at  = attr(out, "lg_tagged_at")
   )
 
-  message(sprintf(
-    "lineager: tagged '%s' \u2014 %d rows, %d cols",
-    dataset_id, n, ncol(data)
-  ))
+  message(sprintf("lineager: tagged '%s' \u2014 %d rows, %d cols",
+                  dataset_id, n, ncol(data)))
   out
 }
 
@@ -119,7 +113,7 @@ lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
 #' @importFrom utils head
 #' @export
 print.lg_df <- function(x, ...) {
-  ds <- attr(x, "lg_dataset_id") %||% "unknown"
+  ds  <- attr(x, "lg_dataset_id") %||% "unknown"
   dom <- attr(x, "lg_domain")
   cat(sprintf(
     "<lg_df> '%s'%s  [%d \u00d7 %d]\n",
@@ -127,7 +121,7 @@ print.lg_df <- function(x, ...) {
     if (!is.null(dom)) sprintf(" (domain: %s)", dom) else "",
     nrow(x), ncol(x)
   ))
-  # Strip .__lid__ and lg_df class before printing to avoid infinite recursion:
+  # Strip lineage_id and lg_df class before printing to avoid infinite recursion:
   # print.lg_df -> [.lg_df (returns lg_df) -> print.lg_df -> ...
   visible <- x[, names(x) != .lid_col, drop = FALSE]
   class(visible) <- "data.frame"
@@ -152,4 +146,26 @@ print.lg_df <- function(x, ...) {
     attr(result, "lg_row_count") <- nrow(result)
   }
   result
+}
+
+
+#' Retrieve lineage IDs from a tagged dataset
+#'
+#' Returns the `lineage_id` vector from an `lg_df` object. Use this instead
+#' of accessing the column directly to keep code robust against future
+#' internal changes.
+#'
+#' @param data An `lg_df` from [lg_tag()].
+#' @return A character vector of lineage IDs, one per row.
+#'
+#' @examples
+#' lg_start()
+#' dm <- data.frame(USUBJID = c("01-001", "01-002"), AGE = c(34L, 52L))
+#' dm_tagged <- lg_tag(dm, dataset_id = "DM")
+#' lg_id(dm_tagged)
+#'
+#' @export
+lg_id <- function(data) {
+  .assert_tagged(data)
+  data[[.lid_col]]
 }

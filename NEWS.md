@@ -23,7 +23,7 @@ Initial release.
   Every variable derivation is recorded in the operation log.
 
 * `lg_join()` — tracked join (left, inner, full, right). Preserves
-  `.__lid__` from `x`; adds `.__lid_y__` to record which rows of `y`
+  `.__lid__` from `x`; adds `lineage_id_y` to record which rows of `y`
   contributed, enabling bilateral tracing.
 
 ## Documentation functions

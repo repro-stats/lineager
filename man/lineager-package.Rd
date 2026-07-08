@@ -105,7 +105,7 @@ lg_report(
 \section{The lineage ID}{
 
 
-Every row in every tagged dataset carries a \code{.__lid__} column. For
+Every row in every tagged dataset carries a \code{lineage_id} column. For
 datasets with a \code{USUBJID} column, the ID embeds the subject identifier
 for human readability:
 

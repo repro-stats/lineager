@@ -40,7 +40,7 @@ any strings — or omitted entirely.
 
 ## 2. Tag your source datasets
 
-`lg_tag()` is the entry point. It assigns a `.__lid__` (lineage ID) to
+`lg_tag()` is the entry point. It assigns a `lineage_id` (lineage ID) to
 every row at position 1. This ID persists through all operations.
 
 ```{r tag-basic}
@@ -102,10 +102,10 @@ derived <- lg_derive(tagged,
 derived[, c("USUBJID", "age", "age_group", "adult")]
 ```
 
-The `.__lid__` column is preserved unchanged through derivations:
+The `lineage_id` column is preserved unchanged through derivations:
 
 ```{r lid-check}
-all(derived[[".__lid__"]] == tagged[[".__lid__"]])
+all(derived[["lineage_id"]] == tagged[["lineage_id"]])
 ```
 
 Chain derivations naturally:
@@ -116,15 +116,15 @@ derived2 <- lg_derive(derived,
   description = "Display label combining USUBJID and group"
 )
 
-derived2[, c(".__lid__", "USUBJID", "group", "label")]
+derived2[, c("lineage_id", "USUBJID", "group", "label")]
 ```
 
 Each call adds one `DERIVE` operation to the session log.
 
 ## 4. Join datasets with lineage tracking
 
-`lg_join()` performs a tracked join. It preserves `.__lid__` from the
-left dataset and adds `.__lid_y__` to record which rows from the right
+`lg_join()` performs a tracked join. It preserves `lineage_id` from the
+left dataset and adds `lineage_id_y` to record which rows from the right
 dataset contributed — enabling bilateral tracing.
 
 ```{r join-left}
@@ -134,11 +134,11 @@ joined <- lg_join(tagged, labs_tagged,
   description = "Merge ALT lab values from LABS onto PATIENTS"
 )
 
-joined[, c(".__lid__", "USUBJID", "eligible", "test", "value", ".__lid_y__")]
+joined[, c("lineage_id", "USUBJID", "eligible", "test", "value", "lineage_id_y")]
 ```
 
-The `.__lid_y__` column shows which LABS row contributed to each PATIENTS
-row. Rows with no matching lab record have `NA` in `.__lid_y__`.
+The `lineage_id_y` column shows which LABS row contributed to each PATIENTS
+row. Rows with no matching lab record have `NA` in `lineage_id_y`.
 
 Supported join types:
 

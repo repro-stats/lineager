@@ -26,12 +26,12 @@ test_that("lg_derive() adds derived column to the dataset", {
   expect_equal(result$AGE_GRP, ifelse(adsl_raw()$AGE >= 35L, ">=35", "<35"))
 })
 
-test_that("lg_derive() preserves .__lid__ column and values", {
+test_that("lg_derive() preserves lineage_id column and values", {
   new_session()
   adsl <- adsl_tagged()
-  lids_before <- adsl[[".__lid__"]]
+  lids_before <- adsl[["lineage_id"]]
   result <- lg_derive(adsl, X = 1L, description = "Constant")
-  expect_equal(result[[".__lid__"]], lids_before)
+  expect_equal(result[["lineage_id"]], lids_before)
 })
 
 test_that("lg_derive() preserves lg_df class", {
@@ -113,7 +113,7 @@ test_that("lg_join() inner join keeps only matching rows", {
   expect_equal(nrow(result), 2L)
 })
 
-test_that("lg_join() adds .__lid_y__ column for bilateral tracing", {
+test_that("lg_join() adds lineage_id_y column for bilateral tracing", {
   new_session()
   x <- lg_tag(data.frame(USUBJID = "01", A = 1L, stringsAsFactors = FALSE),
     dataset_id = "X"
@@ -123,11 +123,11 @@ test_that("lg_join() adds .__lid_y__ column for bilateral tracing", {
   )
 
   result <- lg_join(x, y, by = "USUBJID")
-  expect_true(".__lid_y__" %in% names(result))
-  expect_true(!is.na(result[[".__lid_y__"]][[1L]]))
+  expect_true("lineage_id_y" %in% names(result))
+  expect_true(!is.na(result[["lineage_id_y"]][[1L]]))
 })
 
-test_that("lg_join() preserves .__lid__ from x", {
+test_that("lg_join() preserves lineage_id from x", {
   new_session()
   x <- lg_tag(data.frame(
     USUBJID = c("01", "02"), A = 1:2,
@@ -138,9 +138,9 @@ test_that("lg_join() preserves .__lid__ from x", {
     stringsAsFactors = FALSE
   ), dataset_id = "Y")
 
-  lids_x <- x[[".__lid__"]]
+  lids_x <- x[["lineage_id"]]
   result <- lg_join(x, y, by = "USUBJID")
-  expect_equal(result[[".__lid__"]], lids_x)
+  expect_equal(result[["lineage_id"]], lids_x)
 })
 
 test_that("lg_join() preserves lg_df class", {

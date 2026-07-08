@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/repro-stats/lineager/actions/workflows/R-CMD-check.yaml)
-[![Codecov](https://codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg)](https://codecov.io/gh/repro-stats/lineager)
+[![Codecov](https://app.codecov.io/gh/repro-stats/lineager/branch/main/graph/badge.svg)](https://app.codecov.io/gh/repro-stats/lineager)
 <!-- badges: end -->
 
 **Row-Level Data Provenance and Exclusion Tracking**
@@ -135,7 +135,7 @@ lg_end()
 
 ## The lineage ID
 
-Every row carries a `.__lid__` column. For CDISC datasets with USUBJID:
+Every row carries a `lineage_id` column. For CDISC datasets with USUBJID:
 
 ```
 DM_0001_01-042    # row 1 from DM domain, subject 01-042
@@ -169,7 +169,3 @@ tamper-evident session-level audit trail (who ran what, when, and why),
 and `lineager` for row-level data provenance within that session. The
 `lg_report()` output can be referenced in the `regulog` audit trail via
 `log_action()`.
-
-## License
-
-MIT © ReproStats

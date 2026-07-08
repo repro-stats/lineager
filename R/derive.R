@@ -20,10 +20,8 @@
 #' @examples
 #' lg_start()
 #' lb <- lg_tag(
-#'   data.frame(
-#'     USUBJID = "01-001", LBORRES = "12.4",
-#'     LBSTRESN = 12.4, stringsAsFactors = FALSE
-#'   ),
+#'   data.frame(USUBJID = "01-001", LBORRES = "12.4",
+#'              LBSTRESN = 12.4, stringsAsFactors = FALSE),
 #'   dataset_id = "LB", domain = "LB"
 #' )
 #'
@@ -43,8 +41,8 @@ lg_derive <- function(data, ..., description) {
     stop("`description` is required for lg_derive(). Document what is being derived and why.")
   }
 
-  op_id <- .next_op_id()
-  ds_id <- attr(data, "lg_dataset_id") %||% "unknown"
+  op_id  <- .next_op_id()
+  ds_id  <- attr(data, "lg_dataset_id") %||% "unknown"
   n_rows <- nrow(data)
 
   result <- dplyr::mutate(data, ...)
@@ -77,8 +75,8 @@ lg_derive <- function(data, ..., description) {
 #' Join two tagged datasets with lineage tracking
 #'
 #' Performs a left, inner, full, or right join and records the operation in the
-#' session log. The `.__lid__` column from `x` is preserved. A secondary
-#' column `.__lid_y__` records which rows of `y` contributed to each output
+#' session log. The `lineage_id` column from `x` is preserved. A secondary
+#' column `lineage_id_y` records which rows of `y` contributed to each output
 #' row, enabling full bilateral tracing.
 #'
 #' @param x,y `lg_df` objects.
@@ -89,7 +87,7 @@ lg_derive <- function(data, ..., description) {
 #' @param description Character or `NULL`. Optional description of the join
 #'   purpose (e.g. `"Merge first dose date from EX domain"`).
 #'
-#' @return An `lg_df` with the joined result. `.__lid_y__` is added to record
+#' @return An `lg_df` with the joined result. `lineage_id_y` is added to record
 #'   the contributing row IDs from `y`.
 #'
 #' @examples
@@ -104,10 +102,8 @@ lg_derive <- function(data, ..., description) {
 #'   dataset_id = "EX_SUMM"
 #' )
 #'
-#' adsl_ex <- lg_join(adsl, ex_summary,
-#'   by = "USUBJID",
-#'   description = "First dose date from EX domain"
-#' )
+#' adsl_ex <- lg_join(adsl, ex_summary, by = "USUBJID",
+#'                    description = "First dose date from EX domain")
 #'
 #' @seealso [lg_derive()], [lg_filter()]
 #' @export
@@ -119,13 +115,13 @@ lg_join <- function(x, y, by, type = c("left", "inner", "full", "right"),
   type <- match.arg(type)
 
   op_id <- .next_op_id()
-  ds_x <- attr(x, "lg_dataset_id") %||% "x"
-  ds_y <- attr(y, "lg_dataset_id") %||% "y"
-  desc <- description %||% sprintf("%s join of '%s' onto '%s'", type, ds_y, ds_x)
+  ds_x  <- attr(x, "lg_dataset_id") %||% "x"
+  ds_y  <- attr(y, "lg_dataset_id") %||% "y"
+  desc  <- description %||% sprintf("%s join of '%s' onto '%s'", type, ds_y, ds_x)
 
-  # Rename y's .__lid__ before joining to avoid collision
+  # Rename y's lineage_id before joining to avoid collision
   y_join <- y
-  names(y_join)[names(y_join) == .lid_col] <- ".__lid_y__"
+  names(y_join)[names(y_join) == .lid_col] <- "lineage_id_y"
 
   join_fn <- switch(type,
     left  = dplyr::left_join,
@@ -156,20 +152,16 @@ lg_join <- function(x, y, by, type = c("left", "inner", "full", "right"),
   history <- attr(result, "lg_history") %||% list()
   attr(result, "lg_history") <- c(history, list(op))
 
-  message(sprintf(
-    "lineager: [%s + %s] %s join \u2014 %d rows out",
-    ds_x, ds_y, type, nrow(result)
-  ))
+  message(sprintf("lineager: [%s + %s] %s join \u2014 %d rows out",
+                  ds_x, ds_y, type, nrow(result)))
   result
 }
 
 
 # Internal: restore lg_df class and lineage attrs after dplyr operations
 .restore_lg_attrs <- function(result, source) {
-  preserve <- c(
-    "lg_dataset_id", "lg_domain", "lg_label",
-    "lg_source", "lg_history", "lg_tagged_at"
-  )
+  preserve <- c("lg_dataset_id", "lg_domain", "lg_label",
+                "lg_source", "lg_history", "lg_tagged_at")
   for (a in preserve) {
     attr(result, a) <- attr(source, a)
   }

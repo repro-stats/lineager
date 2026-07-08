@@ -23,16 +23,16 @@ Reviewer's Guide output.}
 \item{source}{Character or \code{NULL}. Source file or system description.}
 }
 \value{
-An \code{lg_df} object : a \code{data.frame} with a \code{.__lid__} column and
+An \code{lg_df} object : a \code{data.frame} with a \code{lineage_id} column and
 lineage metadata stored in attributes.
 }
 \description{
-Assigns a unique lineage identifier (\code{.__lid__}) to every row and registers
+Assigns a unique lineage identifier (\code{lineage_id}) to every row and registers
 the dataset in the active session store. This is the entry point to
 \code{lineager} : all other functions require a tagged data frame.
 }
 \details{
-The \code{.__lid__} column is added at position 1 and is preserved through
+The \code{lineage_id} column is added at position 1 and is preserved through
 \code{\link[=lg_filter]{lg_filter()}}, \code{\link[=lg_derive]{lg_derive()}}, and \code{\link[=lg_join]{lg_join()}} operations. It allows
 every row in any downstream dataset to be traced back to its origin.
 }
@@ -45,10 +45,8 @@ dm <- data.frame(
   SEX     = c("M", "F", "M")
 )
 
-dm_tagged <- lg_tag(dm,
-  dataset_id = "DM", domain = "DM",
-  label = "Demographics"
-)
+dm_tagged <- lg_tag(dm, dataset_id = "DM", domain = "DM",
+                    label = "Demographics")
 dm_tagged
 
 }

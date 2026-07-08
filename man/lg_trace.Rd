@@ -27,7 +27,7 @@ subject across all registered populations.}
 }
 }
 \description{
-Given a USUBJID (or a \code{.__lid__} value), returns the complete history of
+Given a USUBJID (or a \code{lineage_id} value), returns the complete history of
 that subject across all tagged datasets and operations in the session:
 which datasets they appear in, which operations they passed through or were
 excluded by, and which population flags apply to them.
