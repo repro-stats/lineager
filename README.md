@@ -82,12 +82,12 @@ adsl_safety <- lg_filter(
 
 # Document a source-to-analysis variable derivation spec
 lg_spec(
-  dataset_id  = "ADSL",
-  variable    = "SAFFL",
-  label       = "Safety Analysis Set Flag",
-  source_dom  = "DM",
-  source_var  = "ARMCD",
-  derivation  = "Y if ARMCD != 'SCRNFAIL' and EXOCCUR = Y, else N"
+  adam_dataset  = "ADSL",
+  adam_var      = "SAFFL",
+  label         = "Safety Analysis Set Flag",
+  source_domain = "DM",
+  source_var    = "ARMCD",
+  derivation    = "Y if ARMCD != 'SCRNFAIL' and EXOCCUR = Y, else N"
 )
 
 # Trace any subject's complete journey across the pipeline
