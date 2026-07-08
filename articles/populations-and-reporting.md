@@ -26,33 +26,41 @@ lg_start(study_id = "TRIAL-001", analysis_id = "primary-efficacy")
 
 # Source data — patients and lab measurements
 patients <- data.frame(
-  USUBJID  = sprintf("PT-%03d", 1:15),
-  age      = c(22L, 45L, 38L, 61L, 29L, 55L, 43L, 17L, 52L,
-               34L, 48L, 27L, 66L, 39L, 51L),
-  sex      = rep(c("M", "F", "M"), 5L),
-  arm      = c("TRT","TRT","CTL","TRT","CTL","CTL","TRT","TRT",
-               "CTL","TRT","CTL","TRT","CTL","CTL","TRT"),
+  USUBJID = sprintf("PT-%03d", 1:15),
+  age = c(
+    22L, 45L, 38L, 61L, 29L, 55L, 43L, 17L, 52L,
+    34L, 48L, 27L, 66L, 39L, 51L
+  ),
+  sex = rep(c("M", "F", "M"), 5L),
+  arm = c(
+    "TRT", "TRT", "CTL", "TRT", "CTL", "CTL", "TRT", "TRT",
+    "CTL", "TRT", "CTL", "TRT", "CTL", "CTL", "TRT"
+  ),
   enrolled = c(rep(TRUE, 13), FALSE, FALSE),
-  dosed    = c(rep(TRUE, 10), FALSE, TRUE, TRUE, FALSE, FALSE),
+  dosed = c(rep(TRUE, 10), FALSE, TRUE, TRUE, FALSE, FALSE),
   stringsAsFactors = FALSE
 )
 
 labs <- data.frame(
-  USUBJID  = sprintf("PT-%03d", c(1:10, 12:13)),
-  baseline = round(c(24.1,31.8,28.4,22.9,35.2,26.7,
-                      29.1,33.4,27.8,25.5,30.2,28.9), 1),
-  endpoint = round(c(18.4,27.1,24.6,19.8,NA,22.3,
-                      25.4,28.1,NA,21.7,26.4,24.1), 1),
+  USUBJID = sprintf("PT-%03d", c(1:10, 12:13)),
+  baseline = round(c(
+    24.1, 31.8, 28.4, 22.9, 35.2, 26.7,
+    29.1, 33.4, 27.8, 25.5, 30.2, 28.9
+  ), 1),
+  endpoint = round(c(
+    18.4, 27.1, 24.6, 19.8, NA, 22.3,
+    25.4, 28.1, NA, 21.7, 26.4, 24.1
+  ), 1),
   stringsAsFactors = FALSE
 )
 
 # Tag
-pts  <- lg_tag(patients, dataset_id = "PATIENTS", label = "Patient registry")
+pts <- lg_tag(patients, dataset_id = "PATIENTS", label = "Patient registry")
 #> lineager: tagged 'PATIENTS' — 15 rows, 6 cols
 labs_tagged <- lg_tag(labs, dataset_id = "LABS", label = "Laboratory measurements")
 #> lineager: tagged 'LABS' — 12 rows, 3 cols
 
-cat("Patients:", nrow(pts),         "\n")
+cat("Patients:", nrow(pts), "\n")
 #> Patients: 15
 cat("Labs:    ", nrow(labs_tagged), "\n")
 #> Labs:     12
@@ -87,7 +95,7 @@ pts_labs <- lg_join(pts, labs_tagged,
 
 # Derive analysis variables
 analysis_ds <- lg_derive(pts_labs,
-  CHG  = endpoint - baseline,
+  CHG = endpoint - baseline,
   PCHG = round((endpoint - baseline) / baseline * 100, 2),
   description = paste(
     "CHG: absolute change from baseline (endpoint - baseline);",
@@ -99,16 +107,19 @@ analysis_ds <- lg_derive(pts_labs,
 # Filter to enrolled, adult, dosed patients with complete endpoint
 final <- analysis_ds |>
   lg_filter(enrolled == TRUE, adult == TRUE,
-            reason      = "Not enrolled or under 18",
-            reason_code = "NOT_ENROLLED") |>
-  lg_filter(dosed    == TRUE,
-            reason      = "Did not receive study treatment",
-            reason_code = "NOT_DOSED",
-            population  = "SAFETY_SET") |>
+    reason      = "Not enrolled or under 18",
+    reason_code = "NOT_ENROLLED"
+  ) |>
+  lg_filter(dosed == TRUE,
+    reason      = "Did not receive study treatment",
+    reason_code = "NOT_DOSED",
+    population  = "SAFETY_SET"
+  ) |>
   lg_filter(!is.na(endpoint),
-            reason      = "Missing primary endpoint measurement",
-            reason_code = "MISSING_EP",
-            population  = "ANALYSIS_SET")
+    reason      = "Missing primary endpoint measurement",
+    reason_code = "MISSING_EP",
+    population  = "ANALYSIS_SET"
+  )
 #> lineager: [PATIENTS] filter 'Not enrolled or under 18' — 15 in, 12 out, 3 excluded
 #> lineager: [PATIENTS] filter 'Did not receive study treatment' — 12 in, 11 out, 1 excluded
 #> lineager: [PATIENTS] filter 'Missing primary endpoint measurement' — 11 in, 9 out, 2 excluded
@@ -156,15 +167,15 @@ lg_population(pts,
 
 env <- getFromNamespace(".lg", "lineager")
 pop <- env$populations[["DOSEFL"]]
-cat("Flag:       ", pop$flag_var,   "\n")
+cat("Flag:       ", pop$flag_var, "\n")
 #> Flag:        DOSEFL
-cat("Label:      ", pop$label,      "\n")
+cat("Label:      ", pop$label, "\n")
 #> Label:       Safety Set
 cat("N included: ", pop$n_included, "\n")
 #> N included:  12
 cat("N excluded: ", pop$n_excluded, "\n")
 #> N excluded:  3
-cat("N total:    ", pop$n_total,    "\n")
+cat("N total:    ", pop$n_total, "\n")
 #> N total:     15
 ```
 
@@ -292,12 +303,16 @@ cat("Report size:", nchar(html), "characters\n")
 #> Report size: 7109 characters
 cat("Sections found:\n")
 #> Sections found:
-sections <- c("Dataset Inventory", "Subject Disposition",
-              "Population Flag", "Variable Derivation",
-              "Operation Log", "Exclusion Listing")
+sections <- c(
+  "Dataset Inventory", "Subject Disposition",
+  "Population Flag", "Variable Derivation",
+  "Operation Log", "Exclusion Listing"
+)
 for (s in sections) {
-  cat(" ", if (grepl(s, html, ignore.case = TRUE)) "[YES]" else "[NO]",
-      s, "\n")
+  cat(
+    " ", if (grepl(s, html, ignore.case = TRUE)) "[YES]" else "[NO]",
+    s, "\n"
+  )
 }
 #>   [YES] Dataset Inventory 
 #>   [YES] Subject Disposition 

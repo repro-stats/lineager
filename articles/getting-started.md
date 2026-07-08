@@ -41,14 +41,16 @@ position 1. This ID persists through all operations.
 
 patients <- data.frame(
   USUBJID = c("P001", "P002", "P003", "P004", "P005", "P006"),
-  age     = c(34L, 19L, 52L, 28L, 61L, 44L),
-  group   = c("A", "B", "A", "B", "A", "B"),
+  age = c(34L, 19L, 52L, 28L, 61L, 44L),
+  group = c("A", "B", "A", "B", "A", "B"),
   eligible = c(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE),
   stringsAsFactors = FALSE
 )
 
-tagged <- lg_tag(patients, dataset_id = "PATIENTS",
-                 label = "Patient registry")
+tagged <- lg_tag(patients,
+  dataset_id = "PATIENTS",
+  label = "Patient registry"
+)
 #> lineager: tagged 'PATIENTS' — 6 rows, 4 cols
 
 tagged
@@ -77,15 +79,15 @@ Tag all source datasets before any transformations:
 
 labs <- data.frame(
   USUBJID = c("P001", "P001", "P003", "P004", "P006"),
-  test    = c("ALT", "AST", "ALT", "ALT", "ALT"),
-  value   = c(28.4, 31.2, 45.1, 22.8, 38.6),
+  test = c("ALT", "AST", "ALT", "ALT", "ALT"),
+  value = c(28.4, 31.2, 45.1, 22.8, 38.6),
   stringsAsFactors = FALSE
 )
 
 labs_tagged <- lg_tag(labs, dataset_id = "LABS", label = "Laboratory results")
 #> lineager: tagged 'LABS' — 5 rows, 3 cols
 
-cat("Patients tagged:", nrow(tagged),      "rows\n")
+cat("Patients tagged:", nrow(tagged), "rows\n")
 #> Patients tagged: 6 rows
 cat("Labs tagged:    ", nrow(labs_tagged), "rows\n")
 #> Labs tagged:     5 rows
@@ -103,7 +105,7 @@ log.
 
 derived <- lg_derive(tagged,
   age_group = ifelse(age >= 40L, ">=40", "<40"),
-  adult     = age >= 18L,
+  adult = age >= 18L,
   description = "age_group: >=40 vs <40 from age; adult: age >= 18"
 )
 #> lineager: [PATIENTS] derive — age_group: >=40 vs <40 from age; adult: age >= 18
@@ -186,10 +188,10 @@ Supported join types:
 
 ``` r
 
-lg_join(x, y, by = "USUBJID", type = "left")   # all rows of x
-lg_join(x, y, by = "USUBJID", type = "inner")  # only matching rows
-lg_join(x, y, by = "USUBJID", type = "full")   # all rows of both
-lg_join(x, y, by = "USUBJID", type = "right")  # all rows of y
+lg_join(x, y, by = "USUBJID", type = "left") # all rows of x
+lg_join(x, y, by = "USUBJID", type = "inner") # only matching rows
+lg_join(x, y, by = "USUBJID", type = "full") # all rows of both
+lg_join(x, y, by = "USUBJID", type = "right") # all rows of y
 ```
 
 ## 5. Filter with mandatory exclusion reasons
@@ -211,7 +213,7 @@ eligible_only <- lg_filter(tagged,
 )
 #> lineager: [PATIENTS] filter 'Not eligible for analysis (eligible != TRUE)' — 6 in, 4 out, 2 excluded
 
-cat("Before:", nrow(tagged),        "\n")
+cat("Before:", nrow(tagged), "\n")
 #> Before: 6
 cat("After: ", nrow(eligible_only), "\n")
 #> After:  4
@@ -230,25 +232,25 @@ Optional arguments enrich the exclusion record:
 # reason_code and population enrich the exclusion record
 step1 <- lg_filter(tagged,
   eligible == TRUE,
-  reason      = "Screening criteria not met (eligible != TRUE)",
+  reason = "Screening criteria not met (eligible != TRUE)",
   reason_code = "SCREEN_FAIL",
-  population  = "ELIGIBLE_SET"
+  population = "ELIGIBLE_SET"
 )
 #> lineager: [PATIENTS] filter 'Screening criteria not met (eligible != TRUE)' — 6 in, 4 out, 2 excluded
 
 step2 <- lg_filter(step1,
   age >= 18L,
-  reason      = "Under minimum age threshold (age < 18)",
+  reason = "Under minimum age threshold (age < 18)",
   reason_code = "UNDERAGE",
-  population  = "ADULT_SET"
+  population = "ADULT_SET"
 )
 #> lineager: [PATIENTS] filter 'Under minimum age threshold (age < 18)' — 4 in, 4 out, 0 excluded
 
 cat("Enrolled: ", nrow(tagged), "\n")
 #> Enrolled:  6
-cat("Eligible: ", nrow(step1),  "\n")
+cat("Eligible: ", nrow(step1), "\n")
 #> Eligible:  4
-cat("Adult:    ", nrow(step2),  "\n")
+cat("Adult:    ", nrow(step2), "\n")
 #> Adult:     4
 ```
 
@@ -310,9 +312,9 @@ lg_start(study_id = "DEMO")
 
 # Source data
 raw <- data.frame(
-  id      = sprintf("P%03d", 1:8),
-  value   = c(12.4, NA, 8.1, 15.2, 9.8, NA, 11.3, 7.4),
-  group   = rep(c("treatment", "control"), 4),
+  id = sprintf("P%03d", 1:8),
+  value = c(12.4, NA, 8.1, 15.2, 9.8, NA, 11.3, 7.4),
+  group = rep(c("treatment", "control"), 4),
   include = c(TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, FALSE, TRUE),
   stringsAsFactors = FALSE
 )
@@ -330,9 +332,11 @@ ds <- lg_derive(ds,
 
 ds_clean <- ds |>
   lg_filter(include == TRUE,
-            reason = "Excluded by study protocol (include != TRUE)") |>
+    reason = "Excluded by study protocol (include != TRUE)"
+  ) |>
   lg_filter(!is.na(value),
-            reason = "Missing primary endpoint value")
+    reason = "Missing primary endpoint value"
+  )
 #> lineager: [RAW] filter 'Excluded by study protocol (include != TRUE)' — 8 in, 6 out, 2 excluded
 #> lineager: [RAW] filter 'Missing primary endpoint value' — 6 in, 4 out, 2 excluded
 
@@ -387,15 +391,19 @@ Render it inline or export to a file.
 lg_start()
 #> lineager: session started
 raw <- lg_tag(
-  data.frame(USUBJID = sprintf("P%02d", 1:6),
-             group = rep(c("A","B"), 3L),
-             flag  = c(TRUE,TRUE,FALSE,TRUE,FALSE,TRUE),
-             stringsAsFactors = FALSE),
+  data.frame(
+    USUBJID = sprintf("P%02d", 1:6),
+    group = rep(c("A", "B"), 3L),
+    flag = c(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE),
+    stringsAsFactors = FALSE
+  ),
   dataset_id = "RAW"
 )
 #> lineager: tagged 'RAW' — 6 rows, 3 cols
-raw <- lg_derive(raw, group_n = ifelse(group == "A", 1L, 2L),
-                 description = "Numeric group code")
+raw <- lg_derive(raw,
+  group_n = ifelse(group == "A", 1L, 2L),
+  description = "Numeric group code"
+)
 #> lineager: [RAW] derive — Numeric group code
 lg_filter(raw, flag == TRUE, reason = "Flag not set")
 #> lineager: [RAW] filter 'Flag not set' — 6 in, 4 out, 2 excluded

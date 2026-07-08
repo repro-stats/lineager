@@ -65,7 +65,9 @@ ex_summary <- lg_tag(
 )
 #> lineager: tagged 'EX_SUMM' — 2 rows, 2 cols
 
-adsl_ex <- lg_join(adsl, ex_summary, by = "USUBJID",
-                   description = "First dose date from EX domain")
+adsl_ex <- lg_join(adsl, ex_summary,
+  by = "USUBJID",
+  description = "First dose date from EX domain"
+)
 #> lineager: [ADSL + EX_SUMM] left join — 2 rows out
 ```

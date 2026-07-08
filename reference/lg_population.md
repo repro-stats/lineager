@@ -71,18 +71,20 @@ then call `lg_population()` to register its definition.
 lg_start()
 #> lineager: session started
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01", "02", "03"),
-             RANDFL  = c("Y","N","Y"), EXOCCUR = c("Y","N","Y"),
-             SAFFL   = c("Y","N","Y")),
+  data.frame(
+    USUBJID = c("01", "02", "03"),
+    RANDFL = c("Y", "N", "Y"), EXOCCUR = c("Y", "N", "Y"),
+    SAFFL = c("Y", "N", "Y")
+  ),
   dataset_id = "ADSL"
 )
 #> lineager: tagged 'ADSL' — 3 rows, 4 cols
 
 lg_population(
   adsl,
-  flag_var     = "SAFFL",
-  label        = "Safety Analysis Flag",
-  definition   = "All randomised subjects who received at least one dose",
+  flag_var = "SAFFL",
+  label = "Safety Analysis Flag",
+  definition = "All randomised subjects who received at least one dose",
   incl_criteria = c("RANDFL == 'Y'", "EXOCCUR == 'Y'"),
   excl_criteria = "No study drug administered (EXOCCUR != 'Y')"
 )

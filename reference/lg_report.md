@@ -87,16 +87,18 @@ The report covers:
 ## Examples
 
 ``` r
-if (FALSE) { # \dontrun{
+# \donttest{
 lg_start(study_id = "TRIAL-001", analysis_id = "primary")
+#> lineager: session started [study: TRIAL-001] [analysis: primary]
 
 # ... tagging, filtering, deriving, spec registration ...
 
 lg_report(
-  output   = "outputs/lineage_report_TRIAL001.html",
+  output   = tempfile(fileext = ".html"),
   title    = "Data Provenance Report: TRIAL-001",
   sponsor  = "Example Pharma Ltd",
-  author   = "Ndoh Penn, Biostatistician"
+  author   = "J. Smith, Biostatistician"
 )
-} # }
+#> lineager: report written to /tmp/RtmpG4KZPL/file1ad68802d59.html
+# }
 ```

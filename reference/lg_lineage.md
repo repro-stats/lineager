@@ -60,18 +60,21 @@ to a file and render externally with Graphviz.
 lg_start()
 #> lineager: session started
 patients <- data.frame(
-  USUBJID  = c("P01","P02","P03","P04","P05"),
+  USUBJID = c("P01", "P02", "P03", "P04", "P05"),
   eligible = c(TRUE, FALSE, TRUE, TRUE, FALSE),
-  age      = c(34L, 17L, 52L, 29L, 61L),
+  age = c(34L, 17L, 52L, 29L, 61L),
   stringsAsFactors = FALSE
 )
 pts <- lg_tag(patients, dataset_id = "PATIENTS")
 #> lineager: tagged 'PATIENTS' — 5 rows, 3 cols
-pts <- lg_derive(pts, adult = age >= 18L,
-                 description = "adult flag from age")
+pts <- lg_derive(pts,
+  adult = age >= 18L,
+  description = "adult flag from age"
+)
 #> lineager: [PATIENTS] derive — adult flag from age
 lg_filter(pts, eligible & adult,
-          reason = "Ineligible or under 18")
+  reason = "Ineligible or under 18"
+)
 #> lineager: [PATIENTS] filter 'Ineligible or under 18' — 5 in, 3 out, 2 excluded
 #> <lg_df> 'PATIENTS'  [3 × 5]
 #>   USUBJID eligible age adult

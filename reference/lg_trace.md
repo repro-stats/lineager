@@ -65,13 +65,16 @@ programmatically generated answer.
 lg_start()
 #> lineager: session started
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01", "02", "03"),
-             RANDFL  = c("Y", "N", "Y")),
+  data.frame(
+    USUBJID = c("01", "02", "03"),
+    RANDFL = c("Y", "N", "Y")
+  ),
   dataset_id = "ADSL"
 )
 #> lineager: tagged 'ADSL' — 3 rows, 2 cols
 lg_filter(adsl, RANDFL == "Y",
-          reason = "Not randomised", population = "RANDFL")
+  reason = "Not randomised", population = "RANDFL"
+)
 #> lineager: [ADSL] filter 'Not randomised' — 3 in, 2 out, 1 excluded
 #> <lg_df> 'ADSL'  [2 × 3]
 #>   USUBJID RANDFL

@@ -35,15 +35,18 @@ column showing remaining subjects at each stage.
 lg_start()
 #> lineager: session started
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01","02","03","04","05"),
-             RANDFL  = c("Y","N","Y","Y","N"),
-             SAFFL   = c("Y","N","Y","Y","N")),
+  data.frame(
+    USUBJID = c("01", "02", "03", "04", "05"),
+    RANDFL = c("Y", "N", "Y", "Y", "N"),
+    SAFFL = c("Y", "N", "Y", "Y", "N")
+  ),
   dataset_id = "ADSL"
 )
 #> lineager: tagged 'ADSL' — 5 rows, 3 cols
 lg_filter(adsl, RANDFL == "Y",
-          reason = "Not randomised (RANDFL != 'Y')",
-          reason_code = "NOT_RANDOMISED", population = "RANDFL")
+  reason = "Not randomised (RANDFL != 'Y')",
+  reason_code = "NOT_RANDOMISED", population = "RANDFL"
+)
 #> lineager: [ADSL] filter 'Not randomised (RANDFL != 'Y')' — 5 in, 3 out, 2 excluded
 #> <lg_df> 'ADSL'  [3 × 4]
 #>   USUBJID RANDFL SAFFL

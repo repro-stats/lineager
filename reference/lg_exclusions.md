@@ -44,12 +44,13 @@ A `data.frame` with columns: `excl_id`, `op_id`, `dataset_id`, `lid`,
 lg_start()
 #> lineager: session started
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01","02","03"), RANDFL = c("Y","N","Y")),
+  data.frame(USUBJID = c("01", "02", "03"), RANDFL = c("Y", "N", "Y")),
   dataset_id = "ADSL"
 )
 #> lineager: tagged 'ADSL' — 3 rows, 2 cols
 lg_filter(adsl, RANDFL == "Y",
-          reason = "Not randomised", population = "RANDFL")
+  reason = "Not randomised", population = "RANDFL"
+)
 #> lineager: [ADSL] filter 'Not randomised' — 3 in, 2 out, 1 excluded
 #> <lg_df> 'ADSL'  [2 × 3]
 #>   USUBJID RANDFL
@@ -61,5 +62,5 @@ lg_exclusions()
 #>             excl_id   op_id dataset_id          lid usubjid         reason
 #> 1 op_0001_excl_0001 op_0001       ADSL ADSL_0002_02      02 Not randomised
 #>   reason_code population              excluded_at
-#> 1        <NA>     RANDFL 2026-06-30T09:48:41.962Z
+#> 1        <NA>     RANDFL 2026-07-08T11:14:29.183Z
 ```

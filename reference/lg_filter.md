@@ -62,9 +62,11 @@ failure : this is enforced at the R level, not by convention.
 lg_start()
 #> lineager: session started
 adsl <- lg_tag(
-  data.frame(USUBJID = c("01", "02", "03"),
-             RANDFL  = c("Y", "N", "Y"),
-             SAFFL   = c("Y", "N", "Y")),
+  data.frame(
+    USUBJID = c("01", "02", "03"),
+    RANDFL = c("Y", "N", "Y"),
+    SAFFL = c("Y", "N", "Y")
+  ),
   dataset_id = "ADSL"
 )
 #> lineager: tagged 'ADSL' — 3 rows, 3 cols
@@ -72,9 +74,9 @@ adsl <- lg_tag(
 adsl_rand <- lg_filter(
   adsl,
   RANDFL == "Y",
-  reason      = "Not randomised (RANDFL != 'Y')",
+  reason = "Not randomised (RANDFL != 'Y')",
   reason_code = "NOT_RANDOMISED",
-  population  = "RANDFL"
+  population = "RANDFL"
 )
 #> lineager: [ADSL] filter 'Not randomised (RANDFL != 'Y')' — 3 in, 2 out, 1 excluded
 ```
