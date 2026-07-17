@@ -91,6 +91,7 @@
 #' | [lineager::lg_population()] | Register a population or cohort definition |
 #' | [lineager::lg_spec()] | Document a source-to-analysis variable derivation |
 #' | [lineager::lg_trace()] | Trace a row's complete lineage journey |
+#' | [lineager::lg_history()] | Retrieve the operation history recorded on a tagged object |
 #' | [lineager::lg_exclusions()] | Retrieve the full exclusion registry |
 #' | [lineager::lg_disposition()] | Grouped exclusion summary table |
 #' | [lineager::lg_operations()] | Full pipeline operation log |
