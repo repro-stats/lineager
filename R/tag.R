@@ -29,6 +29,12 @@
 #' @param label Character or `NULL`. Human-readable label for the dataset
 #'   (e.g. `"Laboratory test results"`). Used in reports.
 #' @param source Character or `NULL`. Source file or system description.
+#' @param overwrite Logical. If `dataset_id` is already registered in this
+#'   session, `lg_tag()` errors by default : any `lg_df` object still held
+#'   from the previous registration would silently stop being traceable via
+#'   [lg_trace()] the moment the registration is replaced. Set `overwrite =
+#'   TRUE` to explicitly allow re-tagging (e.g. intentionally re-running a
+#'   step) and acknowledge that the prior object is no longer traceable.
 #'
 #' @return An `lg_df` object : a `data.frame` with a `lineage_id` column and
 #'   lineage metadata stored in attributes.
@@ -49,18 +55,21 @@
 #' @seealso [lg_filter()], [lg_derive()], [lg_trace()]
 #' @export
 lg_tag <- function(data, dataset_id, domain = NULL, label = NULL,
-                   source = NULL) {
+                   source = NULL, overwrite = FALSE) {
   .assert_active()
 
   if (!is.data.frame(data))   stop("`data` must be a data.frame or tibble.")
   if (!is.character(dataset_id) || !nzchar(dataset_id)) {
     stop("`dataset_id` must be a non-empty character string.")
   }
-  if (dataset_id %in% names(.lg$datasets)) {
-    warning(sprintf(
-      "lineager: dataset_id '%s' already registered. Re-tagging replaces prior registration.",
+  if (dataset_id %in% names(.lg$datasets) && !isTRUE(overwrite)) {
+    stop(sprintf(
+      "dataset_id '%s' is already registered in this session.\n",
       dataset_id
-    ))
+    ), "  Any lg_df object tagged under the previous registration will no ",
+    "longer be traceable via lg_trace() once it is replaced.\n",
+    "  Set `overwrite = TRUE` if this is intentional, or choose a ",
+    "different dataset_id.")
   }
 
   n <- nrow(data)
@@ -130,6 +139,24 @@ print.lg_df <- function(x, ...) {
   invisible(x)
 }
 
+#' Subset an `lg_df`, preserving lineage attributes
+#'
+#' @details
+#' `[.lg_df` deliberately forces `drop = FALSE`, unlike base `[.data.frame`.
+#' This means single-column subsetting (e.g. `df[, "col"]`) returns a
+#' one-column `lg_df`/`data.frame` rather than a bare vector, so the lineage
+#' attributes are never silently lost through ordinary subsetting. Use
+#' `df[[col]]` or `lg_id(df)` when a plain vector is what you actually want.
+#'
+#' @param x An `lg_df` object.
+#' @param i Row index, as in `[.data.frame`.
+#' @param j Column index, as in `[.data.frame`.
+#' @param drop Ignored : `lg_df` subsetting always behaves as though
+#'   `drop = FALSE`. See Details.
+#'
+#' @return An `lg_df` with lineage attributes preserved (or a plain
+#'   `data.frame`/vector for subsetting operations where preservation
+#'   is not applicable, matching normal `[.data.frame` fallback behaviour).
 #' @export
 `[.lg_df` <- function(x, i, j, drop = FALSE) {
   # Preserve lg_df class and attributes through subsetting
@@ -168,4 +195,31 @@ print.lg_df <- function(x, ...) {
 lg_id <- function(data) {
   .assert_tagged(data)
   data[[.lid_col]]
+}
+
+
+#' Retrieve the operation history recorded on a tagged object
+#'
+#' Every `lg_df` accumulates the sequence of [lg_filter()], [lg_derive()],
+#' and [lg_join()] operations that produced it, in its `lg_history`
+#' attribute. `lg_history()` returns that sequence directly rather than
+#' requiring `attr(data, "lg_history")`.
+#'
+#' @param data An `lg_df` object.
+#' @return A list of `lg_operation` records applied to this specific object,
+#'   in the order they were applied. Empty list if none yet.
+#'
+#' @examples
+#' lg_start()
+#' dm <- lg_tag(
+#'   data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)),
+#'   dataset_id = "DM"
+#' )
+#' dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
+#' length(lg_history(dm_f))
+#'
+#' @export
+lg_history <- function(data) {
+  .assert_tagged(data)
+  attr(data, "lg_history") %||% list()
 }

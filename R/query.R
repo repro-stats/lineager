@@ -58,13 +58,23 @@ lg_trace <- function(usubjid, verbose = TRUE) {
     stop("`usubjid` must be a single character string.")
   }
 
-  # Find which datasets this subject appears in (by matching lid prefix or USUBJID)
+  # Find which datasets this subject appears in.
+  #
+  # lineage_id format embeds USUBJID as the trailing component, e.g.
+  # "LB_0007_101-042". Matching with an unanchored substring search (as a
+  # prior version of this function did via grep(..., fixed = TRUE)) is
+  # unsafe: usubjid "01" would also match inside "101", "011", "201", etc.
+  # -- a real risk given common site-subject numbering schemes where one
+  # USUBJID can genuinely be a substring of another. Instead, require an
+  # exact match on the "_<usubjid>" suffix, which is where USUBJID always
+  # sits in the generated ID.
   subject_lids <- character(0)
   subject_datasets <- character(0)
+  suffix <- paste0("_", usubjid)
 
   for (ds_id in names(.lg$datasets)) {
     ds <- .lg$datasets[[ds_id]]
-    matching <- grep(usubjid, ds$lids, fixed = TRUE, value = TRUE)
+    matching <- ds$lids[endsWith(ds$lids, suffix)]
     if (length(matching) > 0L) {
       subject_lids <- c(subject_lids, matching)
       subject_datasets <- c(subject_datasets, ds_id)
@@ -244,26 +254,41 @@ lg_exclusions <- function(population = NULL, dataset_id = NULL,
 
 #' Generate a subject disposition summary
 #'
-#' Produces a CONSORT-style subject disposition table from all [lg_filter()]
-#' exclusions in the session. Each row represents a distinct exclusion reason,
-#' showing cumulative subject counts at each stage.
+#' Produces a CONSORT-style subject disposition table from every documented
+#' exclusion in the active session -- both [lg_filter()] calls and any
+#' [lg_join()] call (`type = "inner"`/`"right"`) that dropped unmatched rows
+#' of `x`. Both are exclusions in the same sense (rows removed from the
+#' pipeline with a mandatory documented reason), so both must be reflected
+#' here for the totals to match [lg_exclusions()].
 #'
-#' @param by Character. How to group: `"reason"` (default) groups by the
-#'   exclusion reason text, `"population"` groups by population flag,
+#' With the default `by = "reason"`, this returns one row **per contributing
+#' step** (filter or row-dropping join), in the exact chronological order
+#' they were executed, with the number of subjects excluded at that step and
+#' the number remaining immediately afterward -- i.e. the actual funnel.
+#'
+#' `by = "population"` and `by = "dataset"` aggregate exclusions that share a
+#' population flag or dataset across possibly multiple steps, in the order
+#' each group first appears. Note that [lg_join()] has no `population`
+#' argument, so join-caused exclusions always fall into the `"(none)"` group
+#' under `by = "population"`.
+#'
+#' @param by Character. How to group: `"reason"` (default) returns the exact
+#'   step-by-step funnel. `"population"` groups by population flag.
 #'   `"dataset"` groups by dataset ID.
 #'
-#' @return A `data.frame` with columns: `group`, `n_excluded`, and a
-#'   `cumulative_n` column showing remaining subjects at each stage.
+#' @return A `data.frame`. For `by = "reason"`: columns `step`, `reason`,
+#'   `n_excluded`, `n_remaining`. For `by = "population"` or `"dataset"`:
+#'   columns `group`, `n_excluded`, `n_remaining`.
 #'
 #' @examples
 #' lg_start()
 #' adsl <- lg_tag(
 #'   data.frame(
-#'     USUBJID = c("01", "02", "03", "04", "05"),
-#'     RANDFL = c("Y", "N", "Y", "Y", "N"),
-#'     SAFFL = c("Y", "N", "Y", "Y", "N")
+#'     USUBJID = sprintf("%02d", 1:5),
+#'     RANDFL = c("Y","Y","N","Y","Y"),
+#'     SAFFL  = c("Y","Y","N","Y","N")
 #'   ),
-#'   dataset_id = "ADSL"
+#'   dataset_id = "ADSL5"
 #' )
 #' lg_filter(adsl, RANDFL == "Y",
 #'   reason = "Not randomised (RANDFL != 'Y')",
@@ -278,58 +303,114 @@ lg_disposition <- function(by = c("reason", "population", "dataset")) {
   .assert_active()
   by <- match.arg(by)
 
-  excl <- lg_exclusions(verbose = FALSE)
+  ops <- lg_operations(verbose = FALSE)
+  # Both FILTER and any row-dropping JOIN (inner/right with unmatched x
+  # rows) register documented exclusions -- both must be included here to
+  # stay consistent with lg_exclusions(). Left/full joins never drop x rows,
+  # so their rows_excluded is 0 and they are naturally excluded below.
+  is_relevant <- ops$op_type == "FILTER" |
+    (grepl("^JOIN", ops$op_type) & !is.na(ops$rows_excluded) & ops$rows_excluded > 0L)
+  contributing_ops <- ops[is_relevant, , drop = FALSE]
+  # lg_operations() preserves chronological order already (operations are
+  # appended in the order they run); sort by op_id as a defensive guarantee.
+  if (nrow(contributing_ops) > 0L) {
+    contributing_ops <- contributing_ops[order(contributing_ops$op_id), , drop = FALSE]
+  }
 
-  if (nrow(excl) == 0L) {
+  if (nrow(contributing_ops) == 0L) {
     message("lineager: no exclusions to summarise")
+    if (by == "reason") {
+      return(data.frame(
+        step = integer(0), reason = character(0),
+        n_excluded = integer(0), n_remaining = integer(0),
+        stringsAsFactors = FALSE
+      ))
+    }
     return(data.frame(
       group = character(0), n_excluded = integer(0),
-      stringsAsFactors = FALSE
+      n_remaining = integer(0), stringsAsFactors = FALSE
     ))
   }
 
+  if (by == "reason") {
+    # One row per contributing step, in execution order: the true funnel.
+    out <- data.frame(
+      step        = seq_len(nrow(contributing_ops)),
+      reason      = contributing_ops$description,
+      n_excluded  = contributing_ops$rows_excluded,
+      n_remaining = contributing_ops$rows_out,
+      stringsAsFactors = FALSE
+    )
+    return(out)
+  }
+
   group_col <- switch(by,
-    reason     = "reason",
     population = "population",
     dataset    = "dataset_id"
   )
 
-  counts <- as.data.frame(table(excl[[group_col]], dnn = "group"),
-    stringsAsFactors = FALSE
-  )
-  names(counts)[2L] <- "n_excluded"
-  counts <- counts[order(-counts$n_excluded), ]
-  rownames(counts) <- NULL
+  groups_seen <- unique(contributing_ops[[group_col]])
+  running_n <- contributing_ops$rows_in[[1L]]
 
-  counts
+  out_rows <- vector("list", length(groups_seen))
+  for (i in seq_along(groups_seen)) {
+    g <- groups_seen[[i]]
+    is_g <- if (is.na(g)) is.na(contributing_ops[[group_col]]) else
+      (!is.na(contributing_ops[[group_col]]) & contributing_ops[[group_col]] == g)
+    g_steps <- contributing_ops[is_g, , drop = FALSE]
+    n_excl <- sum(g_steps$rows_excluded, na.rm = TRUE)
+    running_n <- running_n - n_excl
+    out_rows[[i]] <- data.frame(
+      group       = if (is.na(g)) "(none)" else g,
+      n_excluded  = n_excl,
+      n_remaining = running_n,
+      stringsAsFactors = FALSE
+    )
+  }
+  out <- do.call(rbind, out_rows)
+  rownames(out) <- NULL
+  out
 }
 
 
 #' Retrieve the operation log as a data frame
 #'
-#' @param verbose Logical. Print count summary. Default `FALSE`.
-#' @return A `data.frame` of all recorded operations.
+#' @param verbose Logical. Print count summary. Default `TRUE`.
+#' @return A `data.frame` of all recorded operations, with columns `op_id`,
+#'   `op_type`, `dataset_id`, `description`, `population` (`NA` for
+#'   non-`FILTER` operations), `rows_in`, `rows_out`, `rows_excluded`
+#'   (`rows_in - rows_out` when not directly recorded), and `timestamp`.
 #' @export
-lg_operations <- function(verbose = FALSE) {
+lg_operations <- function(verbose = TRUE) {
   .assert_active()
 
   if (length(.lg$operations) == 0L) {
     return(data.frame(
       op_id = character(0), op_type = character(0),
       dataset_id = character(0), description = character(0),
+      population = character(0),
       rows_in = integer(0), rows_out = integer(0),
+      rows_excluded = integer(0),
+      timestamp = character(0),
       stringsAsFactors = FALSE
     ))
   }
 
   rows <- lapply(.lg$operations, function(op) {
+    rows_in  <- op$rows_in %||% NA_integer_
+    rows_out <- op$rows_out %||% NA_integer_
+    rows_excluded <- op$rows_excluded %||%
+      (if (!is.na(rows_in) && !is.na(rows_out)) rows_in - rows_out else NA_integer_)
+
     data.frame(
       op_id = op$op_id,
       op_type = op$op_type,
       dataset_id = op$dataset_id %||% NA_character_,
       description = op$description %||% NA_character_,
-      rows_in = op$rows_in %||% NA_integer_,
-      rows_out = op$rows_out %||% NA_integer_,
+      population = op$population %||% NA_character_,
+      rows_in = rows_in,
+      rows_out = rows_out,
+      rows_excluded = rows_excluded,
       timestamp = op$timestamp %||% NA_character_,
       stringsAsFactors = FALSE
     )

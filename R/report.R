@@ -9,6 +9,12 @@
 #   4. Variable derivations \u2014 each registered lg_spec (SDTM \u2192 ADaM)
 #   5. Operation log \u2014 full sequence of lg_filter / lg_derive / lg_join ops
 #   6. Exclusion listing \u2014 full exclusion registry, grouped by reason
+#
+# All user-supplied text (reasons, descriptions, labels, definitions, etc.)
+# is passed through .html_escape() before being inserted into the HTML
+# template, since exclusion/derivation text routinely contains "<", ">",
+# and "&" (e.g. `reason = "AGE < 18 & CONSENT != 'Y'"`), which would
+# otherwise corrupt the rendered table.
 
 
 #' Generate a CDISC Reviewer's Guide-aligned provenance report
@@ -150,7 +156,7 @@ lg_report <- function(format = "html",
 <body>
 %s
 </body>
-</html>', title, body)
+</html>', .html_escape(title), body)
 }
 
 
@@ -179,8 +185,9 @@ lg_report <- function(format = "html",
   %d population(s) &nbsp;&bull;&nbsp;
   %d variable spec(s)
 </div>',
-    title, study_id, .lg$analysis_id %||% "Not specified",
-    sponsor, author, date, .utc_now(),
+    .html_escape(title), .html_escape(study_id),
+    .html_escape(.lg$analysis_id %||% "Not specified"),
+    .html_escape(sponsor), .html_escape(author), .html_escape(date), .utc_now(),
     n_ds, n_ops, n_excl, n_pop, n_spec
   )
 }
@@ -195,11 +202,11 @@ lg_report <- function(format = "html",
     ds <- .lg$datasets[[id]]
     sprintf(
       "<tr><td><code>%s</code></td><td>%s</td><td>%s</td><td>%d</td><td>%s</td></tr>",
-      id,
-      ds$label %||% "",
-      ds$domain %||% "&mdash;",
+      .html_escape(id),
+      .html_escape(ds$label %||% ""),
+      if (is.null(ds$domain)) "&mdash;" else .html_escape(ds$domain),
       ds$n_rows,
-      ds$source %||% "&mdash;"
+      if (is.null(ds$source)) "&mdash;" else .html_escape(ds$source)
     )
   }, character(1L))
 
@@ -219,21 +226,26 @@ lg_report <- function(format = "html",
     return("<h2>2. Subject Disposition</h2><p>No exclusions recorded.</p>")
   }
 
+  # lg_disposition(by = "reason") now returns the true step-by-step funnel:
+  # step, reason, n_excluded, n_remaining (see query.R).
   disp <- lg_disposition(by = "reason")
   rows <- vapply(seq_len(nrow(disp)), function(i) {
     sprintf(
-      "<tr><td>%s</td><td class='excl'>%d</td></tr>",
-      disp$group[[i]], disp$n_excluded[[i]]
+      "<tr><td>%d</td><td>%s</td><td class='excl'>%d</td><td>%d</td></tr>",
+      disp$step[[i]], .html_escape(disp$reason[[i]]),
+      disp$n_excluded[[i]], disp$n_remaining[[i]]
     )
   }, character(1L))
+
+  final_n <- if (nrow(disp) > 0L) disp$n_remaining[[nrow(disp)]] else NA_integer_
 
   sprintf(
     '<h2>2. Subject Disposition</h2>
 <table>
-<tr><th>Exclusion reason</th><th>N excluded</th></tr>
+<tr><th>Step</th><th>Exclusion reason</th><th>N excluded</th><th>N remaining</th></tr>
 %s
-<tr><td><strong>Total excluded</strong></td><td class="excl"><strong>%d</strong></td></tr>
-</table>', paste(rows, collapse = "\n"), sum(disp$n_excluded)
+<tr><td colspan="2"><strong>Total excluded</strong></td><td class="excl"><strong>%d</strong></td><td><strong>%d</strong></td></tr>
+</table>', paste(rows, collapse = "\n"), sum(disp$n_excluded), final_n
   )
 }
 
@@ -245,8 +257,12 @@ lg_report <- function(format = "html",
 
   sections <- vapply(names(.lg$populations), function(flag) {
     p <- .lg$populations[[flag]]
-    crit_in <- paste(p$incl_criteria, collapse = "<br>")
-    crit_out <- if (!is.null(p$excl_criteria)) paste(p$excl_criteria, collapse = "<br>") else "&mdash;"
+    crit_in <- paste(.html_escape(p$incl_criteria), collapse = "<br>")
+    crit_out <- if (!is.null(p$excl_criteria)) {
+      paste(.html_escape(p$excl_criteria), collapse = "<br>")
+    } else {
+      "&mdash;"
+    }
     sprintf(
       "<h3><code>%s</code> &mdash; %s</h3>
 <p><em>%s</em></p>
@@ -257,7 +273,7 @@ lg_report <- function(format = "html",
 <tr><th>N excluded</th><td class='excl'>%d</td></tr>
 <tr><th>N total</th><td>%d</td></tr>
 </table>",
-      flag, p$label, p$definition,
+      .html_escape(flag), .html_escape(p$label), .html_escape(p$definition),
       crit_in, crit_out,
       p$n_included, p$n_excluded, p$n_total
     )
@@ -276,8 +292,8 @@ lg_report <- function(format = "html",
     s <- .lg$var_specs[[key]]
     sprintf(
       "<tr><td><code>%s</code></td><td><code>%s</code></td><td>%s</td><td><code>%s</code></td><td><code>%s</code></td><td>%s</td></tr>",
-      s$adam_dataset, s$adam_var, s$label,
-      s$source_domain, s$source_var, s$derivation
+      .html_escape(s$adam_dataset), .html_escape(s$adam_var), .html_escape(s$label),
+      .html_escape(s$source_domain), .html_escape(s$source_var), .html_escape(s$derivation)
     )
   }, character(1L))
 
@@ -301,8 +317,8 @@ lg_report <- function(format = "html",
     op <- ops[i, ]
     sprintf(
       "<tr><td><span class='badge'>%s</span></td><td><code>%s</code></td><td>%s</td><td>%s</td><td>%s</td></tr>",
-      op$op_type %||% "", op$dataset_id %||% "",
-      op$description %||% "",
+      .html_escape(op$op_type %||% ""), .html_escape(op$dataset_id %||% ""),
+      .html_escape(op$description %||% ""),
       op$rows_in %||% "", op$rows_out %||% ""
     )
   }, character(1L))
@@ -327,10 +343,10 @@ lg_report <- function(format = "html",
     e <- excl[i, ]
     sprintf(
       "<tr><td>%s</td><td><code>%s</code></td><td class='excl'>%s</td><td>%s</td></tr>",
-      e$usubjid %||% "&mdash;",
-      e$dataset_id %||% "",
-      e$reason %||% "",
-      e$population %||% "&mdash;"
+      .esc_or_dash(e$usubjid),
+      .html_escape(e$dataset_id %||% ""),
+      .html_escape(e$reason %||% ""),
+      .esc_or_dash(e$population)
     )
   }, character(1L))
 

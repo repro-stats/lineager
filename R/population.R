@@ -24,6 +24,13 @@
 #'   or plain English. At least one required.
 #' @param excl_criteria Character vector of explicit exclusion criteria.
 #'   `NULL` if there are none beyond failing inclusion.
+#' @param included_value The value of `flag_var` that denotes inclusion.
+#'   Defaults to `"Y"` (the CDISC convention), but `lineager` is
+#'   general-purpose : if your flag is a logical column, pass
+#'   `included_value = TRUE`; for any other custom coding, pass the actual
+#'   included-value directly. Using the wrong value here silently produces
+#'   incorrect included/excluded counts (e.g. a logical `TRUE`/`FALSE` flag
+#'   compared against `"Y"` will count every row as excluded).
 #'
 #' @return `data`, invisibly (for pipe use).
 #'
@@ -50,7 +57,8 @@
 #' @seealso [lg_filter()], [lg_disposition()], [lg_report()]
 #' @export
 lg_population <- function(data, flag_var, label, definition,
-                          incl_criteria, excl_criteria = NULL) {
+                          incl_criteria, excl_criteria = NULL,
+                          included_value = "Y") {
   .assert_active()
   .assert_tagged(data)
 
@@ -61,9 +69,16 @@ lg_population <- function(data, flag_var, label, definition,
     ), "  Derive the flag with lg_derive() first, then call lg_population().")
   }
 
+  if (flag_var %in% names(.lg$populations)) {
+    warning(sprintf(
+      "lineager: population '%s' already registered. Overwriting prior registration.",
+      flag_var
+    ))
+  }
+
   flag_vals <- data[[flag_var]]
-  n_included <- sum(flag_vals == "Y", na.rm = TRUE)
-  n_excluded <- sum(flag_vals != "Y" | is.na(flag_vals), na.rm = TRUE)
+  n_included <- sum(flag_vals == included_value, na.rm = TRUE)
+  n_excluded <- sum(flag_vals != included_value | is.na(flag_vals), na.rm = TRUE)
 
   pop <- structure(
     list(
@@ -72,6 +87,7 @@ lg_population <- function(data, flag_var, label, definition,
       definition = definition,
       incl_criteria = incl_criteria,
       excl_criteria = excl_criteria,
+      included_value = included_value,
       dataset_id = attr(data, "lg_dataset_id") %||% "unknown",
       n_included = n_included,
       n_excluded = n_excluded,
@@ -153,6 +169,15 @@ lg_spec <- function(adam_dataset, adam_var, label,
                     derivation, conditions = NULL) {
   .assert_active()
 
+  key <- paste0(adam_dataset, ".", adam_var)
+
+  if (key %in% names(.lg$var_specs)) {
+    warning(sprintf(
+      "lineager: variable spec '%s' already registered. Overwriting prior registration.",
+      key
+    ))
+  }
+
   spec <- structure(
     list(
       adam_dataset  = adam_dataset,
@@ -167,7 +192,6 @@ lg_spec <- function(adam_dataset, adam_var, label,
     class = "lg_var_spec"
   )
 
-  key <- paste0(adam_dataset, ".", adam_var)
   .lg$var_specs[[key]] <- spec
   invisible(NULL)
 }

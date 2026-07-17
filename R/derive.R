@@ -76,19 +76,40 @@ lg_derive <- function(data, ..., description) {
 #'
 #' Performs a left, inner, full, or right join and records the operation in the
 #' session log. The `lineage_id` column from `x` is preserved. A secondary
-#' column `lineage_id_y` records which rows of `y` contributed to each output
-#' row, enabling full bilateral tracing.
+#' column records which rows of `y` contributed to each output row, enabling
+#' full bilateral tracing.
 #'
 #' @param x,y `lg_df` objects.
 #' @param by Character vector of join keys, passed to the underlying
 #'   [dplyr::left_join()] (etc.) call.
 #' @param type Join type: `"left"` (default), `"inner"`, `"full"`,
 #'   `"right"`.
-#' @param description Character or `NULL`. Optional description of the join
-#'   purpose (e.g. `"Merge first dose date from EX domain"`).
+#' @param description Character or `NULL`. Description of the join purpose
+#'   (e.g. `"Merge first dose date from EX domain"`). For `type = "inner"`
+#'   or `type = "right"`, `description` becomes **mandatory** the moment the
+#'   join actually drops one or more rows of `x` (i.e. `x` rows with no
+#'   matching `y` record) : those dropped rows are subjects being silently
+#'   removed from the pipeline, and per lineager's core design, every
+#'   exclusion must carry a documented reason. If no rows end up dropped,
+#'   `description` stays optional as before.
 #'
-#' @return An `lg_df` with the joined result. `lineage_id_y` is added to record
-#'   the contributing row IDs from `y`.
+#' @return An `lg_df` with the joined result. A `lineage_id_y` column is
+#'   added recording the contributing row IDs from `y`, matching prior
+#'   versions of `lineager`. If `x` already carries a `lineage_id_y` column
+#'   from an earlier join in the same chain (e.g. joining a third dataset
+#'   onto the result of a previous `lg_join()` call), this join's own
+#'   y-tracing column is instead named `lineage_id_y__<op_id>` (e.g.
+#'   `lineage_id_y__op_0003`) so it cannot silently collide with -- or
+#'   overwrite -- the earlier join's tracing column. A message is printed
+#'   whenever this fallback naming is used.
+#'
+#' @details
+#' Only unmatched rows of `x` are exclusion-tracked (since `x` is treated as
+#' the primary, subject-carrying dataset in lineager's model). Unmatched rows
+#' of `y` dropped by `"left"` or `"inner"` joins are not separately logged as
+#' exclusions of `y`'s own dataset : if `y`-side row loss also needs
+#' documented tracking for your use case, log it explicitly with
+#' [lg_filter()] on `y` before joining.
 #'
 #' @examples
 #' lg_start()
@@ -117,11 +138,25 @@ lg_join <- function(x, y, by, type = c("left", "inner", "full", "right"),
   op_id <- .next_op_id()
   ds_x  <- attr(x, "lg_dataset_id") %||% "x"
   ds_y  <- attr(y, "lg_dataset_id") %||% "y"
-  desc  <- description %||% sprintf("%s join of '%s' onto '%s'", type, ds_y, ds_x)
 
-  # Rename y's lineage_id before joining to avoid collision
+  # Rename y's lineage_id before joining to avoid colliding with x's own
+  # lineage_id column. In the common, non-chained case this column keeps its
+  # long-standing name "lineage_id_y" -- unchanged from prior behaviour, so
+  # existing code/vignettes that reference it directly keep working. Only
+  # when x ALREADY carries a "lineage_id_y" column (i.e. this is a second
+  # or later join in a chain) does it get a distinguishing, op_id-based name
+  # instead -- avoiding the silent column collision that previously mangled
+  # bilateral tracing on chained joins, without breaking the ordinary case.
+  y_lid_name <- "lineage_id_y"
+  if (y_lid_name %in% names(x)) {
+    y_lid_name <- paste0("lineage_id_y__", op_id)
+    message(sprintf(
+      "lineager: '%s' already has a 'lineage_id_y' column from an earlier join in this chain; recording this join's y-tracing column as '%s' instead.",
+      ds_x, y_lid_name
+    ))
+  }
   y_join <- y
-  names(y_join)[names(y_join) == .lid_col] <- "lineage_id_y"
+  names(y_join)[names(y_join) == .lid_col] <- y_lid_name
 
   join_fn <- switch(type,
     left  = dplyr::left_join,
@@ -131,6 +166,52 @@ lg_join <- function(x, y, by, type = c("left", "inner", "full", "right"),
   )
 
   result <- join_fn(x, y_join, by = by)
+
+  # Inner/right joins can silently drop x rows that have no matching y
+  # record. Per lineager's core design, every row removed from the pipeline
+  # must carry a documented reason -- so treat those drops the same way
+  # lg_filter() treats an exclusion: register them in the session exclusion
+  # registry, and require `description` the moment a drop actually occurs.
+  if (type %in% c("inner", "right")) {
+    included_lids <- result[[.lid_col]]
+    all_lids_x <- x[[.lid_col]]
+    dropped_lids <- setdiff(all_lids_x, included_lids)
+
+    if (length(dropped_lids) > 0L) {
+      if (is.null(description) || !is.character(description) ||
+          !nzchar(trimws(description))) {
+        stop(sprintf(
+          "lg_join(type = \"%s\") drops %d row(s) from '%s' with no matching '%s' record.\n",
+          type, length(dropped_lids), ds_x, ds_y
+        ), "  Provide a `description` documenting why these unmatched rows ",
+        "are being dropped, or use type = \"left\"/\"full\" to keep them.")
+      }
+
+      dropped_rows <- x[x[[.lid_col]] %in% dropped_lids, , drop = FALSE]
+      has_subj <- "USUBJID" %in% names(dropped_rows)
+
+      excl_list <- lapply(seq_len(nrow(dropped_rows)), function(i) {
+        structure(
+          list(
+            excl_id     = sprintf("%s_excl_%04d", op_id, i),
+            op_id       = op_id,
+            dataset_id  = ds_x,
+            lid         = dropped_rows[[.lid_col]][[i]],
+            usubjid     = if (has_subj) dropped_rows$USUBJID[[i]] else NA_character_,
+            reason      = description,
+            reason_code = NA_character_,
+            population  = NA_character_,
+            excluded_at = .utc_now()
+          ),
+          class = "lg_exclusion"
+        )
+      })
+      .register_exclusions(excl_list)
+    }
+  }
+
+  desc <- description %||% sprintf("%s join of '%s' onto '%s'", type, ds_y, ds_x)
+
   result <- .restore_lg_attrs(result, x)
 
   op <- structure(
@@ -143,6 +224,7 @@ lg_join <- function(x, y, by, type = c("left", "inner", "full", "right"),
       by           = paste(by, collapse = ", "),
       rows_in      = nrow(x),
       rows_out     = nrow(result),
+      rows_excluded = nrow(x) - sum(x[[.lid_col]] %in% result[[.lid_col]]),
       timestamp    = .utc_now()
     ),
     class = "lg_operation"

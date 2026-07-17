@@ -30,7 +30,7 @@
 
 
 # --------------------------------------------------------------------------- #
-#  lg_start / lg_end                                                           # nolint: commented_code_linter
+#  lg_start / lg_end
 # --------------------------------------------------------------------------- #
 
 #' Start a lineager provenance session
@@ -150,6 +150,33 @@ lg_end <- function() {
 #' @noRd
 .register_exclusions <- function(excl_list) {
   .lg$exclusions <- c(.lg$exclusions, excl_list)
+}
+
+#' Minimal HTML entity escaping for user-supplied text inserted into
+#' lg_report() output. Applied to every dynamic (non-literal) string before
+#' it is placed inside an HTML table cell or attribute. `&` is escaped first
+#' so the escaping of the other characters does not get double-escaped.
+#' @noRd
+.html_escape <- function(x) {
+  if (is.null(x)) return(x)
+  na_mask <- is.na(x)
+  x <- as.character(x)
+  x <- gsub("&", "&amp;", x, fixed = TRUE)
+  x <- gsub("<", "&lt;", x, fixed = TRUE)
+  x <- gsub(">", "&gt;", x, fixed = TRUE)
+  x <- gsub('"', "&quot;", x, fixed = TRUE)
+  x <- gsub("'", "&#39;", x, fixed = TRUE)
+  x[na_mask] <- NA_character_
+  x
+}
+
+#' Render a possibly-NA scalar as an em-dash placeholder, escaping the real
+#' value if present. Use instead of `x %||% "&mdash;"` for data-frame-derived
+#' values, which are NA (not NULL) when missing -- `%||%` only substitutes on
+#' NULL, so it never actually fires for NA columns.
+#' @noRd
+.esc_or_dash <- function(x) {
+  if (length(x) == 0L || is.na(x)) "&mdash;" else .html_escape(x)
 }
 
 #' Pipe operator
