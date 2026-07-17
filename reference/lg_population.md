@@ -15,7 +15,8 @@ lg_population(
   label,
   definition,
   incl_criteria,
-  excl_criteria = NULL
+  excl_criteria = NULL,
+  included_value = "Y"
 )
 ```
 
@@ -47,6 +48,16 @@ lg_population(
 
   Character vector of explicit exclusion criteria. `NULL` if there are
   none beyond failing inclusion.
+
+- included_value:
+
+  The value of `flag_var` that denotes inclusion. Defaults to `"Y"` (the
+  CDISC convention), but `lineager` is general-purpose : if your flag is
+  a logical column, pass `included_value = TRUE`; for any other custom
+  coding, pass the actual included-value directly. Using the wrong value
+  here silently produces incorrect included/excluded counts (e.g. a
+  logical `TRUE`/`FALSE` flag compared against `"Y"` will count every
+  row as excluded).
 
 ## Value
 

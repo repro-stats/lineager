@@ -341,14 +341,18 @@ call above contributed its exclusions to this summary.
 lg_disposition(by = "reason")
 ```
 
-    #>                                                                    group
-    #> 1 Restrict to Week 16 primary timepoint with non-missing EASI assessment
-    #> 2             Restrict to ITT population (ITTFL = Y) per SAP Section 4.2
-    #> 3        Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1
-    #>   n_excluded
-    #> 1        323
-    #> 2         10
-    #> 3          6
+    #>   step                                                                 reason
+    #> 1    1        Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1
+    #> 2    2             Restrict to ITT population (ITTFL = Y) per SAP Section 4.2
+    #> 3    3           Join ADLB EASI assessments to ITT-restricted ADSL covariates
+    #> 4    4   Exclude records with missing baseline EASI score per SAP Section 5.1
+    #> 5    5 Restrict to Week 16 primary timepoint with non-missing EASI assessment
+    #>   n_excluded n_remaining
+    #> 1          6         314
+    #> 2         10         304
+    #> 3         32         608
+    #> 4          0         608
+    #> 5        323         285
 
 ------------------------------------------------------------------------
 
@@ -359,7 +363,7 @@ lg_disposition(by = "reason")
 excl <- lg_exclusions()
 ```
 
-    #> lineager: 339 exclusion(s) retrieved
+    #> lineager: 371 exclusion(s) retrieved
 
 ``` r
 
@@ -386,6 +390,38 @@ excl |>
 | ADSL | Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 | ITTFL |
 | ADSL | Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 | ITTFL |
 | ADSL | Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 | ITTFL |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
+| ADLB | Join ADLB EASI assessments to ITT-restricted ADSL covariates | NA |
 | ADEFF | Restrict to Week 16 primary timepoint with non-missing EASI assessment | ITTFL |
 | ADEFF | Restrict to Week 16 primary timepoint with non-missing EASI assessment | ITTFL |
 | ADEFF | Restrict to Week 16 primary timepoint with non-missing EASI assessment | ITTFL |
@@ -763,8 +799,10 @@ if (!is.na(excluded_subj)) lg_trace(excluded_subj)
     #>     [FILTER] ADSL: Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 (314→304)
     #>     [JOIN_INNER] ADLB: Join ADLB EASI assessments to ITT-restricted ADSL covariates (640→608)
     #> 
-    #>   Exclusions (1):
+    #>   Exclusions (3):
     #>     ✗ [ADSL] Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 [pop: ITTFL]
+    #>     ✗ [ADLB] Join ADLB EASI assessments to ITT-restricted ADSL covariates
+    #>     ✗ [ADLB] Join ADLB EASI assessments to ITT-restricted ADSL covariates
     #> 
     #>   Registered populations:
     #>     SAFFL: Safety Analysis Flag
@@ -853,7 +891,7 @@ lg_report(
 lg_end()
 ```
 
-    #> lineager: session ended — 7 operation(s), 339 exclusion(s), 1 population(s), 1 var spec(s)
+    #> lineager: session ended — 7 operation(s), 371 exclusion(s), 1 population(s), 1 var spec(s)
 
 ------------------------------------------------------------------------
 
@@ -904,7 +942,7 @@ sessionInfo()
     #> 
     #> loaded via a namespace (and not attached):
     #>  [1] vctrs_0.7.3       cli_3.6.6         knitr_1.51        rlang_1.3.0      
-    #>  [5] xfun_0.59         otel_0.2.0        generics_0.1.4    textshaping_1.0.5
+    #>  [5] xfun_0.60         otel_0.2.0        generics_0.1.4    textshaping_1.0.5
     #>  [9] jsonlite_2.0.0    glue_1.8.1        htmltools_0.5.9   ragg_1.5.2       
     #> [13] sass_0.4.10       rmarkdown_2.31    tibble_3.3.1      evaluate_1.0.5   
     #> [17] jquerylib_0.1.4   fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  

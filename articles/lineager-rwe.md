@@ -437,6 +437,11 @@ style="width:100%;"}
 ``` r
 
 ops <- lg_operations() |> filter(op_type == "FILTER")
+```
+
+    #> lineager: 10 operation(s) in log
+
+``` r
 
 waterfall <- data.frame(
   label = c("Claims pool", ops$description),
@@ -478,14 +483,14 @@ call above — there is no separate group definition to maintain.
 lg_disposition(by = "population")
 ```
 
-    #>               group n_excluded
-    #> 1 FOLLOWUP_ADEQUATE       4640
-    #> 2    T2DM_CONFIRMED       4399
-    #> 3          NEW_USER       4371
-    #> 4 LOOKBACK_ADEQUATE       3712
-    #> 5        NO_INSULIN       1993
-    #> 6      AGE_ELIGIBLE       1166
-    #> 7           NO_ESRD         14
+    #>               group n_excluded n_remaining
+    #> 1      AGE_ELIGIBLE       1166       23834
+    #> 2    T2DM_CONFIRMED       4399       19435
+    #> 3 LOOKBACK_ADEQUATE       3712       15723
+    #> 4          NEW_USER       4371       11352
+    #> 5        NO_INSULIN       1993        9359
+    #> 6           NO_ESRD         14        9345
+    #> 7 FOLLOWUP_ADEQUATE       4640        4705
 
 ------------------------------------------------------------------------
 
@@ -687,7 +692,7 @@ sessionInfo()
     #>  [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
     #> [13] generics_0.1.4     knitr_1.51         htmlwidgets_1.6.4  tibble_3.3.1      
     #> [17] desc_1.4.3         bslib_0.11.0       pillar_1.11.1      RColorBrewer_1.1-3
-    #> [21] rlang_1.3.0        cachem_1.1.0       xfun_0.59          S7_0.2.2          
+    #> [21] rlang_1.3.0        cachem_1.1.0       xfun_0.60          S7_0.2.2          
     #> [25] fs_2.1.0           sass_0.4.10        otel_0.2.0         cli_3.6.6         
     #> [29] withr_3.0.3        pkgdown_2.2.1      magrittr_2.0.5     digest_0.6.39     
     #> [33] grid_4.6.1         lifecycle_1.0.5    vctrs_0.7.3        evaluate_1.0.5    

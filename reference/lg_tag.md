@@ -7,7 +7,14 @@ point to `lineager` : all other functions require a tagged data frame.
 ## Usage
 
 ``` r
-lg_tag(data, dataset_id, domain = NULL, label = NULL, source = NULL)
+lg_tag(
+  data,
+  dataset_id,
+  domain = NULL,
+  label = NULL,
+  source = NULL,
+  overwrite = FALSE
+)
 ```
 
 ## Arguments
@@ -35,6 +42,16 @@ lg_tag(data, dataset_id, domain = NULL, label = NULL, source = NULL)
 - source:
 
   Character or `NULL`. Source file or system description.
+
+- overwrite:
+
+  Logical. If `dataset_id` is already registered in this session,
+  `lg_tag()` errors by default : any `lg_df` object still held from the
+  previous registration would silently stop being traceable via
+  [`lg_trace()`](https://reprostats.org/lineager/reference/lg_trace.md)
+  the moment the registration is replaced. Set `overwrite = TRUE` to
+  explicitly allow re-tagging (e.g. intentionally re-running a step) and
+  acknowledge that the prior object is no longer traceable.
 
 ## Value
 

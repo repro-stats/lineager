@@ -271,6 +271,9 @@ lg_spec(
   derivation    = "endpoint - baseline. LOCF applied when endpoint missing at Week 12 only.",
   conditions    = "LOCF from Week 8 visit applied per SAP section 7.2"
 )
+#> Warning in lg_spec(adam_dataset = "ANALYSIS", adam_var = "CHG", label = "Change
+#> from Baseline", : lineager: variable spec 'ANALYSIS.CHG' already registered.
+#> Overwriting prior registration.
 ```
 
 ## 3. lg_report(): generating the provenance report
@@ -300,7 +303,7 @@ html <- lg_report(
 )
 
 cat("Report size:", nchar(html), "characters\n")
-#> Report size: 7109 characters
+#> Report size: 7264 characters
 cat("Sections found:\n")
 #> Sections found:
 sections <- c(

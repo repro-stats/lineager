@@ -52,7 +52,14 @@ the dataset in the active session store. This is the entry point to
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lg_tag</span><span class="op">(</span><span class="va">data</span>, <span class="va">dataset_id</span>, domain <span class="op">=</span> <span class="cn">NULL</span>, label <span class="op">=</span> <span class="cn">NULL</span>, source <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">lg_tag</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">dataset_id</span>,</span>
+<span>  domain <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  source <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -82,6 +89,14 @@ Reviewer's Guide output.</p></dd>
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
 <dd><p>Character or <code>NULL</code>. Source file or system description.</p></dd>
+
+
+<dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
+<dd><p>Logical. If <code>dataset_id</code> is already registered in this
+session, <code>lg_tag()</code> errors by default : any <code>lg_df</code> object still held
+from the previous registration would silently stop being traceable via
+<code><a href="lg_trace.html">lg_trace()</a></code> the moment the registration is replaced. Set <code>overwrite = TRUE</code> to explicitly allow re-tagging (e.g. intentionally re-running a
+step) and acknowledge that the prior object is no longer traceable.</p></dd>
 
 </dl></div>
     <div class="section level2">

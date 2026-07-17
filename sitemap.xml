@@ -17,6 +17,7 @@
 <url><loc>https://reprostats.org/lineager/reference/lg_end.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lg_exclusions.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lg_filter.html</loc></url>
+<url><loc>https://reprostats.org/lineager/reference/lg_history.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lg_id.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lg_join.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lg_lineage.html</loc></url>
@@ -30,5 +31,6 @@
 <url><loc>https://reprostats.org/lineager/reference/lg_trace.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/lineager-package.html</loc></url>
 <url><loc>https://reprostats.org/lineager/reference/reexports.html</loc></url>
+<url><loc>https://reprostats.org/lineager/reference/sub-.lg_df.html</loc></url>
 </urlset>
 

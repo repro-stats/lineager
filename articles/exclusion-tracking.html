@@ -316,19 +316,31 @@ disposition table.</p>
 </h3>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"reason"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                                                        group n_excluded</span></span>
-<span><span class="co">#&gt; 1 Does not meet diagnostic criteria per protocol section 3.1         13</span></span>
-<span><span class="co">#&gt; 2                   Did not provide written informed consent          4</span></span>
-<span><span class="co">#&gt; 3                        Missing primary outcome measurement          1</span></span>
-<span><span class="co">#&gt; 4               Under minimum age threshold (age &lt; 18 years)          1</span></span></code></pre></div>
+<span><span class="co">#&gt;   step                                                      reason n_excluded</span></span>
+<span><span class="co">#&gt; 1    1                Under minimum age threshold (age &lt; 18 years)          1</span></span>
+<span><span class="co">#&gt; 2    2                    Did not provide written informed consent          4</span></span>
+<span><span class="co">#&gt; 3    3  Does not meet diagnostic criteria per protocol section 3.1         13</span></span>
+<span><span class="co">#&gt; 4    4 Received prohibited prior medication within wash-out period          0</span></span>
+<span><span class="co">#&gt; 5    5  Biomarker below threshold (&lt; 2.0) per protocol section 4.3          0</span></span>
+<span><span class="co">#&gt; 6    6                         Missing primary outcome measurement          1</span></span>
+<span><span class="co">#&gt;   n_remaining</span></span>
+<span><span class="co">#&gt; 1          19</span></span>
+<span><span class="co">#&gt; 2          15</span></span>
+<span><span class="co">#&gt; 3           2</span></span>
+<span><span class="co">#&gt; 4           2</span></span>
+<span><span class="co">#&gt; 5           2</span></span>
+<span><span class="co">#&gt; 6           1</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="group-by-population">Group by population<a class="anchor" aria-label="anchor" href="#group-by-population"></a>
 </h3>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"population"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;          group n_excluded</span></span>
-<span><span class="co">#&gt; 1 ANALYSIS_SET          1</span></span></code></pre></div>
+<span><span class="co">#&gt;           group n_excluded n_remaining</span></span>
+<span><span class="co">#&gt; 1        (none)         18           2</span></span>
+<span><span class="co">#&gt; 2  ELIGIBLE_SET          0           2</span></span>
+<span><span class="co">#&gt; 3 BIOMARKER_POS          0           2</span></span>
+<span><span class="co">#&gt; 4  ANALYSIS_SET          1           1</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="group-by-dataset">Group by dataset<a class="anchor" aria-label="anchor" href="#group-by-dataset"></a>
@@ -336,8 +348,8 @@ disposition table.</p>
 <p>Useful when multiple source datasets are filtered:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"dataset"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;      group n_excluded</span></span>
-<span><span class="co">#&gt; 1 REGISTRY         19</span></span></code></pre></div>
+<span><span class="co">#&gt;      group n_excluded n_remaining</span></span>
+<span><span class="co">#&gt; 1 REGISTRY         19           1</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -443,6 +455,7 @@ as a data frame — useful for understanding the pipeline structure and
 for automating documentation.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_operations.html">lg_operations</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; lineager: 6 operation(s) in log</span></span>
 <span><span class="va">ops</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
 <span>  <span class="st">"op_id"</span>, <span class="st">"op_type"</span>, <span class="st">"dataset_id"</span>, <span class="st">"description"</span>,</span>
 <span>  <span class="st">"rows_in"</span>, <span class="st">"rows_out"</span></span>
@@ -577,10 +590,10 @@ where exclusion branches occur — complementing the tabular output of
 <span><span class="co">#&gt; Completed:  4</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"reason"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;                             group n_excluded</span></span>
-<span><span class="co">#&gt; 1      Did not complete the study          2</span></span>
-<span><span class="co">#&gt; 2 Did not receive study treatment          2</span></span>
-<span><span class="co">#&gt; 3           Not enrolled in study          2</span></span></code></pre></div>
+<span><span class="co">#&gt;   step                          reason n_excluded n_remaining</span></span>
+<span><span class="co">#&gt; 1    1           Not enrolled in study          2           8</span></span>
+<span><span class="co">#&gt; 2    2 Did not receive study treatment          2           6</span></span>
+<span><span class="co">#&gt; 3    3      Did not complete the study          2           4</span></span></code></pre></div>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_end.html">lg_end</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; lineager: session ended — 3 operation(s), 6 exclusion(s), 0 population(s), 0 var spec(s)</span></span></code></pre></div>

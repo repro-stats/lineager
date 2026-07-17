@@ -313,6 +313,7 @@ registry automatically.</p>
 log. Retrieve it with <code><a href="../reference/lg_operations.html">lg_operations()</a></code>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ops</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_operations.html">lg_operations</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; lineager: 6 operation(s) in log</span></span>
 <span><span class="va">ops</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"op_id"</span>, <span class="st">"op_type"</span>, <span class="st">"description"</span>, <span class="st">"rows_in"</span>, <span class="st">"rows_out"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;     op_id   op_type                                       description rows_in</span></span>
 <span><span class="co">#&gt; 1 op_0001    DERIVE age_group: &gt;=40 vs &lt;40 from age; adult: age &gt;= 18       6</span></span>

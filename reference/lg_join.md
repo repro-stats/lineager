@@ -2,8 +2,8 @@
 
 Performs a left, inner, full, or right join and records the operation in
 the session log. The `lineage_id` column from `x` is preserved. A
-secondary column `lineage_id_y` records which rows of `y` contributed to
-each output row, enabling full bilateral tracing.
+secondary column records which rows of `y` contributed to each output
+row, enabling full bilateral tracing.
 
 ## Usage
 
@@ -35,13 +35,36 @@ lg_join(
 
 - description:
 
-  Character or `NULL`. Optional description of the join purpose (e.g.
-  `"Merge first dose date from EX domain"`).
+  Character or `NULL`. Description of the join purpose (e.g.
+  `"Merge first dose date from EX domain"`). For `type = "inner"` or
+  `type = "right"`, `description` becomes **mandatory** the moment the
+  join actually drops one or more rows of `x` (i.e. `x` rows with no
+  matching `y` record) : those dropped rows are subjects being silently
+  removed from the pipeline, and per lineager's core design, every
+  exclusion must carry a documented reason. If no rows end up dropped,
+  `description` stays optional as before.
 
 ## Value
 
-An `lg_df` with the joined result. `lineage_id_y` is added to record the
-contributing row IDs from `y`.
+An `lg_df` with the joined result. A `lineage_id_y` column is added
+recording the contributing row IDs from `y`, matching prior versions of
+`lineager`. If `x` already carries a `lineage_id_y` column from an
+earlier join in the same chain (e.g. joining a third dataset onto the
+result of a previous `lg_join()` call), this join's own y-tracing column
+is instead named `lineage_id_y__<op_id>` (e.g. `lineage_id_y__op_0003`)
+so it cannot silently collide with – or overwrite – the earlier join's
+tracing column. A message is printed whenever this fallback naming is
+used.
+
+## Details
+
+Only unmatched rows of `x` are exclusion-tracked (since `x` is treated
+as the primary, subject-carrying dataset in lineager's model). Unmatched
+rows of `y` dropped by `"left"` or `"inner"` joins are not separately
+logged as exclusions of `y`'s own dataset : if `y`-side row loss also
+needs documented tracking for your use case, log it explicitly with
+[`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
+on `y` before joining.
 
 ## See also
 

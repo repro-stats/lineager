@@ -233,11 +233,20 @@ behind a CONSORT flow diagram or study disposition table.
 ``` r
 
 lg_disposition(by = "reason")
-#>                                                        group n_excluded
-#> 1 Does not meet diagnostic criteria per protocol section 3.1         13
-#> 2                   Did not provide written informed consent          4
-#> 3                        Missing primary outcome measurement          1
-#> 4               Under minimum age threshold (age < 18 years)          1
+#>   step                                                      reason n_excluded
+#> 1    1                Under minimum age threshold (age < 18 years)          1
+#> 2    2                    Did not provide written informed consent          4
+#> 3    3  Does not meet diagnostic criteria per protocol section 3.1         13
+#> 4    4 Received prohibited prior medication within wash-out period          0
+#> 5    5  Biomarker below threshold (< 2.0) per protocol section 4.3          0
+#> 6    6                         Missing primary outcome measurement          1
+#>   n_remaining
+#> 1          19
+#> 2          15
+#> 3           2
+#> 4           2
+#> 5           2
+#> 6           1
 ```
 
 ### Group by population
@@ -245,8 +254,11 @@ lg_disposition(by = "reason")
 ``` r
 
 lg_disposition(by = "population")
-#>          group n_excluded
-#> 1 ANALYSIS_SET          1
+#>           group n_excluded n_remaining
+#> 1        (none)         18           2
+#> 2  ELIGIBLE_SET          0           2
+#> 3 BIOMARKER_POS          0           2
+#> 4  ANALYSIS_SET          1           1
 ```
 
 ### Group by dataset
@@ -256,8 +268,8 @@ Useful when multiple source datasets are filtered:
 ``` r
 
 lg_disposition(by = "dataset")
-#>      group n_excluded
-#> 1 REGISTRY         19
+#>      group n_excluded n_remaining
+#> 1 REGISTRY         19           1
 ```
 
 ## 4. Subject tracing
@@ -371,6 +383,7 @@ understanding the pipeline structure and for automating documentation.
 ``` r
 
 ops <- lg_operations()
+#> lineager: 6 operation(s) in log
 ops[, c(
   "op_id", "op_type", "dataset_id", "description",
   "rows_in", "rows_out"
@@ -518,10 +531,10 @@ cat("Completed: ", nrow(step3), "\n")
 #> Completed:  4
 
 lg_disposition(by = "reason")
-#>                             group n_excluded
-#> 1      Did not complete the study          2
-#> 2 Did not receive study treatment          2
-#> 3           Not enrolled in study          2
+#>   step                          reason n_excluded n_remaining
+#> 1    1           Not enrolled in study          2           8
+#> 2    2 Did not receive study treatment          2           6
+#> 3    3      Did not complete the study          2           4
 ```
 
 ``` r

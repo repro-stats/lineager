@@ -340,14 +340,18 @@ automatically — no manual group definitions needed. Every
 summary.</p>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_disposition.html">lg_disposition</a></span><span class="op">(</span>by <span class="op">=</span> <span class="st">"reason"</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt;                                                                    group</span></span>
-<span><span class="co">#&gt; 1 Restrict to Week 16 primary timepoint with non-missing EASI assessment</span></span>
-<span><span class="co">#&gt; 2             Restrict to ITT population (ITTFL = Y) per SAP Section 4.2</span></span>
-<span><span class="co">#&gt; 3        Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1</span></span>
-<span><span class="co">#&gt;   n_excluded</span></span>
-<span><span class="co">#&gt; 1        323</span></span>
-<span><span class="co">#&gt; 2         10</span></span>
-<span><span class="co">#&gt; 3          6</span></span></code></pre>
+<pre><code><span><span class="co">#&gt;   step                                                                 reason</span></span>
+<span><span class="co">#&gt; 1    1        Restrict to safety analysis set (SAFFL = Y) per SAP Section 4.1</span></span>
+<span><span class="co">#&gt; 2    2             Restrict to ITT population (ITTFL = Y) per SAP Section 4.2</span></span>
+<span><span class="co">#&gt; 3    3           Join ADLB EASI assessments to ITT-restricted ADSL covariates</span></span>
+<span><span class="co">#&gt; 4    4   Exclude records with missing baseline EASI score per SAP Section 5.1</span></span>
+<span><span class="co">#&gt; 5    5 Restrict to Week 16 primary timepoint with non-missing EASI assessment</span></span>
+<span><span class="co">#&gt;   n_excluded n_remaining</span></span>
+<span><span class="co">#&gt; 1          6         314</span></span>
+<span><span class="co">#&gt; 2         10         304</span></span>
+<span><span class="co">#&gt; 3         32         608</span></span>
+<span><span class="co">#&gt; 4          0         608</span></span>
+<span><span class="co">#&gt; 5        323         285</span></span></code></pre>
 <hr>
 </div>
 <div class="section level2">
@@ -355,7 +359,7 @@ summary.</p>
 </h2>
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">excl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_exclusions.html">lg_exclusions</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; lineager: 339 exclusion(s) retrieved</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; lineager: 371 exclusion(s) retrieved</span></span></code></pre>
 <div class="sourceCode" id="cb44"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">excl</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">dataset_id</span>, <span class="va">reason</span>, <span class="va">population</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -468,6 +472,198 @@ Section 4.1</td>
 <td align="left">Restrict to ITT population (ITTFL = Y) per SAP Section
 4.2</td>
 <td align="left">ITTFL</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left">ADLB</td>
+<td align="left">Join ADLB EASI assessments to ITT-restricted ADSL
+covariates</td>
+<td align="left">NA</td>
 </tr>
 <tr class="odd">
 <td align="left">ADEFF</td>
@@ -2452,8 +2648,10 @@ it, and any exclusion records.</p>
 <span><span class="co">#&gt;     [FILTER] ADSL: Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 (314→304)</span></span>
 <span><span class="co">#&gt;     [JOIN_INNER] ADLB: Join ADLB EASI assessments to ITT-restricted ADSL covariates (640→608)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;   Exclusions (1):</span></span>
+<span><span class="co">#&gt;   Exclusions (3):</span></span>
 <span><span class="co">#&gt;     ✗ [ADSL] Restrict to ITT population (ITTFL = Y) per SAP Section 4.2 [pop: ITTFL]</span></span>
+<span><span class="co">#&gt;     ✗ [ADLB] Join ADLB EASI assessments to ITT-restricted ADSL covariates</span></span>
+<span><span class="co">#&gt;     ✗ [ADLB] Join ADLB EASI assessments to ITT-restricted ADSL covariates</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;   Registered populations:</span></span>
 <span><span class="co">#&gt;     SAFFL: Safety Analysis Flag</span></span></code></pre>
@@ -2534,7 +2732,7 @@ it, and any exclusion records.</p>
 </h2>
 <div class="sourceCode" id="cb52"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_end.html">lg_end</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<pre><code><span><span class="co">#&gt; lineager: session ended — 7 operation(s), 339 exclusion(s), 1 population(s), 1 var spec(s)</span></span></code></pre>
+<pre><code><span><span class="co">#&gt; lineager: session ended — 7 operation(s), 371 exclusion(s), 1 population(s), 1 var spec(s)</span></span></code></pre>
 <hr>
 </div>
 <div class="section level2">
@@ -2580,7 +2778,7 @@ with the derivation code that produced them.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; loaded via a namespace (and not attached):</span></span>
 <span><span class="co">#&gt;  [1] vctrs_0.7.3       cli_3.6.6         knitr_1.51        rlang_1.3.0      </span></span>
-<span><span class="co">#&gt;  [5] xfun_0.59         otel_0.2.0        generics_0.1.4    textshaping_1.0.5</span></span>
+<span><span class="co">#&gt;  [5] xfun_0.60         otel_0.2.0        generics_0.1.4    textshaping_1.0.5</span></span>
 <span><span class="co">#&gt;  [9] jsonlite_2.0.0    glue_1.8.1        htmltools_0.5.9   ragg_1.5.2       </span></span>
 <span><span class="co">#&gt; [13] sass_0.4.10       rmarkdown_2.31    tibble_3.3.1      evaluate_1.0.5   </span></span>
 <span><span class="co">#&gt; [17] jquerylib_0.1.4   fastmap_1.2.0     yaml_2.3.12       lifecycle_1.0.5  </span></span>

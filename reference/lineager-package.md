@@ -86,6 +86,7 @@ pharmaceutical and clinical users.
 | [`lg_population()`](https://reprostats.org/lineager/reference/lg_population.md) | Register a population or cohort definition |
 | [`lg_spec()`](https://reprostats.org/lineager/reference/lg_spec.md) | Document a source-to-analysis variable derivation |
 | [`lg_trace()`](https://reprostats.org/lineager/reference/lg_trace.md) | Trace a row's complete lineage journey |
+| [`lg_history()`](https://reprostats.org/lineager/reference/lg_history.md) | Retrieve the operation history recorded on a tagged object |
 | [`lg_exclusions()`](https://reprostats.org/lineager/reference/lg_exclusions.md) | Retrieve the full exclusion registry |
 | [`lg_disposition()`](https://reprostats.org/lineager/reference/lg_disposition.md) | Grouped exclusion summary table |
 | [`lg_operations()`](https://reprostats.org/lineager/reference/lg_operations.md) | Full pipeline operation log |

@@ -266,6 +266,7 @@ call adds an entry to the session operation log. Retrieve it with
 ``` r
 
 ops <- lg_operations()
+#> lineager: 6 operation(s) in log
 ops[, c("op_id", "op_type", "description", "rows_in", "rows_out")]
 #>     op_id   op_type                                       description rows_in
 #> 1 op_0001    DERIVE age_group: >=40 vs <40 from age; adult: age >= 18       6
