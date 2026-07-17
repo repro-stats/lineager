@@ -109,8 +109,46 @@ test_that("lg_join() inner join keeps only matching rows", {
     stringsAsFactors = FALSE
   ), dataset_id = "Y")
 
-  result <- lg_join(x, y, by = "USUBJID", type = "inner")
+  result <- lg_join(x, y, by = "USUBJID", type = "inner",
+                     description = "Subject 03 has no matching Y record")
   expect_equal(nrow(result), 2L)
+})
+
+test_that("lg_join() inner/right join errors without description when rows would drop", {
+  new_session()
+  x <- lg_tag(data.frame(
+    USUBJID = c("01", "02", "03"), A = 1:3,
+    stringsAsFactors = FALSE
+  ), dataset_id = "X")
+  y <- lg_tag(data.frame(
+    USUBJID = c("01", "02"), B = c(10L, 20L),
+    stringsAsFactors = FALSE
+  ), dataset_id = "Y")
+
+  expect_error(
+    lg_join(x, y, by = "USUBJID", type = "inner"),
+    "drops"
+  )
+})
+
+test_that("lg_join() inner join registers dropped x rows as documented exclusions", {
+  new_session()
+  x <- lg_tag(data.frame(
+    USUBJID = c("01", "02", "03"), A = 1:3,
+    stringsAsFactors = FALSE
+  ), dataset_id = "X")
+  y <- lg_tag(data.frame(
+    USUBJID = c("01", "02"), B = c(10L, 20L),
+    stringsAsFactors = FALSE
+  ), dataset_id = "Y")
+
+  lg_join(x, y, by = "USUBJID", type = "inner",
+          description = "Subject 03 has no matching Y record")
+
+  excl <- lg_exclusions(verbose = FALSE)
+  expect_equal(nrow(excl), 1L)
+  expect_equal(excl$usubjid[[1L]], "03")
+  expect_equal(excl$reason[[1L]], "Subject 03 has no matching Y record")
 })
 
 test_that("lg_join() adds lineage_id_y column for bilateral tracing", {
@@ -182,4 +220,27 @@ test_that("lg_join() description defaults when NULL", {
 
   ops <- lg_operations(verbose = FALSE)
   expect_true(grepl("join", ops$description[[1L]], ignore.case = TRUE))
+})
+
+test_that("lg_join() chained joins use a distinct y-tracing column, not a collision", {
+  # Covers the fallback-naming branch: when x already carries a
+  # "lineage_id_y" column from an earlier join in the chain, the second
+  # join must not silently overwrite it.
+  new_session()
+  x  <- lg_tag(data.frame(USUBJID = c("01", "02"), A = 1:2, stringsAsFactors = FALSE),
+               dataset_id = "X")
+  y1 <- lg_tag(data.frame(USUBJID = c("01", "02"), B = c(10L, 20L), stringsAsFactors = FALSE),
+               dataset_id = "Y1")
+  y2 <- lg_tag(data.frame(USUBJID = c("01", "02"), C = c(100L, 200L), stringsAsFactors = FALSE),
+               dataset_id = "Y2")
+
+  step1 <- lg_join(x, y1, by = "USUBJID", description = "add Y1")
+  expect_true("lineage_id_y" %in% names(step1))
+
+  step2 <- lg_join(step1, y2, by = "USUBJID", description = "add Y2")
+  y_cols <- grep("^lineage_id_y", names(step2), value = TRUE)
+
+  expect_equal(length(y_cols), 2L)
+  expect_true("lineage_id_y" %in% y_cols)                 # first join's name preserved
+  expect_true(any(grepl("^lineage_id_y__op_", y_cols)))   # second join got a distinct name
 })

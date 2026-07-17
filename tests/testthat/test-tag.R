@@ -77,10 +77,24 @@ test_that("lg_tag() errors on blank or missing dataset_id", {
   expect_error(lg_tag(adsl_raw(), NULL), "non-empty")
 })
 
-test_that("lg_tag() warns when dataset_id already registered", {
+test_that("lg_tag() errors when dataset_id already registered without overwrite", {
+  # NOTE: this used to only warn ("already registered") and silently proceed.
+  # Re-tagging a dataset_id now hard-errors by default, because any lg_df
+  # object still held from the earlier registration silently stops being
+  # traceable via lg_trace() the moment the registration is replaced --
+  # a warning was too easy to miss for something with that consequence.
   new_session()
   lg_tag(adsl_raw(), "ADSL")
-  expect_warning(lg_tag(adsl_raw(), "ADSL"), "already registered")
+  expect_error(lg_tag(adsl_raw(), "ADSL"), "already registered")
+})
+
+test_that("lg_tag() allows re-registration with overwrite = TRUE", {
+  new_session()
+  lg_tag(adsl_raw(), "ADSL")
+  expect_no_error(lg_tag(adsl_raw(), "ADSL", overwrite = TRUE))
+
+  env <- lg_env()
+  expect_true("ADSL" %in% names(env$datasets))
 })
 
 test_that("print.lg_df shows dataset_id and dimensions", {
@@ -89,6 +103,36 @@ test_that("print.lg_df shows dataset_id and dimensions", {
   out <- capture.output(print(tagged))
   expect_true(any(grepl("ADSL", out)))
   expect_true(any(grepl("3", out)))
+})
+
+test_that("print.lg_df shows '... N more rows' when nrow > 6", {
+  new_session()
+  tagged <- adsl_tagged(10L)
+  out <- capture.output(print(tagged))
+  expect_true(any(grepl("more rows", out)))
+})
+
+test_that("lg_id() returns the lineage_id vector", {
+  new_session()
+  tagged <- adsl_tagged(3L)
+  ids <- lg_id(tagged)
+  expect_type(ids, "character")
+  expect_equal(ids, tagged[["lineage_id"]])
+  expect_length(ids, 3L)
+})
+
+test_that("lg_history() returns the operation sequence recorded on an object", {
+  new_session()
+  dm <- lg_tag(
+    data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)),
+    dataset_id = "DMH"
+  )
+  expect_length(lg_history(dm), 0L)
+
+  dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
+  h <- lg_history(dm_f)
+  expect_length(h, 1L)
+  expect_equal(h[[1L]]$op_type, "FILTER")
 })
 
 test_that("[.lg_df preserves lg_df class on row subsetting", {

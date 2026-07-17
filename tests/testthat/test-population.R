@@ -96,6 +96,34 @@ test_that("lg_population() can register multiple populations", {
   expect_true("SAFFL"  %in% names(env$populations))
 })
 
+test_that("lg_population() warns when overwriting an existing population", {
+  # NOTE: previously silent; lg_population() now warns on overwrite for
+  # consistency with lg_tag()'s (now hard-error) and lg_spec()'s guards.
+  new_session()
+  adsl <- adsl_tagged()
+  lg_population(adsl, "SAFFL", "Safety", "Def", "SAFFL == 'Y'")
+  expect_warning(
+    lg_population(adsl, "SAFFL", "Safety v2", "Def v2", "SAFFL == 'Y'"),
+    "already registered"
+  )
+  pop <- lg_env()$populations[["SAFFL"]]
+  expect_equal(pop$label, "Safety v2")
+})
+
+test_that("lg_population() included_value supports logical flags", {
+  new_session()
+  pts <- lg_tag(
+    data.frame(USUBJID = c("01", "02", "03"), ELIG = c(TRUE, FALSE, TRUE)),
+    dataset_id = "PTS"
+  )
+  lg_population(pts, "ELIG", "Eligible", "Eligible for study",
+                incl_criteria = "ELIG == TRUE", included_value = TRUE)
+
+  pop <- lg_env()$populations[["ELIG"]]
+  expect_equal(pop$n_included, 2L)
+  expect_equal(pop$n_excluded, 1L)
+})
+
 test_that("print.lg_population shows key fields", {
   new_session()
   adsl <- adsl_tagged()
@@ -162,10 +190,16 @@ test_that("lg_spec() can register multiple specs", {
   expect_true(all(c("ADLB.AVAL", "ADLB.AVALC", "ADSL.TRTSDT") %in% names(specs)))
 })
 
-test_that("lg_spec() overwrites existing spec with same key", {
+test_that("lg_spec() warns and overwrites existing spec with same key", {
+  # NOTE: previously silent; lg_spec() now warns on overwrite for
+  # consistency with lg_tag()/lg_population()'s guards against silent
+  # re-registration.
   new_session()
   lg_spec("ADLB", "AVAL", "Old Label", "LB", "LBORRES",  "Old derivation")
-  lg_spec("ADLB", "AVAL", "New Label", "LB", "LBSTRESN", "New derivation")
+  expect_warning(
+    lg_spec("ADLB", "AVAL", "New Label", "LB", "LBSTRESN", "New derivation"),
+    "already registered"
+  )
 
   spec <- lg_env()$var_specs[["ADLB.AVAL"]]
   expect_equal(spec$label,      "New Label")

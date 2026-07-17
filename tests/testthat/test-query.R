@@ -75,7 +75,23 @@ test_that("lg_disposition() returns empty data frame with no exclusions", {
   expect_equal(nrow(df), 0L)
 })
 
-test_that("lg_disposition(by='reason') groups by exclusion reason", {
+test_that("lg_disposition(by='population') returns empty data frame when no exclusions", {
+  # Covers the non-"reason" branch of the empty-result path -- distinct from
+  # the default by="reason" empty case already tested above.
+  new_session()
+  adsl_tagged()
+  df <- lg_disposition(by = "population")
+  expect_s3_class(df, "data.frame")
+  expect_equal(nrow(df), 0L)
+  expect_true(all(c("group", "n_excluded", "n_remaining") %in% names(df)))
+})
+
+test_that("lg_disposition(by='reason') returns the step-by-step funnel", {
+  # NOTE: lg_disposition(by = "reason") was changed from a frequency-sorted
+  # group/n_excluded summary to an actual chronological funnel: columns are
+  # now step/reason/n_excluded/n_remaining, one row per FILTER call, in
+  # execution order -- this is what makes it a real CONSORT-style
+  # disposition table rather than just a grouped count.
   new_session()
   adsl <- adsl_tagged()
   lg_filter(adsl, RANDFL == "Y",
@@ -84,9 +100,26 @@ test_that("lg_disposition(by='reason') groups by exclusion reason", {
   )
 
   disp <- lg_disposition(by = "reason")
-  expect_true("group" %in% names(disp))
+  expect_true("step" %in% names(disp))
+  expect_true("reason" %in% names(disp))
   expect_true("n_excluded" %in% names(disp))
-  expect_true(any(grepl("Not randomised", disp$group)))
+  expect_true("n_remaining" %in% names(disp))
+  expect_true(any(grepl("Not randomised", disp$reason)))
+  expect_equal(disp$step[[1L]], 1L)
+  expect_equal(disp$n_remaining[[1L]], sum(adsl_raw()$RANDFL == "Y"))
+})
+
+test_that("lg_disposition(by='reason') funnel is chronological across multiple steps", {
+  new_session()
+  adsl <- adsl_tagged()
+  s1 <- lg_filter(adsl, RANDFL == "Y", reason = "Not randomised", population = "RANDFL")
+  lg_filter(s1, SAFFL == "Y", reason = "Not safety", population = "SAFFL")
+
+  disp <- lg_disposition(by = "reason")
+  expect_equal(nrow(disp), 2L)
+  expect_equal(disp$step, c(1L, 2L))
+  # n_remaining must be non-increasing down the funnel
+  expect_true(all(diff(disp$n_remaining) <= 0L))
 })
 
 test_that("lg_disposition(by='population') groups by population flag", {
@@ -106,6 +139,39 @@ test_that("lg_disposition(by='dataset') groups by dataset", {
 
   disp <- lg_disposition(by = "dataset")
   expect_true("ADSL" %in% disp$group)
+})
+
+test_that("lg_disposition() includes join-caused exclusions, matching lg_exclusions() total", {
+  # This is the exact pattern used in the lineager-dermatology vignette:
+  # an inner join with a description that drops unmatched rows. Both the
+  # filter-caused and join-caused exclusions must be reflected here, or
+  # lg_disposition() silently undercounts relative to lg_exclusions().
+  new_session()
+  adsl <- lg_tag(
+    data.frame(USUBJID = sprintf("S%03d", 1:20),
+               SAFFL = rep(c("Y","Y","Y","Y","N"), 4),
+               ITTFL = rep(c("Y","Y","Y","N","Y"), 4),
+               stringsAsFactors = FALSE),
+    dataset_id = "ADSL_D"
+  )
+  adlb <- lg_tag(
+    data.frame(USUBJID = rep(sprintf("S%03d", 1:20), each = 2),
+               AVISITN = rep(c(0L, 16L), 20), stringsAsFactors = FALSE),
+    dataset_id = "ADLB_D"
+  )
+
+  adsl_saf <- lg_filter(adsl, SAFFL == "Y", reason = "Not in safety set", population = "SAFFL")
+  adsl_itt <- lg_filter(adsl_saf, ITTFL == "Y", reason = "Not in ITT", population = "ITTFL")
+
+  lg_join(adlb, adsl_itt[, "USUBJID", drop = FALSE], by = "USUBJID", type = "inner",
+          description = "Join ADLB to ITT-restricted ADSL")
+
+  excl <- lg_exclusions(verbose = FALSE)
+  disp <- lg_disposition(by = "reason")
+
+  expect_equal(nrow(excl), sum(disp$n_excluded))
+  expect_equal(nrow(disp), 3L)  # 2 filters + 1 row-dropping join
+  expect_true(any(grepl("Join ADLB", disp$reason)))
 })
 
 test_that("lg_disposition() n_excluded sums to total exclusions", {
