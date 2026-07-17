@@ -1,6 +1,5 @@
 # test-report.R — lg_report()
 
-# Helper: build a populated session for report testing
 populated_session <- function() {
   new_session()
   adsl <- adsl_tagged()
@@ -157,4 +156,25 @@ test_that("lg_report() works with a minimal session (nothing but a tag)", {
   html <- lg_report(output = NULL, title = "Minimal")
   expect_true(grepl("<!DOCTYPE html>", html, fixed = TRUE))
   expect_true(grepl("ADSL", html))
+})
+
+test_that("lg_report() handles a session with zero tagged datasets", {
+  # Covers .section_datasets()'s early-return branch (length(.lg$datasets) == 0)
+  new_session()
+  html <- lg_report(output = NULL, title = "Empty session")
+  expect_true(grepl("<!DOCTYPE html>", html, fixed = TRUE))
+  expect_true(grepl("Empty session", html))
+})
+
+test_that("lg_report() renders an em-dash placeholder when excl_criteria is missing", {
+  # Covers .section_populations()'s NULL excl_criteria branch, which was
+  # never exercised because populated_session() always supplies excl_criteria.
+  new_session()
+  adsl <- adsl_tagged()
+  lg_population(adsl, "RANDFL", "Randomised", "Def",
+                incl_criteria = "RANDFL == 'Y'")  # no excl_criteria supplied
+
+  html <- lg_report(output = NULL)
+  expect_true(grepl("Exclusion criteria", html))
+  expect_true(grepl("&mdash;", html, fixed = TRUE))
 })
