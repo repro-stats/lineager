@@ -7,28 +7,44 @@
 lg_disposition(by = c("reason", "population", "dataset"))
 }
 \arguments{
-\item{by}{Character. How to group: \code{"reason"} (default) groups by the
-exclusion reason text, \code{"population"} groups by population flag,
+\item{by}{Character. How to group: \code{"reason"} (default) returns the exact
+step-by-step funnel. \code{"population"} groups by population flag.
 \code{"dataset"} groups by dataset ID.}
 }
 \value{
-A \code{data.frame} with columns: \code{group}, \code{n_excluded}, and a
-\code{cumulative_n} column showing remaining subjects at each stage.
+A \code{data.frame}. For \code{by = "reason"}: columns \code{step}, \code{reason},
+\code{n_excluded}, \code{n_remaining}. For \code{by = "population"} or \code{"dataset"}:
+columns \code{group}, \code{n_excluded}, \code{n_remaining}.
 }
 \description{
-Produces a CONSORT-style subject disposition table from all \code{\link[=lg_filter]{lg_filter()}}
-exclusions in the session. Each row represents a distinct exclusion reason,
-showing cumulative subject counts at each stage.
+Produces a CONSORT-style subject disposition table from every documented
+exclusion in the active session -- both \code{\link[=lg_filter]{lg_filter()}} calls and any
+\code{\link[=lg_join]{lg_join()}} call (\code{type = "inner"}/\code{"right"}) that dropped unmatched rows
+of \code{x}. Both are exclusions in the same sense (rows removed from the
+pipeline with a mandatory documented reason), so both must be reflected
+here for the totals to match \code{\link[=lg_exclusions]{lg_exclusions()}}.
+}
+\details{
+With the default \code{by = "reason"}, this returns one row \strong{per contributing
+step} (filter or row-dropping join), in the exact chronological order
+they were executed, with the number of subjects excluded at that step and
+the number remaining immediately afterward -- i.e. the actual funnel.
+
+\code{by = "population"} and \code{by = "dataset"} aggregate exclusions that share a
+population flag or dataset across possibly multiple steps, in the order
+each group first appears. Note that \code{\link[=lg_join]{lg_join()}} has no \code{population}
+argument, so join-caused exclusions always fall into the \code{"(none)"} group
+under \code{by = "population"}.
 }
 \examples{
 lg_start()
 adsl <- lg_tag(
   data.frame(
-    USUBJID = c("01", "02", "03", "04", "05"),
-    RANDFL = c("Y", "N", "Y", "Y", "N"),
-    SAFFL = c("Y", "N", "Y", "Y", "N")
+    USUBJID = sprintf("\%02d", 1:5),
+    RANDFL = c("Y","Y","N","Y","Y"),
+    SAFFL  = c("Y","Y","N","Y","N")
   ),
-  dataset_id = "ADSL"
+  dataset_id = "ADSL5"
 )
 lg_filter(adsl, RANDFL == "Y",
   reason = "Not randomised (RANDFL != 'Y')",

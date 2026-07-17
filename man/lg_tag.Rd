@@ -4,7 +4,14 @@
 \alias{lg_tag}
 \title{Tag a dataset to begin lineage tracking}
 \usage{
-lg_tag(data, dataset_id, domain = NULL, label = NULL, source = NULL)
+lg_tag(
+  data,
+  dataset_id,
+  domain = NULL,
+  label = NULL,
+  source = NULL,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{data}{A \code{data.frame} or \code{tibble}.}
@@ -21,6 +28,12 @@ Reviewer's Guide output.}
 (e.g. \code{"Laboratory test results"}). Used in reports.}
 
 \item{source}{Character or \code{NULL}. Source file or system description.}
+
+\item{overwrite}{Logical. If \code{dataset_id} is already registered in this
+session, \code{lg_tag()} errors by default : any \code{lg_df} object still held
+from the previous registration would silently stop being traceable via
+\code{\link[=lg_trace]{lg_trace()}} the moment the registration is replaced. Set \code{overwrite = TRUE} to explicitly allow re-tagging (e.g. intentionally re-running a
+step) and acknowledge that the prior object is no longer traceable.}
 }
 \value{
 An \code{lg_df} object : a \code{data.frame} with a \code{lineage_id} column and

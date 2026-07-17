@@ -21,18 +21,39 @@ lg_join(
 \item{type}{Join type: \code{"left"} (default), \code{"inner"}, \code{"full"},
 \code{"right"}.}
 
-\item{description}{Character or \code{NULL}. Optional description of the join
-purpose (e.g. \code{"Merge first dose date from EX domain"}).}
+\item{description}{Character or \code{NULL}. Description of the join purpose
+(e.g. \code{"Merge first dose date from EX domain"}). For \code{type = "inner"}
+or \code{type = "right"}, \code{description} becomes \strong{mandatory} the moment the
+join actually drops one or more rows of \code{x} (i.e. \code{x} rows with no
+matching \code{y} record) : those dropped rows are subjects being silently
+removed from the pipeline, and per lineager's core design, every
+exclusion must carry a documented reason. If no rows end up dropped,
+\code{description} stays optional as before.}
 }
 \value{
-An \code{lg_df} with the joined result. \code{lineage_id_y} is added to record
-the contributing row IDs from \code{y}.
+An \code{lg_df} with the joined result. A \code{lineage_id_y} column is
+added recording the contributing row IDs from \code{y}, matching prior
+versions of \code{lineager}. If \code{x} already carries a \code{lineage_id_y} column
+from an earlier join in the same chain (e.g. joining a third dataset
+onto the result of a previous \code{lg_join()} call), this join's own
+y-tracing column is instead named \verb{lineage_id_y__<op_id>} (e.g.
+\code{lineage_id_y__op_0003}) so it cannot silently collide with -- or
+overwrite -- the earlier join's tracing column. A message is printed
+whenever this fallback naming is used.
 }
 \description{
 Performs a left, inner, full, or right join and records the operation in the
 session log. The \code{lineage_id} column from \code{x} is preserved. A secondary
-column \code{lineage_id_y} records which rows of \code{y} contributed to each output
-row, enabling full bilateral tracing.
+column records which rows of \code{y} contributed to each output row, enabling
+full bilateral tracing.
+}
+\details{
+Only unmatched rows of \code{x} are exclusion-tracked (since \code{x} is treated as
+the primary, subject-carrying dataset in lineager's model). Unmatched rows
+of \code{y} dropped by \code{"left"} or \code{"inner"} joins are not separately logged as
+exclusions of \code{y}'s own dataset : if \code{y}-side row loss also needs
+documented tracking for your use case, log it explicitly with
+\code{\link[=lg_filter]{lg_filter()}} on \code{y} before joining.
 }
 \examples{
 lg_start()

@@ -10,7 +10,8 @@ lg_population(
   label,
   definition,
   incl_criteria,
-  excl_criteria = NULL
+  excl_criteria = NULL,
+  included_value = "Y"
 )
 }
 \arguments{
@@ -28,6 +29,14 @@ or plain English. At least one required.}
 
 \item{excl_criteria}{Character vector of explicit exclusion criteria.
 \code{NULL} if there are none beyond failing inclusion.}
+
+\item{included_value}{The value of \code{flag_var} that denotes inclusion.
+Defaults to \code{"Y"} (the CDISC convention), but \code{lineager} is
+general-purpose : if your flag is a logical column, pass
+\code{included_value = TRUE}; for any other custom coding, pass the actual
+included-value directly. Using the wrong value here silently produces
+incorrect included/excluded counts (e.g. a logical \code{TRUE}/\code{FALSE} flag
+compared against \code{"Y"} will count every row as excluded).}
 }
 \value{
 \code{data}, invisibly (for pipe use).

@@ -93,6 +93,7 @@ lg_report(
    \code{\link[=lg_population]{lg_population()}} \tab Register a population or cohort definition \cr
    \code{\link[=lg_spec]{lg_spec()}} \tab Document a source-to-analysis variable derivation \cr
    \code{\link[=lg_trace]{lg_trace()}} \tab Trace a row's complete lineage journey \cr
+   \code{\link[=lg_history]{lg_history()}} \tab Retrieve the operation history recorded on a tagged object \cr
    \code{\link[=lg_exclusions]{lg_exclusions()}} \tab Retrieve the full exclusion registry \cr
    \code{\link[=lg_disposition]{lg_disposition()}} \tab Grouped exclusion summary table \cr
    \code{\link[=lg_operations]{lg_operations()}} \tab Full pipeline operation log \cr

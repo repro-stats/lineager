@@ -4,13 +4,16 @@
 \alias{lg_operations}
 \title{Retrieve the operation log as a data frame}
 \usage{
-lg_operations(verbose = FALSE)
+lg_operations(verbose = TRUE)
 }
 \arguments{
-\item{verbose}{Logical. Print count summary. Default \code{FALSE}.}
+\item{verbose}{Logical. Print count summary. Default \code{TRUE}.}
 }
 \value{
-A \code{data.frame} of all recorded operations.
+A \code{data.frame} of all recorded operations, with columns \code{op_id},
+\code{op_type}, \code{dataset_id}, \code{description}, \code{population} (\code{NA} for
+non-\code{FILTER} operations), \code{rows_in}, \code{rows_out}, \code{rows_excluded}
+(\code{rows_in - rows_out} when not directly recorded), and \code{timestamp}.
 }
 \description{
 Retrieve the operation log as a data frame
