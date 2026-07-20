@@ -257,7 +257,11 @@ lg_spec(
 If you call
 [`lg_spec()`](https://reprostats.org/lineager/reference/lg_spec.md) with
 the same `adam_dataset` and `adam_var`, the prior spec is replaced —
-useful during iterative analysis:
+useful during iterative analysis.
+[`lg_spec()`](https://reprostats.org/lineager/reference/lg_spec.md)
+emits a warning when this happens, so an accidental duplicate key
+doesn’t silently overwrite an unrelated spec; the warning below is
+expected here, since we are deliberately re-registering `ANALYSIS.CHG`:
 
 ``` r
 

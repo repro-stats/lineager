@@ -308,7 +308,11 @@ structured R objects rather than prose.</p>
 </h3>
 <p>If you call <code><a href="../reference/lg_spec.html">lg_spec()</a></code> with the same
 <code>adam_dataset</code> and <code>adam_var</code>, the prior spec is
-replaced — useful during iterative analysis:</p>
+replaced — useful during iterative analysis. <code><a href="../reference/lg_spec.html">lg_spec()</a></code>
+emits a warning when this happens, so an accidental duplicate key
+doesn’t silently overwrite an unrelated spec; the warning below is
+expected here, since we are deliberately re-registering
+<code>ANALYSIS.CHG</code>:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Refine the CHG derivation description</span></span>
 <span><span class="fu"><a href="../reference/lg_spec.html">lg_spec</a></span><span class="op">(</span></span>

@@ -194,6 +194,14 @@ lg_join(x, y, by = "USUBJID", type = "full") # all rows of both
 lg_join(x, y, by = "USUBJID", type = "right") # all rows of y
 ```
 
+`"left"` and `"full"` never drop rows of `x`, so `description` stays
+optional for them. `"inner"` and `"right"` can drop unmatched `x` rows —
+the moment a drop actually happens,
+[`lg_join()`](https://reprostats.org/lineager/reference/lg_join.md)
+requires a `description` (used as the exclusion reason for those dropped
+rows) and errors if one isn’t supplied. If no rows end up dropped,
+`description` remains optional even for `"inner"`/`"right"`.
+
 ## 5. Filter with mandatory exclusion reasons
 
 [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
@@ -286,6 +294,35 @@ ops[, c("op_id", "op_type", "description", "rows_in", "rows_out")]
 
 The operation log is the backbone of the provenance report — it shows
 the complete sequence of transformations applied to the data.
+
+[`lg_operations()`](https://reprostats.org/lineager/reference/lg_operations.md)
+returns the log for the **whole session** — every dataset, every
+operation. When you only want the history behind one specific object,
+[`lg_history()`](https://reprostats.org/lineager/reference/lg_history.md)
+returns just the operations that produced it, in order:
+
+``` r
+
+history <- lg_history(step2)
+length(history)
+#> [1] 2
+vapply(history, function(op) op$op_type, character(1))
+#> [1] "FILTER" "FILTER"
+vapply(history, function(op) op$description, character(1))
+#> [1] "Screening criteria not met (eligible != TRUE)"
+#> [2] "Under minimum age threshold (age < 18)"
+```
+
+`step2` above went through two
+[`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
+calls (eligibility, then age), so `lg_history(step2)` returns a list of
+those two operation records — useful when you have several derived
+objects in scope and want to check what actually produced a particular
+one, without filtering the full session log by hand. Each element is an
+`lg_operation` record with the same fields shown in
+[`lg_operations()`](https://reprostats.org/lineager/reference/lg_operations.md)
+(`op_id`, `op_type`, `description`, `rows_in`, `rows_out`, etc.) —
+accessed with `$`, as above, rather than printed directly.
 
 ## 7. End the session
 
