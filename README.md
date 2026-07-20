@@ -126,6 +126,7 @@ lg_end()
 | `lg_population()` | Register a population or cohort definition |
 | `lg_spec()` | Document a source-to-analysis variable derivation |
 | `lg_trace()` | Trace a row's complete lineage journey |
+| `lg_history()` | Retrieve the operation history recorded on a tagged object |
 | `lg_exclusions()` | Retrieve the full exclusion registry |
 | `lg_disposition()` | Grouped exclusion summary table |
 | `lg_operations()` | Full pipeline operation log |
