@@ -105,12 +105,11 @@
 ### Testing
 
 - Test coverage increased from 98.18% to 99.89%
-  ([`covr::package_coverage()`](http://covr.r-lib.org/reference/package_coverage.md)),
-  with new tests specifically targeting each fix above: chained-join
-  collision avoidance, backward-compatible single-join naming,
-  inner/right join row-drop documentation, the disposition funnel’s
-  chronological ordering, exact USUBJID matching, HTML-escaping
-  (including the previously-untested `NA` branch), the
+  (`covr::package_coverage()`), with new tests specifically targeting
+  each fix above: chained-join collision avoidance, backward-compatible
+  single-join naming, inner/right join row-drop documentation, the
+  disposition funnel’s chronological ordering, exact USUBJID matching,
+  HTML-escaping (including the previously-untested `NA` branch), the
   [`lg_tag()`](https://reprostats.org/lineager/reference/lg_tag.md)
   overwrite guard, and
   [`lg_population()`](https://reprostats.org/lineager/reference/lg_population.md)’s
