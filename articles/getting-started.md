@@ -303,26 +303,30 @@ returns just the operations that produced it, in order:
 
 ``` r
 
-history <- lg_history(step2)
-length(history)
-#> [1] 2
-vapply(history, function(op) op$op_type, character(1))
-#> [1] "FILTER" "FILTER"
-vapply(history, function(op) op$description, character(1))
-#> [1] "Screening criteria not met (eligible != TRUE)"
-#> [2] "Under minimum age threshold (age < 18)"
+lg_history(step2)
+#> <lg_history> 2 operation(s)
+#> 
+#> <lg_operation> [op_0005] FILTER
+#>   Dataset    : PATIENTS
+#>   Description: Screening criteria not met (eligible != TRUE)
+#>   Population : ELIGIBLE_SET
+#>   Rows       : 6 -> 4 (2 excluded)
+#>   Timestamp  : 2026-07-30T16:10:36.717Z
+#> 
+#> <lg_operation> [op_0006] FILTER
+#>   Dataset    : PATIENTS
+#>   Description: Under minimum age threshold (age < 18)
+#>   Population : ADULT_SET
+#>   Rows       : 4 -> 4 (0 excluded)
+#>   Timestamp  : 2026-07-30T16:10:36.719Z
 ```
 
 `step2` above went through two
 [`lg_filter()`](https://reprostats.org/lineager/reference/lg_filter.md)
-calls (eligibility, then age), so `lg_history(step2)` returns a list of
-those two operation records — useful when you have several derived
-objects in scope and want to check what actually produced a particular
-one, without filtering the full session log by hand. Each element is an
-`lg_operation` record with the same fields shown in
-[`lg_operations()`](https://reprostats.org/lineager/reference/lg_operations.md)
-(`op_id`, `op_type`, `description`, `rows_in`, `rows_out`, etc.) —
-accessed with `$`, as above, rather than printed directly.
+calls (eligibility, then age), so `lg_history(step2)` returns both of
+those operation records — useful when you have several derived objects
+in scope and want to check what actually produced a particular one,
+without filtering the full session log by hand.
 
 ## 7. End the session
 

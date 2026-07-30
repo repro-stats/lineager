@@ -68,8 +68,16 @@ requiring <code>attr(data, "lg_history")</code>.</p>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list of <code>lg_operation</code> records applied to this specific object,
-in the order they were applied. Empty list if none yet.</p>
+    <p>An <code>lg_history</code> object (a list of <code>lg_operation</code> records applied
+to this specific object, in the order they were applied; empty if
+none yet). Iterate over it, or index into it, exactly like a regular
+list — the class only changes how it prints.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>The returned object prints as a readable summary rather than a raw nested
+list — when empty, it reports plainly that no operations are recorded for
+this object yet, rather than printing a bare, uninformative <code><a href="https://rdrr.io/r/base/list.html" class="external-link">list()</a></code>.</p>
     </div>
 
     <div class="section level2">
@@ -81,10 +89,20 @@ in the order they were applied. Empty list if none yet.</p>
 <span class="r-in"><span>  dataset_id <span class="op">=</span> <span class="st">"DM"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> lineager: tagged 'DM' — 2 rows, 2 cols</span>
+<span class="r-in"><span><span class="fu">lg_history</span><span class="op">(</span><span class="va">dm</span><span class="op">)</span> <span class="co"># no operations yet</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;lg_history&gt; no operations recorded for this object yet</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">dm_f</span> <span class="op">&lt;-</span> <span class="fu"><a href="lg_filter.html">lg_filter</a></span><span class="op">(</span><span class="va">dm</span>, <span class="va">AGE</span> <span class="op">&gt;=</span> <span class="fl">18L</span>, reason <span class="op">=</span> <span class="st">"Minors excluded"</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> lineager: [DM] filter 'Minors excluded' — 2 in, 1 out, 1 excluded</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="fu">lg_history</span><span class="op">(</span><span class="va">dm_f</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 1</span>
+<span class="r-in"><span><span class="fu">lg_history</span><span class="op">(</span><span class="va">dm_f</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;lg_history&gt; 1 operation(s)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;lg_operation&gt; [op_0001] FILTER</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Dataset    : DM</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Description: Minors excluded</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Rows       : 2 -&gt; 1 (1 excluded)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Timestamp  : 2026-07-30T16:10:27.900Z</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

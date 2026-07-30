@@ -344,24 +344,27 @@ session</strong> — every dataset, every operation. When you only want
 the history behind one specific object, <code><a href="../reference/lg_history.html">lg_history()</a></code>
 returns just the operations that produced it, in order:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/lg_history.html">lg_history</a></span><span class="op">(</span><span class="va">step2</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">history</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 2</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">history</span>, <span class="kw">function</span><span class="op">(</span><span class="va">op</span><span class="op">)</span> <span class="va">op</span><span class="op">$</span><span class="va">op_type</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "FILTER" "FILTER"</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">history</span>, <span class="kw">function</span><span class="op">(</span><span class="va">op</span><span class="op">)</span> <span class="va">op</span><span class="op">$</span><span class="va">description</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">character</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Screening criteria not met (eligible != TRUE)"</span></span>
-<span><span class="co">#&gt; [2] "Under minimum age threshold (age &lt; 18)"</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/lg_history.html">lg_history</a></span><span class="op">(</span><span class="va">step2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; &lt;lg_history&gt; 2 operation(s)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;lg_operation&gt; [op_0005] FILTER</span></span>
+<span><span class="co">#&gt;   Dataset    : PATIENTS</span></span>
+<span><span class="co">#&gt;   Description: Screening criteria not met (eligible != TRUE)</span></span>
+<span><span class="co">#&gt;   Population : ELIGIBLE_SET</span></span>
+<span><span class="co">#&gt;   Rows       : 6 -&gt; 4 (2 excluded)</span></span>
+<span><span class="co">#&gt;   Timestamp  : 2026-07-30T16:10:36.717Z</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; &lt;lg_operation&gt; [op_0006] FILTER</span></span>
+<span><span class="co">#&gt;   Dataset    : PATIENTS</span></span>
+<span><span class="co">#&gt;   Description: Under minimum age threshold (age &lt; 18)</span></span>
+<span><span class="co">#&gt;   Population : ADULT_SET</span></span>
+<span><span class="co">#&gt;   Rows       : 4 -&gt; 4 (0 excluded)</span></span>
+<span><span class="co">#&gt;   Timestamp  : 2026-07-30T16:10:36.719Z</span></span></code></pre></div>
 <p><code>step2</code> above went through two <code><a href="../reference/lg_filter.html">lg_filter()</a></code>
 calls (eligibility, then age), so <code>lg_history(step2)</code> returns
-a list of those two operation records — useful when you have several
-derived objects in scope and want to check what actually produced a
-particular one, without filtering the full session log by hand. Each
-element is an <code>lg_operation</code> record with the same fields
-shown in <code><a href="../reference/lg_operations.html">lg_operations()</a></code> (<code>op_id</code>,
-<code>op_type</code>, <code>description</code>, <code>rows_in</code>,
-<code>rows_out</code>, etc.) — accessed with <code>$</code>, as above,
-rather than printed directly.</p>
+both of those operation records — useful when you have several derived
+objects in scope and want to check what actually produced a particular
+one, without filtering the full session log by hand.</p>
 </div>
 <div class="section level2">
 <h2 id="end-the-session">7. End the session<a class="anchor" aria-label="anchor" href="#end-the-session"></a>
