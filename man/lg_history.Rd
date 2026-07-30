@@ -10,8 +10,10 @@ lg_history(data)
 \item{data}{An \code{lg_df} object.}
 }
 \value{
-A list of \code{lg_operation} records applied to this specific object,
-in the order they were applied. Empty list if none yet.
+An \code{lg_history} object (a list of \code{lg_operation} records applied
+to this specific object, in the order they were applied; empty if
+none yet). Iterate over it, or index into it, exactly like a regular
+list — the class only changes how it prints.
 }
 \description{
 Every \code{lg_df} accumulates the sequence of \code{\link[=lg_filter]{lg_filter()}}, \code{\link[=lg_derive]{lg_derive()}},
@@ -19,13 +21,20 @@ and \code{\link[=lg_join]{lg_join()}} operations that produced it, in its \code{
 attribute. \code{lg_history()} returns that sequence directly rather than
 requiring \code{attr(data, "lg_history")}.
 }
+\details{
+The returned object prints as a readable summary rather than a raw nested
+list — when empty, it reports plainly that no operations are recorded for
+this object yet, rather than printing a bare, uninformative \code{list()}.
+}
 \examples{
 lg_start()
 dm <- lg_tag(
   data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)),
   dataset_id = "DM"
 )
+lg_history(dm) # no operations yet
+
 dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
-length(lg_history(dm_f))
+lg_history(dm_f)
 
 }

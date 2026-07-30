@@ -2,7 +2,9 @@
 
 S3method("[",lg_df)
 S3method(print,lg_df)
+S3method(print,lg_history)
 S3method(print,lg_lineage)
+S3method(print,lg_operation)
 S3method(print,lg_population)
 export("%>%")
 export(lg_derive)
