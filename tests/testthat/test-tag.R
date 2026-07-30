@@ -135,6 +135,81 @@ test_that("lg_history() returns the operation sequence recorded on an object", {
   expect_equal(h[[1L]]$op_type, "FILTER")
 })
 
+test_that("lg_history() returns an lg_history object, not a bare list", {
+  # length()/vapply() must keep working unchanged -- only print() behaviour
+  # is meant to differ from a plain list.
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)), dataset_id = "DMH2")
+  expect_s3_class(lg_history(dm), "lg_history")
+  expect_true(is.list(lg_history(dm)))
+
+  dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
+  h <- lg_history(dm_f)
+  expect_s3_class(h, "lg_history")
+  expect_equal(vapply(h, function(op) op$op_type, character(1)), "FILTER")
+})
+
+test_that("print.lg_history() reports plainly when no operations are recorded", {
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = "01", AGE = 20L), dataset_id = "DMH3")
+  out <- capture.output(print(lg_history(dm)))
+  expect_true(any(grepl("no operations recorded", out)))
+  # Must NOT just be a bare, uninformative "list()"
+  expect_false(identical(trimws(out), "list()"))
+})
+
+test_that("print.lg_history() shows a readable summary, not a raw nested list dump", {
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)), dataset_id = "DMH4")
+  dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
+
+  out <- capture.output(print(lg_history(dm_f)))
+  expect_true(any(grepl("1 operation", out)))
+  expect_true(any(grepl("FILTER", out)))
+  expect_true(any(grepl("Minors excluded", out)))
+  # The old raw-dump output included this exact artifact -- must be gone
+  expect_false(any(grepl('attr\\(,"class"\\)', out)))
+})
+
+test_that("print.lg_operation() shows dataset, description, rows, and timestamp", {
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = c("01", "02", "03"), AGE = c(20L, 15L, 40L)), dataset_id = "DMH5")
+  dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
+
+  op <- lg_history(dm_f)[[1L]]
+  out <- capture.output(print(op))
+  expect_true(any(grepl("DMH5", out)))
+  expect_true(any(grepl("Minors excluded", out)))
+  expect_true(any(grepl("3 -> 2", out, fixed = TRUE)))
+  expect_true(any(grepl("1 excluded", out)))
+})
+
+test_that("print.lg_operation() shows the Population line when one is recorded", {
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = c("01", "02", "03"), RANDFL = c("Y", "N", "Y")), dataset_id = "DMH5B")
+  dm_f <- lg_filter(dm, RANDFL == "Y", reason = "Not randomised", population = "RANDFL")
+
+  op <- lg_history(dm_f)[[1L]]
+  out <- capture.output(print(op))
+  expect_true(any(grepl("Population : RANDFL", out, fixed = TRUE)))
+})
+
+test_that("print.lg_operation() handles DERIVE/JOIN records missing population/rows_excluded", {
+  # DERIVE and JOIN operation records don't carry a `population` field, and
+  # DERIVE doesn't carry `rows_excluded` either -- print.lg_operation() must
+  # not error on these, just omit the inapplicable lines.
+  new_session()
+  dm <- lg_tag(data.frame(USUBJID = c("01", "02")), dataset_id = "DMH6")
+  dm_d <- lg_derive(dm, X = 1L, description = "Constant column")
+
+  op <- lg_history(dm_d)[[1L]]
+  expect_null(op$population)
+  expect_null(op$rows_excluded)
+  out <- capture.output(print(op))
+  expect_true(any(grepl("DERIVE", out)))
+  expect_false(any(grepl("Population", out)))
+})
+
 test_that("[.lg_df preserves lg_df class on row subsetting", {
   new_session()
   tagged <- adsl_tagged()

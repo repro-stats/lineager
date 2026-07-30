@@ -205,9 +205,15 @@ lg_id <- function(data) {
 #' attribute. `lg_history()` returns that sequence directly rather than
 #' requiring `attr(data, "lg_history")`.
 #'
+#' The returned object prints as a readable summary rather than a raw nested
+#' list — when empty, it reports plainly that no operations are recorded for
+#' this object yet, rather than printing a bare, uninformative `list()`.
+#'
 #' @param data An `lg_df` object.
-#' @return A list of `lg_operation` records applied to this specific object,
-#'   in the order they were applied. Empty list if none yet.
+#' @return An `lg_history` object (a list of `lg_operation` records applied
+#'   to this specific object, in the order they were applied; empty if
+#'   none yet). Iterate over it, or index into it, exactly like a regular
+#'   list — the class only changes how it prints.
 #'
 #' @examples
 #' lg_start()
@@ -215,11 +221,50 @@ lg_id <- function(data) {
 #'   data.frame(USUBJID = c("01", "02"), AGE = c(20L, 15L)),
 #'   dataset_id = "DM"
 #' )
+#' lg_history(dm) # no operations yet
+#'
 #' dm_f <- lg_filter(dm, AGE >= 18L, reason = "Minors excluded")
-#' length(lg_history(dm_f))
+#' lg_history(dm_f)
 #'
 #' @export
 lg_history <- function(data) {
   .assert_tagged(data)
-  attr(data, "lg_history") %||% list()
+  h <- attr(data, "lg_history") %||% list()
+  structure(h, class = "lg_history")
+}
+
+
+#' @export
+print.lg_history <- function(x, ...) {
+  if (length(x) == 0L) {
+    cat("<lg_history> no operations recorded for this object yet\n")
+    return(invisible(x))
+  }
+  cat(sprintf("<lg_history> %d operation(s)\n\n", length(x)))
+  for (op in x) print(op)
+  invisible(x)
+}
+
+
+#' @export
+print.lg_operation <- function(x, ...) {
+  cat(sprintf(
+    "<lg_operation> [%s] %s\n", x$op_id %||% "?", x$op_type %||% "?"
+  ))
+  cat(sprintf("  Dataset    : %s\n", x$dataset_id %||% "unknown"))
+  cat(sprintf("  Description: %s\n", x$description %||% ""))
+  if (!is.null(x$population) && !is.na(x$population)) {
+    cat(sprintf("  Population : %s\n", x$population))
+  }
+  if (!is.null(x$rows_in) && !is.null(x$rows_out)) {
+    excl_txt <- if (!is.null(x$rows_excluded) && !is.na(x$rows_excluded)) {
+      sprintf(" (%d excluded)", x$rows_excluded)
+    } else {
+      ""
+    }
+    cat(sprintf("  Rows       : %d -> %d%s\n", x$rows_in, x$rows_out, excl_txt))
+  }
+  cat(sprintf("  Timestamp  : %s\n", x$timestamp %||% ""))
+  cat("\n")
+  invisible(x)
 }
